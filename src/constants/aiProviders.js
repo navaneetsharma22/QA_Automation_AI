@@ -64,6 +64,28 @@ export const AI_PROVIDERS = [
     latency: '~450ms',
     tokensPerSec: 90,
     color: '#EC4899'
+  },
+  {
+    id: 'OPENROUTER',
+    name: 'OpenRouter',
+    badge: 'Free Tier',
+    description: 'Use OpenRouter without credits (Llama 3 8B)',
+    models: ['meta-llama/llama-3.1-8b-instruct:free'],
+    defaultModel: 'meta-llama/llama-3.1-8b-instruct:free',
+    latency: '~600ms',
+    tokensPerSec: 100,
+    color: '#14B8A6'
+  },
+  {
+    id: 'HUGGINGFACE',
+    name: 'Hugging Face',
+    badge: 'Serverless API',
+    description: 'Run open-source models directly via Hugging Face Inference API',
+    models: ['meta-llama/Meta-Llama-3-8B-Instruct', 'mistralai/Mistral-7B-Instruct-v0.3', 'HuggingFaceH4/zephyr-7b-beta'],
+    defaultModel: 'meta-llama/Meta-Llama-3-8B-Instruct',
+    latency: '~800ms',
+    tokensPerSec: 80,
+    color: '#FFD21E'
   }
 ];
 

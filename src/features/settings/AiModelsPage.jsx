@@ -18,13 +18,22 @@ export const AiModelsPage = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-200">
-      <div className="border-b border-[#1F2937] pb-6">
-        <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
-          AI Provider & Model Management
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Manage inference endpoints across Groq, Gemini, OpenAI, Claude, DeepSeek, and local Ollama deployments.
-        </p>
+      <div className="border-b border-[#1F2937] pb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+            AI Provider & Model Management
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Manage inference endpoints across Groq, Gemini, OpenAI, Claude, DeepSeek, and local Ollama deployments.
+          </p>
+        </div>
+        <button 
+          onClick={() => toast.success('AI Provider configuration saved successfully!')}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          Save Configuration
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

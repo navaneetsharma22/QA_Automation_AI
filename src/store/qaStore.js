@@ -228,10 +228,24 @@ export const useQaStore = create(
   }
 }), {
   name: 'arena-qa-storage', // key for localStorage
+  merge: (persistedState, currentState) => {
+    if (persistedState.aiProviders) {
+      // Sync hardcoded provider configs (models, badges, etc.) but keep user's active toggle state
+      persistedState.aiProviders = currentState.aiProviders.map(currentProvider => {
+        const savedProvider = persistedState.aiProviders.find(p => p.id === currentProvider.id);
+        if (savedProvider) {
+          return { ...currentProvider, active: savedProvider.active };
+        }
+        return currentProvider;
+      });
+    }
+    return { ...currentState, ...persistedState };
+  },
   partialize: (state) => ({ 
     history: state.history, 
     prompts: state.prompts, 
     knowledgeBase: state.knowledgeBase,
-    settings: state.settings 
+    settings: state.settings,
+    aiProviders: state.aiProviders 
   }), // Only persist these fields
 }));
