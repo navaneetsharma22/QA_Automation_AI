@@ -14,9 +14,9 @@ export const AI_PROVIDERS = [
     id: 'GEMINI',
     name: 'Gemini',
     badge: 'Multimodal',
-    description: 'Google Gemini 2.5 Pro with long context window processing',
-    models: ['gemini-2.5-pro', 'gemini-2.5-flash'],
-    defaultModel: 'gemini-2.5-pro',
+    description: 'Google Gemini 1.5 Pro with long context window processing',
+    models: ['gemini-1.5-pro-latest', 'gemini-1.5-flash'],
+    defaultModel: 'gemini-1.5-flash',
     latency: '~650ms',
     tokensPerSec: 140,
     color: '#10B981'

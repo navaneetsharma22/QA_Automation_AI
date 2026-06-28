@@ -45,7 +45,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
     } catch (err) {
-      toast.error('Analysis failed to execute', { id: toastId });
+      toast.error(err.message || 'Analysis failed to execute', { id: toastId });
     } finally {
       setIsAnalyzing(false);
     }

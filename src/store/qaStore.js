@@ -77,7 +77,7 @@ export const useQaStore = create(
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze conversation');
+        throw new Error(errorData.details || errorData.error || 'Failed to analyze conversation');
       }
 
       const aiResult = await response.json();
@@ -88,8 +88,10 @@ export const useQaStore = create(
       const newReport = {
         analysisId,
         date: new Date().toISOString(),
-        agentName: 'Agent Support',
+        agentName: aiResult.agentName || 'Agent Support',
         customerName: 'Customer',
+        petitionId: aiResult.petitionId || null,
+        errorType: aiResult.errorType || null,
         aiModelUsed: `${aiProvider} (${aiModel})`,
         promptVersion: promptVersion || 'v4',
         processingTime: `${latencyMs}ms`,
