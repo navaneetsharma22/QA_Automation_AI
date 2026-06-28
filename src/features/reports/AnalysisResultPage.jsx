@@ -94,15 +94,15 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
       if (report.findings && report.findings.length > 0) {
         const finding = report.findings[0];
-        setQaFindingError(finding.issueTitle || finding.issue || "");
-        setQaFindingDescription(finding.finding || finding.description || "");
+        setQaFindingError(Array.isArray(finding.issueTitle) ? finding.issueTitle.join('\n') : (finding.issueTitle || finding.issue || ""));
+        setQaFindingDescription(Array.isArray(finding.finding) ? finding.finding.join('\n') : (Array.isArray(finding.description) ? finding.description.join('\n') : (finding.finding || finding.description || "")));
         setExpectedAgentAction(Array.isArray(finding.expectedAgentAction) ? finding.expectedAgentAction.join('\n') : (finding.expectedAgentAction || ""));
-        setAgentAction(finding.agentAction || "");
+        setAgentAction(Array.isArray(finding.agentAction) ? finding.agentAction.join('\n') : (finding.agentAction || ""));
         setMissingExpectedAction(Array.isArray(finding.missingExpectedAction) ? finding.missingExpectedAction.join('\n') : (finding.missingExpectedAction || ""));
-        setReasonText(finding.reason || "");
-        setResponseText(finding.response || finding.impact || "");
-        setAhtText(finding.aht || "");
-        setCriticalChatLogs(finding.criticalChatLogs || finding.conversationEvidence || "");
+        setReasonText(Array.isArray(finding.reason) ? finding.reason.join('\n') : (finding.reason || ""));
+        setResponseText(Array.isArray(finding.response) ? finding.response.join('\n') : (Array.isArray(finding.impact) ? finding.impact.join('\n') : (finding.response || finding.impact || "")));
+        setAhtText(Array.isArray(finding.aht) ? finding.aht.join('\n') : (finding.aht || ""));
+        setCriticalChatLogs(Array.isArray(finding.criticalChatLogs) ? finding.criticalChatLogs.join('\n\n') : (Array.isArray(finding.conversationEvidence) ? finding.conversationEvidence.join('\n\n') : (finding.criticalChatLogs || finding.conversationEvidence || "")));
       } else {
         setQaFindingError("");
         setQaFindingDescription("");
