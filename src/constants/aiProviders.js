@@ -108,6 +108,17 @@ export const AI_PROVIDERS = [
     latency: '~800ms',
     tokensPerSec: 75,
     color: '#38A169'
+  },
+  {
+    id: 'GITHUB',
+    name: 'GitHub Models',
+    badge: 'Multi-Model',
+    description: 'Access Llama 3, Phi-3, and GPT-4o directly through GitHub Personal Access Tokens',
+    models: ['gpt-4o', 'Meta-Llama-3.1-70B-Instruct', 'Meta-Llama-3.1-8B-Instruct', 'Phi-3-medium-128k-instruct', 'DeepSeek-R1'],
+    defaultModel: 'DeepSeek-R1',
+    latency: '~650ms',
+    tokensPerSec: 100,
+    color: '#24292E'
   }
 ];
 
