@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
-import { Search, Bell, Shield, UserCheck, Sparkles, Command } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Bell, Shield, UserCheck, Sparkles, Command, LogOut, UserCircle2, ChevronDown } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
-export const Header = ({ activeTab, onOpenCommandPalette }) => {
-  const { user } = useAuthStore();
+export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
+  const { user, logout } = useAuthStore();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const getTitle = () => {
     switch (activeTab) {
@@ -55,6 +67,51 @@ export const Header = ({ activeTab, onOpenCommandPalette }) => {
           <Bell className="w-4 h-4" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
         </button>
+
+        {/* User Dropdown */}
+        <div className="relative ml-2" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-[#111827] border border-transparent hover:border-[#1F2937] transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+              {user?.fullName?.charAt(0) || 'U'}
+            </div>
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-56 bg-[#111827] border border-[#1F2937] rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-in slide-in-from-top-2 duration-200">
+              <div className="px-4 py-3 border-b border-[#1F2937]">
+                <p className="text-sm font-semibold text-white truncate">{user?.fullName}</p>
+                <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+              </div>
+              
+              <div className="p-1">
+                <button
+                  onClick={() => {
+                    onNavigate('profile');
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-[#1F2937] rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <UserCircle2 className="w-4 h-4" />
+                  My Profile
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-2 mt-1"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log Out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

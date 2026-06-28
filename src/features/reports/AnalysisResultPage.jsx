@@ -56,9 +56,9 @@ const CopyButton = ({ text, className = "" }) => {
 export const AnalysisResultPage = ({ report, onBack }) => {
   const { updateReport } = useQaStore();
   
-  const highestSeverity = report?.findings?.some(f => f.severity === 'Critical') ? 'CRITICAL' : 
-                          report?.findings?.some(f => f.severity === 'High') ? 'HIGH' :
-                          report?.findings?.some(f => f.severity === 'Medium') ? 'MEDIUM' :
+  const highestSeverity = report?.findings?.some(f => f.severity?.toLowerCase() === 'critical') ? 'CRITICAL' : 
+                          report?.findings?.some(f => f.severity?.toLowerCase() === 'high') ? 'HIGH' :
+                          report?.findings?.some(f => f.severity?.toLowerCase() === 'medium') ? 'MEDIUM' :
                           report?.findings?.length > 0 ? 'LOW' : 'NONE';
 
   const [selectedErrorType, setSelectedErrorType] = useState(report?.errorType || highestSeverity);
@@ -120,14 +120,15 @@ export const AnalysisResultPage = ({ report, onBack }) => {
   if (!report) return null;
 
   const getStatusBadge = (status) => {
-    if (status === 'Passed') {
+    const s = status?.toLowerCase() || '';
+    if (s === 'passed' || s === 'pass') {
       return (
         <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
           <CheckCircle2 className="w-3.5 h-3.5" /> PASSED QA
         </span>
       );
     }
-    if (status === 'Warning') {
+    if (s === 'warning') {
       return (
         <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5" /> WARNING
@@ -270,7 +271,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
         <div className="space-y-2">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
-          <select 
+            <select 
             value={selectedErrorType} 
             onChange={(e) => setSelectedErrorType(e.target.value)}
             className={`w-full bg-[#0B1020] border text-white text-sm font-bold rounded-xl px-4 py-3 focus:outline-none transition-colors appearance-none cursor-pointer ${
@@ -280,6 +281,9 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               selectedErrorType === 'LOW' ? 'border-blue-500' : 'border-[#1F2937]'
             }`} 
           >
+            {(!errorTypeOptions.includes(selectedErrorType) && selectedErrorType) && (
+              <option value={selectedErrorType}>{selectedErrorType}</option>
+            )}
             {errorTypeOptions.map(option => (
               <option key={option} value={option}>{option}</option>
             ))}

@@ -54,7 +54,7 @@ const MainApp = () => {
       <Sidebar activeTab={activeTab === 'result' ? resultSource : activeTab} setActiveTab={(tab) => { setActiveTab(tab); setViewingReport(null); }} />
 
       <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
-        <Header activeTab={activeTab} onOpenCommandPalette={() => setIsCommandOpen(true)} />
+        <Header activeTab={activeTab} onNavigate={setActiveTab} onOpenCommandPalette={() => setIsCommandOpen(true)} />
 
         <main className="flex-1 overflow-y-auto pb-16">
           {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}

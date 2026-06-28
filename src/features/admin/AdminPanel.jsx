@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../../store/adminStore';
-import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard, Bot } from 'lucide-react';
+import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard, Bot, UserPlus } from 'lucide-react';
 import { AdminRulesManager } from './AdminRulesManager';
 import { PromptStudio } from './PromptStudio';
+import { AdminUsersManager } from './AdminUsersManager';
 
 export const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -90,6 +91,17 @@ export const AdminPanel = () => {
             <Bot className="w-5 h-5" />
             Prompt Studio
           </button>
+          <button 
+            onClick={() => setActiveTab('users')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'users' 
+                ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
+            }`}
+          >
+            <UserPlus className="w-5 h-5" />
+            Provision Accounts
+          </button>
         </aside>
 
         {/* Main Content */}
@@ -132,6 +144,10 @@ export const AdminPanel = () => {
 
             {activeTab === 'prompt' && (
               <PromptStudio />
+            )}
+
+            {activeTab === 'users' && (
+              <AdminUsersManager />
             )}
           </div>
         </main>
