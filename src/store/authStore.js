@@ -11,48 +11,37 @@ export const useAuthStore = create(
 
   login: async (email, password) => {
     set({ isLoading: true, error: null });
-    await new Promise((res) => setTimeout(res, 600));
+    
     if (!email || !password) {
       set({ isLoading: false, error: 'Email and password are required' });
       return false;
     }
-    const role = 'User';
-    set({
-      isLoading: false,
-      isAuthenticated: true,
-      user: {
-        id: 'usr_' + Math.random().toString(36).substr(2, 9),
-        fullName: email.split('@')[0],
-        email,
-        role,
-        avatarUrl: '',
-        company: '',
-        createdAt: new Date().toISOString(),
-        token: 'jwt_mock_' + Date.now()
+
+    try {
+      const res = await fetch('http://localhost:3000/api/v1/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Authentication failed');
       }
-    });
-    return true;
+
+      set({
+        isLoading: false,
+        isAuthenticated: true,
+        user: data.user
+      });
+      return true;
+    } catch (err) {
+      set({ isLoading: false, error: err.message });
+      return false;
+    }
   },
 
-  register: async (fullName, email, password) => {
-    set({ isLoading: true, error: null });
-    await new Promise((res) => setTimeout(res, 600));
-    set({
-      isLoading: false,
-      isAuthenticated: true,
-      user: {
-        id: 'usr_' + Math.random().toString(36).substr(2, 9),
-        fullName,
-        email,
-        role: 'User',
-        avatarUrl: '',
-        company: '',
-        createdAt: new Date().toISOString(),
-        token: 'jwt_mock_' + Date.now()
-      }
-    });
-    return true;
-  },
 
   logout: () => {
     set({ isAuthenticated: false, user: null });

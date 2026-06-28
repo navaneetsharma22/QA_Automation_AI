@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../../store/adminStore';
-import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard } from 'lucide-react';
+import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard, Bot } from 'lucide-react';
 import { AdminRulesManager } from './AdminRulesManager';
+import { PromptStudio } from './PromptStudio';
 
 export const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -78,6 +79,17 @@ export const AdminPanel = () => {
             <BookOpen className="w-5 h-5" />
             AI Reference Rules
           </button>
+          <button 
+            onClick={() => setActiveTab('prompt')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'prompt' 
+                ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
+            }`}
+          >
+            <Bot className="w-5 h-5" />
+            Prompt Studio
+          </button>
         </aside>
 
         {/* Main Content */}
@@ -116,6 +128,10 @@ export const AdminPanel = () => {
 
             {activeTab === 'rules' && (
               <AdminRulesManager />
+            )}
+
+            {activeTab === 'prompt' && (
+              <PromptStudio />
             )}
           </div>
         </main>

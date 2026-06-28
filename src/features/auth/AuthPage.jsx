@@ -4,10 +4,9 @@ import { ShieldCheck, Mail, Lock, User, ArrowRight, CheckCircle2, AlertCircle } 
 import toast from 'react-hot-toast';
 
 export const AuthPage = () => {
-  const [mode, setMode] = useState('login'); // 'login', 'register', 'forgot', 'reset'
+  const [mode, setMode] = useState('login'); // 'login', 'forgot', 'reset'
   const [email, setEmail] = useState('alexander.vance@arena-ai.io');
   const [password, setPassword] = useState('EnterpriseSecure#2026');
-  const [fullName, setFullName] = useState('Alexander Vance');
   const [resetToken, setResetToken] = useState('');
   const { login, register, forgotPassword, resetPassword, isLoading, error } = useAuthStore();
 
@@ -15,11 +14,8 @@ export const AuthPage = () => {
     e.preventDefault();
     if (mode === 'login') {
       const ok = await login(email, password);
-      if (ok) toast.success('Successfully authenticated via JWT Bearer Token');
+      if (ok) toast.success('Successfully authenticated');
       else toast.error('Authentication failed');
-    } else if (mode === 'register') {
-      const ok = await register(fullName, email, password);
-      if (ok) toast.success('Account created successfully');
     } else if (mode === 'forgot') {
       await forgotPassword(email);
       toast.success('Password reset instructions sent to your email');
@@ -53,13 +49,11 @@ export const AuthPage = () => {
 
         <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] mb-2">
           {mode === 'login' && 'Sign in to your organization'}
-          {mode === 'register' && 'Create enterprise account'}
           {mode === 'forgot' && 'Reset account password'}
           {mode === 'reset' && 'Set new password'}
         </h2>
         <p className="text-sm text-gray-400 mb-6">
           {mode === 'login' && 'Access multi-LLM quality assurance analytics and audit logs.'}
-          {mode === 'register' && 'Single-organization deployment with automated misleading detection.'}
           {mode === 'forgot' && 'Enter your work email to receive a password recovery token.'}
           {mode === 'reset' && 'Enter the reset token sent to your inbox.'}
         </p>
@@ -72,24 +66,6 @@ export const AuthPage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'register' && (
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Alexander Vance"
-                  className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
-            </div>
-          )}
 
           {mode !== 'reset' && (
             <div>
@@ -126,7 +102,7 @@ export const AuthPage = () => {
             </div>
           )}
 
-          {(mode === 'login' || mode === 'register' || mode === 'reset') && (
+          {(mode === 'login' || mode === 'reset') && (
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider">
@@ -164,8 +140,7 @@ export const AuthPage = () => {
             {isLoading ? 'Processing...' : (
               <>
                 <span>
-                  {mode === 'login' && 'Sign In via JWT'}
-                  {mode === 'register' && 'Create Account'}
+                  {mode === 'login' && 'Sign In'}
                   {mode === 'forgot' && 'Send Recovery Email'}
                   {mode === 'reset' && 'Update Password'}
                 </span>
@@ -176,22 +151,6 @@ export const AuthPage = () => {
         </form>
 
         <div className="mt-8 pt-6 border-t border-[#1F2937] text-center text-xs text-gray-400">
-          {mode === 'login' && (
-            <p>
-              Don't have an enterprise account?{' '}
-              <button onClick={() => setMode('register')} className="text-blue-400 hover:text-blue-300 font-semibold">
-                Register Account
-              </button>
-            </p>
-          )}
-          {mode === 'register' && (
-            <p>
-              Already registered?{' '}
-              <button onClick={() => setMode('login')} className="text-blue-400 hover:text-blue-300 font-semibold">
-                Sign In
-              </button>
-            </p>
-          )}
           {(mode === 'forgot' || mode === 'reset') && (
             <p>
               Remember your credentials?{' '}
