@@ -18,8 +18,11 @@ import { useAuthStore } from './store/authStore';
 import { useQaStore } from './store/qaStore';
 import { useUiStore } from './store/uiStore';
 import { Toaster } from 'react-hot-toast';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AdminLoginPage } from './features/admin/AdminLoginPage';
+import { AdminPanel } from './features/admin/AdminPanel';
 
-export const ArenaAiClientApp = () => {
+const MainApp = () => {
   const { isAuthenticated, user } = useAuthStore();
   const { currentReport, setCurrentReport } = useQaStore();
   const { activeTab, setActiveTab, resultSource, setResultSource, viewingReport, setViewingReport } = useUiStore();
@@ -88,5 +91,17 @@ export const ArenaAiClientApp = () => {
         }} 
       />
     </div>
+  );
+};
+
+export const ArenaAiClientApp = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/*" element={<AdminPanel />} />
+        <Route path="/*" element={<MainApp />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
