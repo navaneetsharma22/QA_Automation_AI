@@ -86,6 +86,28 @@ export const AI_PROVIDERS = [
     latency: '~800ms',
     tokensPerSec: 80,
     color: '#FFD21E'
+  },
+  {
+    id: 'CEREBRAS',
+    name: 'Cerebras',
+    badge: 'Blazing Fast',
+    description: 'Cerebras Wafer-Scale Engine — the fastest AI inference on the planet',
+    models: ['llama3.1-8b', 'llama3.1-70b', 'zai-glm-4.7', 'gpt-oss-120b'],
+    defaultModel: 'llama3.1-70b',
+    latency: '~120ms',
+    tokensPerSec: 2100,
+    color: '#F97316'
+  },
+  {
+    id: 'COHERE',
+    name: 'Cohere',
+    badge: 'Enterprise',
+    description: 'Command R and Command R+ optimized for RAG and complex analysis tasks',
+    models: ['command-a-plus-05-2026', 'command-a-03-2025', 'command-r-plus-08-2024', 'command-r-08-2024'],
+    defaultModel: 'command-a-plus-05-2026',
+    latency: '~800ms',
+    tokensPerSec: 75,
+    color: '#38A169'
   }
 ];
 
