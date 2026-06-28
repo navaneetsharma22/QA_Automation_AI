@@ -20,6 +20,17 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+const errorTypeOptions = [
+  "AHT (Average Handle Time)",
+  "ART (Agent Response Time)",
+  "CRITICAL",
+  "MISLEADING",
+  "GRAMETICAL",
+  "WRONG IDENTIFICATION",
+  "Escalation Delay",
+  "In Progress"
+];
+
 export const AnalysisResultPage = ({ report, onBack }) => {
   const { updateReport } = useQaStore();
   
@@ -27,6 +38,32 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                           report?.findings?.some(f => f.severity === 'High') ? 'HIGH' :
                           report?.findings?.some(f => f.severity === 'Medium') ? 'MEDIUM' :
                           report?.findings?.length > 0 ? 'LOW' : 'NONE';
+
+  const [selectedErrorType, setSelectedErrorType] = useState(highestSeverity);
+  const [petitionNumber, setPetitionNumber] = useState("");
+  const [agentName, setAgentName] = useState("");
+
+  useEffect(() => {
+    if (report?.conversationText) {
+      const petMatch = report.conversationText.match(/\*\*PET ID:\*\*\s*(PET-[a-zA-Z0-9-]+)/i);
+      if (petMatch && petMatch[1]) {
+        setPetitionNumber(petMatch[1]);
+      }
+
+      const custMatch = report.conversationText.match(/\*\*Customer Name:\*\*\s*([^\n]+)/i);
+      const customerName = custMatch ? custMatch[1].trim() : "Customer";
+
+      const speakerMatches = [...report.conversationText.matchAll(/\*\*([^*:]+):\*\*/g)];
+      const ignoreList = ["PET ID", "Customer Name", "Issue", "Error", customerName, "Marilyn Green", "QA Finding", "Critical Chat Logs"];
+      
+      const agentMatch = speakerMatches.find(m => !ignoreList.includes(m[1].trim()));
+      if (agentMatch) {
+        setAgentName(agentMatch[1].trim());
+      } else if (report.agentName && report.agentName !== 'Agent Support') {
+        setAgentName(report.agentName);
+      }
+    }
+  }, [report]);
 
   if (!report) return null;
 
@@ -164,7 +201,46 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
       </div>
 
-
+      {/* Metadata Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Petition Number</label>
+          <input 
+            type="text" 
+            placeholder="e.g. PET-12345" 
+            value={petitionNumber}
+            onChange={(e) => setPetitionNumber(e.target.value)}
+            className="w-full bg-[#0B1020] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
+          <select 
+            value={selectedErrorType} 
+            onChange={(e) => setSelectedErrorType(e.target.value)}
+            className={`w-full bg-[#0B1020] border text-white text-sm font-bold rounded-xl px-4 py-3 focus:outline-none transition-colors appearance-none cursor-pointer ${
+              selectedErrorType === 'CRITICAL' ? 'border-red-500' :
+              selectedErrorType === 'HIGH' ? 'border-amber-500' :
+              selectedErrorType === 'MEDIUM' ? 'border-yellow-500' :
+              selectedErrorType === 'LOW' ? 'border-blue-500' : 'border-[#1F2937]'
+            }`} 
+          >
+            {errorTypeOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Agent Name</label>
+          <input 
+            type="text" 
+            placeholder="Optional" 
+            value={agentName}
+            onChange={(e) => setAgentName(e.target.value)}
+            className="w-full bg-[#0B1020] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+          />
+        </div>
+      </div>
 
       {/* Findings */}
       <div className="space-y-4 mt-6">
