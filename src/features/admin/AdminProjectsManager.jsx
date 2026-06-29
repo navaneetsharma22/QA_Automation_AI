@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { LayoutTemplate, Plus, Trash2, Edit2, Save, X, PlusCircle, Folder, Check, RefreshCw } from 'lucide-react';
+import { LayoutTemplate, Plus, Trash2, Edit2, Save, X, PlusCircle, Folder, Check, RefreshCw, Power } from 'lucide-react';
 
 export const AdminProjectsManager = () => {
   const [projects, setProjects] = useState([]);
@@ -103,6 +103,10 @@ export const AdminProjectsManager = () => {
       toast.error('Project name is required');
       return;
     }
+    if (cards.length === 0) {
+      toast.error('Please add at least one card to the schema');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -158,6 +162,26 @@ export const AdminProjectsManager = () => {
       } catch (err) {
         toast.error('Failed to delete project');
       }
+    }
+  };
+
+  const handleToggleStatus = async (proj) => {
+    try {
+      const newStatus = proj.status === 'Archived' ? 'Active' : 'Archived';
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/projects/${proj._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...proj, status: newStatus })
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      toast.success(newStatus === 'Archived' ? 'Project Disabled' : 'Project Enabled');
+      if (editingProject?._id === proj._id) {
+        setEditingProject({ ...proj, status: newStatus });
+      }
+      fetchProjects();
+    } catch (err) {
+      toast.error('Failed to update status');
     }
   };
 
@@ -223,14 +247,24 @@ export const AdminProjectsManager = () => {
             {loading ? <p className="text-gray-400 text-sm">Loading...</p> : 
              projects.length === 0 ? <p className="text-gray-400 text-sm">No projects created yet.</p> :
              projects.map(p => (
-              <div key={p._id} className="p-4 bg-[#0B1020] border border-[#1F2937] rounded-xl flex items-center justify-between group">
+              <div key={p._id} className={`p-4 bg-[#0B1020] border border-[#1F2937] rounded-xl flex items-center justify-between group transition-opacity ${p.status === 'Archived' ? 'opacity-50' : ''}`}>
                 <div>
-                  <h3 className="text-white font-medium">{p.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-white font-medium">{p.name}</h3>
+                    {p.status === 'Archived' && <span className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-semibold uppercase">Disabled</span>}
+                  </div>
                   <p className="text-xs text-gray-500">{p.cards?.length || 0} Dynamic Cards</p>
                 </div>
                 <div className="flex gap-2 transition-opacity">
-                  <button onClick={() => handleEdit(p)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md"><Edit2 className="w-4 h-4"/></button>
-                  <button onClick={() => handleDelete(p._id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md"><Trash2 className="w-4 h-4"/></button>
+                  <button onClick={() => handleToggleStatus(p)} className="p-1.5 text-yellow-500 hover:bg-yellow-500/10 rounded-md" title={p.status === 'Archived' ? 'Enable Format' : 'Disable Format'}>
+                    <Power className="w-4 h-4"/>
+                  </button>
+                  <button onClick={() => handleEdit(p)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md" title="Edit">
+                    <Edit2 className="w-4 h-4"/>
+                  </button>
+                  <button onClick={() => handleDelete(p._id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md" title="Delete">
+                    <Trash2 className="w-4 h-4"/>
+                  </button>
                 </div>
               </div>
             ))}
@@ -301,10 +335,12 @@ export const AdminProjectsManager = () => {
               )}
               <button 
                 onClick={handleSaveProject}
-                disabled={isSubmitting || isSaved}
+                disabled={isSubmitting || isSaved || cards.length === 0}
                 className={`flex items-center gap-2 px-6 py-2.5 font-medium rounded-xl shadow-lg transition-all ${
                   isSaved 
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 cursor-default'
+                    : cards.length === 0
+                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed shadow-none'
                     : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-50'
                 }`}
               >

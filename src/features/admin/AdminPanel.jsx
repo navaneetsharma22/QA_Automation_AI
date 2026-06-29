@@ -116,19 +116,7 @@ export const AdminPanel = () => {
             <MessageSquare className="w-5 h-5" />
             GPT Examples
           </button>
-          
-          <button 
-            onClick={() => setActiveTab('projects')}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-              activeTab === 'projects' 
-                ? 'bg-emerald-600/10 text-emerald-400 border border-emerald-500/20' 
-                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            Report Schemas
-          </button>
-        </aside>
+          </aside>
 
         {/* Main Content */}
         <main className="flex-1 p-8 overflow-y-auto animate-in fade-in duration-200">
@@ -174,10 +162,6 @@ export const AdminPanel = () => {
 
             {activeTab === 'users' && (
               <AdminUsersManager />
-            )}
-
-            {activeTab === 'projects' && (
-              <AdminProjectsManager />
             )}
 
             {activeTab === 'gpt' && (
