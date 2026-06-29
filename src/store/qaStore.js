@@ -105,7 +105,16 @@ export const useQaStore = create(
         overallRecommendation: aiResult.overallRecommendation || 'No findings.',
         findings: aiResult.findings || [],
         projectId: projectId || null,
-        schemaDefinition: aiResult.schemaDefinition || null // Will store dynamic schema used
+        schemaDefinition: aiResult.schemaDefinition || null, // Will store dynamic schema used
+        // Global report card fields
+        qaFinding: aiResult.qaFinding || null,
+        criticalChatLogs: aiResult.criticalChatLogs || [],
+        expectedAgentAction: aiResult.expectedAgentAction || [],
+        agentAction: aiResult.agentAction || null,
+        missingExpectedAction: aiResult.missingExpectedAction || null,
+        ahtAnalysis: aiResult.ahtAnalysis || null,
+        reason: aiResult.reason || null,
+        qaConclusion: aiResult.qaConclusion || null
       };
 
       set(state => ({

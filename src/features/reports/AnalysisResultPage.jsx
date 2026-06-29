@@ -29,7 +29,8 @@ const errorTypeOptions = [
   "GRAMETICAL",
   "WRONG IDENTIFICATION",
   "Escalation Delay",
-  "In Progress"
+  "In Progress",
+  "None"
 ];
 
 const CopyButton = ({ text, className = "" }) => {
@@ -114,62 +115,22 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                           report?.findings?.length > 0 ? 'LOW' : 'NONE';
 
   const [selectedErrorType, setSelectedErrorType] = useState(report?.errorType || highestSeverity);
-  const [petitionIdValue, setPetitionIdValue] = useState(report?.petitionId || report?.analysisId || "");
+  const [petitionIdValue, setPetitionIdValue] = useState((report?.petitionId || report?.analysisId || "").replace(/^#+/, ''));
   const [agentName, setAgentName] = useState(report?.agentName || "");
-  const [qaFindingError, setQaFindingError] = useState("");
-  const [criticalChatLogs, setCriticalChatLogs] = useState("");
-  const [qaFindingDescription, setQaFindingDescription] = useState("");
-  const [expectedAgentAction, setExpectedAgentAction] = useState("");
-  const [agentAction, setAgentAction] = useState("");
-  const [missingExpectedAction, setMissingExpectedAction] = useState("");
-  const [reasonText, setReasonText] = useState("");
-  const [responseText, setResponseText] = useState("");
-  const [ahtText, setAhtText] = useState("");
 
   useEffect(() => {
-    if (report?.conversationText) {
-      const idMatch = report.conversationText.match(/\*\*(?:Analysis ID|PET ID):\*\*\s*([a-zA-Z0-9-]+)/i);
-      setPetitionIdValue(idMatch && idMatch[1] ? idMatch[1] : (report?.petitionId || report?.analysisId || ""));
-
-      const custMatch = report.conversationText.match(/\*\*Customer Name:\*\*\s*([^\n]+)/i);
-      const customerName = custMatch ? custMatch[1].trim() : "Customer";
-      const speakerMatches = [...report.conversationText.matchAll(/\*\*([^*:]+):\*\*/g)];
-      const ignoreList = ["Analysis ID", "PET ID", "Customer Name", "Issue", "Error", customerName, "QA Finding", "Critical Chat Logs"];
-      const agentMatch = speakerMatches.find(m => !ignoreList.includes(m[1].trim()));
-      
-      if (agentMatch) {
-        setAgentName(agentMatch[1].trim());
-      } else {
-        setAgentName(report?.agentName || "");
-      }
-      setSelectedErrorType(report?.errorType || highestSeverity);
-
-      if (report.findings && report.findings.length > 0) {
-        const finding = report.findings[0];
-        setQaFindingError(Array.isArray(finding.issueTitle) ? finding.issueTitle.join('\n') : (finding.issueTitle || finding.issue || ""));
-        setQaFindingDescription(Array.isArray(finding.finding) ? finding.finding.join('\n') : (Array.isArray(finding.description) ? finding.description.join('\n') : (finding.finding || finding.description || "")));
-        setExpectedAgentAction(Array.isArray(finding.expectedAgentAction) ? finding.expectedAgentAction.join('\n') : (finding.expectedAgentAction || ""));
-        setAgentAction(Array.isArray(finding.agentAction) ? finding.agentAction.join('\n') : (finding.agentAction || ""));
-        setMissingExpectedAction(Array.isArray(finding.missingExpectedAction) ? finding.missingExpectedAction.join('\n') : (finding.missingExpectedAction || ""));
-        setReasonText(Array.isArray(finding.reason) ? finding.reason.join('\n') : (finding.reason || ""));
-        setResponseText(Array.isArray(finding.response) ? finding.response.join('\n') : (Array.isArray(finding.impact) ? finding.impact.join('\n') : (finding.response || finding.impact || "")));
-        setAhtText(Array.isArray(finding.aht) ? finding.aht.join('\n') : (finding.aht || ""));
-        setCriticalChatLogs(Array.isArray(finding.criticalChatLogs) ? finding.criticalChatLogs.join('\n\n') : (Array.isArray(finding.conversationEvidence) ? finding.conversationEvidence.join('\n\n') : (finding.criticalChatLogs || finding.conversationEvidence || "")));
-      } else {
-        setQaFindingError("");
-        setQaFindingDescription("");
-        setExpectedAgentAction("");
-        setAgentAction("");
-        setMissingExpectedAction("");
-        setReasonText("");
-        setResponseText("");
-        setAhtText("");
-        setCriticalChatLogs("");
-      }
+    if (report) {
+      setPetitionIdValue((report.petitionId || report.analysisId || "").replace(/^#+/, ''));
+      setAgentName(report.agentName || "");
+      setSelectedErrorType(report.errorType || highestSeverity);
     }
   }, [report]);
 
   if (!report) return null;
+
+  // Detect if this report uses the new global format
+  const isGlobalFormat = !!(report.qaFinding || report.qaConclusion || report.ahtAnalysis || report.reason);
+  const isDynamicSchema = report?.schemaDefinition && report.schemaDefinition.length > 0;
 
   const getStatusBadge = (status) => {
     const s = status?.toLowerCase() || '';
@@ -194,21 +155,6 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     );
   };
 
-  const getSeverityBadge = (severity) => {
-    switch (severity?.toLowerCase()) {
-      case 'critical':
-        return <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">CRITICAL</span>;
-      case 'high':
-        return <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">HIGH</span>;
-      case 'medium':
-        return <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-yellow-500/15 text-yellow-300 border border-yellow-500/30">MEDIUM</span>;
-      case 'low':
-        return <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">LOW</span>;
-      default:
-        return <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-500/15 text-gray-300 border border-gray-500/30">INFORMATIONAL</span>;
-    }
-  };
-
   const handleExportJson = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
     const downloadAnchor = document.createElement('a');
@@ -220,44 +166,344 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     toast.success('Report exported to JSON');
   };
 
-  const renderHighlightedTranscript = (text, findings) => {
-    if (!text) return text;
-    if (!findings || findings.length === 0) return text;
+  // ─── Card Renderers ───────────────────────────────────────────────
 
-    const highlights = findings
-      .map(f => f.criticalChatLogs)
-      .filter(log => log && typeof log === 'string' && log.trim() !== '');
+  // Card 1: QA Finding
+  const renderQaFinding = () => {
+    const content = report.qaFinding;
+    if (!content) return null;
 
-    if (highlights.length === 0) return text;
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-blue-400" />
+            QA Finding
+          </h2>
+          <CopyButton text={content} />
+        </div>
+        <p className="text-gray-300 text-sm leading-relaxed">
+          <span className="font-bold text-white">Result:</span> {content}
+        </p>
+      </div>
+    );
+  };
 
-    const escapeRegExp = (string) => {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    };
+  // Card 2: Critical Chat Logs
+  const renderCriticalChatLogs = () => {
+    const logs = report.criticalChatLogs;
+    if (!logs || (Array.isArray(logs) && logs.length === 0)) return null;
 
-    // Sort highlights by length descending so longer phrases match first
-    const uniqueHighlights = [...new Set(highlights)].sort((a, b) => b.length - a.length);
+    // Handle both array-of-objects format and string format
+    const isStructured = Array.isArray(logs) && logs.length > 0 && typeof logs[0] === 'object';
+    const copyText = isStructured 
+      ? logs.map(l => `${l.speaker}:\n${l.message}`).join('\n\n') 
+      : (Array.isArray(logs) ? logs.join('\n\n') : String(logs));
 
-    const pattern = uniqueHighlights.map(h => escapeRegExp(h)).join('|');
-    try {
-      const regex = new RegExp(`(${pattern})`, 'gi');
-      const parts = text.split(regex);
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-amber-400" />
+            Critical Chat Logs
+          </h2>
+          <CopyButton text={copyText} />
+        </div>
+        <div className="space-y-5">
+          {isStructured ? (
+            logs.map((log, idx) => (
+              <div key={idx} className="border-b border-[#1F2937] pb-5 last:border-0 last:pb-0">
+                <p className="font-bold text-white text-sm mb-1.5">{log.speaker}:</p>
+                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{log.message}</p>
+              </div>
+            ))
+          ) : (
+            <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
+              {copyText}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
-      return parts.map((part, i) => {
-        if (!part) return null;
-        const isMatch = uniqueHighlights.some(h => h.toLowerCase() === part.toLowerCase());
-        if (isMatch) {
-          return (
-            <mark key={i} className="bg-red-500/30 text-red-100 px-1 rounded-sm border-b border-red-500/50 font-bold" title="Misleading / Error detected here">
-              {part}
-            </mark>
-          );
-        }
-        return <span key={i}>{part}</span>;
-      });
-    } catch (e) {
-      console.error("Regex error in highlighting:", e);
-      return text;
-    }
+  // Card 3: Findings (rule evaluations)
+  const renderFindings = () => {
+    const findings = report.findings;
+    if (!findings || findings.length === 0) return null;
+
+    // Check if findings have the new ruleName/status structure
+    const hasRuleFormat = findings.some(f => f.ruleName || f.status);
+    if (!hasRuleFormat) return null;
+
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            <FileCheck className="w-5 h-5 text-indigo-400" />
+            Findings
+          </h2>
+          <CopyButton text={findings.map(f => `${f.ruleName}: ${f.status}\n${f.description}\n${f.explanation || ''}`).join('\n\n')} />
+        </div>
+        <div className="space-y-4">
+          {findings.map((finding, idx) => {
+            const isPassed = finding.status?.toLowerCase() === 'pass' || finding.status?.toLowerCase() === 'passed';
+            return (
+              <div 
+                key={idx} 
+                className={`bg-[#0B1020] border rounded-xl p-5 ${
+                  isPassed ? 'border-emerald-500/20' : 'border-red-500/20'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-bold text-white font-['Plus_Jakarta_Sans']">
+                    {finding.ruleName || finding.issue || `Finding ${idx + 1}`}
+                  </h3>
+                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
+                    isPassed 
+                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+                      : 'bg-red-500/15 text-red-400 border border-red-500/30'
+                  }`}>
+                    {finding.status || 'N/A'}
+                  </span>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed mb-2">
+                  {finding.description || finding.finding || ''}
+                </p>
+                {finding.explanation && !isPassed && (
+                  <div className="mt-3 pt-3 border-t border-[#1F2937]">
+                    <p className="text-sm leading-relaxed">
+                      <span className="font-bold text-red-400">Fail:</span>{' '}
+                      <span className="text-gray-300">{finding.explanation}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // Card 4+5+6: Expected Agent Action / Agent Action / Missing Expected Action (Parent)
+  const renderActionCards = () => {
+    const expected = report.expectedAgentAction;
+    const actual = report.agentAction;
+    const missing = report.missingExpectedAction;
+
+    if (!expected && !actual && !missing) return null;
+
+    const expectedArr = Array.isArray(expected) ? expected : (expected ? [expected] : []);
+    const copyText = `Expected Agent Action:\n${expectedArr.join('\n')}\n\nAgent Action:\n${actual || 'N/A'}\n\nMissing Expected Action:\n${missing || 'None'}`;
+
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
+        <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+          <CopyButton text={copyText} />
+        </div>
+
+        {/* Expected Agent Action */}
+        {expectedArr.length > 0 && (
+          <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                Expected Agent Action
+              </h2>
+              <CopyButton text={expectedArr.join('\n')} />
+            </div>
+            <ul className="text-gray-300 text-sm leading-relaxed space-y-2 list-none">
+              {expectedArr.map((action, idx) => (
+                <li key={idx} className="flex items-start gap-2 break-words">
+                  <span className="text-blue-400 mt-0.5 flex-shrink-0">•</span>
+                  <span>{action}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Agent Action */}
+        {actual && (
+          <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                Agent Action
+              </h2>
+              <CopyButton text={actual} />
+            </div>
+            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{actual}</p>
+          </div>
+        )}
+
+        {/* Missing Expected Action */}
+        {missing && (
+          <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                Missing Expected Action
+              </h2>
+              <CopyButton text={missing} />
+            </div>
+            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{missing}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Card 7: AHT Delay Analysis
+  const renderAhtAnalysis = () => {
+    const aht = report.ahtAnalysis;
+    if (!aht) return null;
+
+    const copyText = `AHT Delay Analysis\nResult: ${aht.result || 'N/A'}\n\nConversation Timeline:\n${(aht.timeline || []).join('\n')}\n\nObservation:\n${aht.observation || 'N/A'}`;
+
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            <Clock className="w-5 h-5 text-cyan-400" />
+            AHT Delay Analysis
+          </h2>
+          <CopyButton text={copyText} />
+        </div>
+
+        {/* Result */}
+        {aht.result && (
+          <div className="mb-5">
+            <p className="text-sm text-gray-300">
+              <span className="font-bold text-white">Result:</span> {aht.result}
+            </p>
+          </div>
+        )}
+
+        {/* Timeline */}
+        {aht.timeline && aht.timeline.length > 0 && (
+          <div className="mb-5">
+            <h3 className="text-sm font-bold text-gray-300 mb-3">Conversation Timeline:</h3>
+            <div className="bg-[#0B1020] rounded-xl p-4 border border-[#1F2937] space-y-1.5">
+              {aht.timeline.map((entry, idx) => (
+                <p key={idx} className="text-sm text-gray-400 font-mono">{entry}</p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Observation */}
+        {aht.observation && (
+          <div className="pt-4 border-t border-[#1F2937]">
+            <p className="text-sm text-gray-300">
+              <span className="font-bold text-white">Observation:</span> {aht.observation}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Card 8: Reason
+  const renderReason = () => {
+    const reason = report.reason;
+    if (!reason) return null;
+
+    return (
+      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-purple-400" />
+            Reason
+          </h2>
+          <CopyButton text={reason} />
+        </div>
+        <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
+          {reason}
+        </p>
+      </div>
+    );
+  };
+
+  // Card 9: QA Conclusion
+  const renderQaConclusion = () => {
+    const conclusion = report.qaConclusion;
+    if (!conclusion) return null;
+
+    const isPassed = conclusion.status?.toLowerCase().includes('passed');
+    const copyText = `QA Conclusion\nStatus: ${conclusion.status}\nMisleading: ${conclusion.misleading}\nSeverity: ${conclusion.severity}\n\nQA Observations:\n${(conclusion.observations || []).join('\n')}\n\nQA Decision:\n${conclusion.decision || 'N/A'}`;
+
+    return (
+      <div className={`bg-[#111827] border rounded-2xl p-8 mt-8 shadow-md ${
+        isPassed ? 'border-emerald-500/30' : 'border-red-500/30'
+      }`}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+            {isPassed ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            ) : (
+              <XCircle className="w-5 h-5 text-red-400" />
+            )}
+            QA Conclusion
+          </h2>
+          <CopyButton text={copyText} />
+        </div>
+
+        {/* Status badges row */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+            isPassed 
+              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+              : 'bg-red-500/15 text-red-400 border border-red-500/30'
+          }`}>
+            Status: {conclusion.status || 'N/A'}
+          </span>
+          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+            conclusion.misleading?.toLowerCase() === 'no'
+              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+              : 'bg-red-500/15 text-red-400 border border-red-500/30'
+          }`}>
+            Misleading: {conclusion.misleading || 'N/A'}
+          </span>
+          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+            conclusion.severity?.toLowerCase() === 'none'
+              ? 'bg-gray-500/15 text-gray-300 border border-gray-500/30'
+              : conclusion.severity?.toLowerCase() === 'critical'
+              ? 'bg-red-500/15 text-red-400 border border-red-500/30'
+              : conclusion.severity?.toLowerCase() === 'high'
+              ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+              : 'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30'
+          }`}>
+            Severity: {conclusion.severity || 'N/A'}
+          </span>
+        </div>
+
+        {/* QA Observations */}
+        {conclusion.observations && conclusion.observations.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wider">QA Observations</h3>
+            <div className="bg-[#0B1020] rounded-xl p-5 border border-[#1F2937] space-y-2">
+              {conclusion.observations.map((obs, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-sm text-gray-300">
+                  <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isPassed ? '✓' : '✗'}
+                  </span>
+                  <span>{obs}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* QA Decision */}
+        {conclusion.decision && (
+          <div className="pt-5 border-t border-[#1F2937]">
+            <h3 className="text-sm font-bold text-gray-300 mb-3 uppercase tracking-wider">QA Decision</h3>
+            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
+              {conclusion.decision}
+            </p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -356,8 +602,8 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
       </div>
 
-      {/* Dynamic Project Schema Render */}
-      {report?.schemaDefinition && report.schemaDefinition.length > 0 ? (
+      {/* ═══ Dynamic Project Schema Render ═══ */}
+      {isDynamicSchema ? (
         report.findings?.map((finding, idx) => (
           <div key={`finding-${idx}`} className="mt-12 first:mt-8 relative">
             {report.findings.length > 1 && (
@@ -370,225 +616,50 @@ export const AnalysisResultPage = ({ report, onBack }) => {
             ))}
           </div>
         ))
-      ) : (
-        /* Fallback Legacy Rendering */
+      ) : isGlobalFormat ? (
+        /* ═══ Global 9-Card Format ═══ */
         <>
-          {qaFindingError && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-                  QA Finding
-                </h2>
-                <CopyButton text={`QA Finding\nError: ${qaFindingError}`} />
-              </div>
-              <p className="text-gray-300 text-sm">
-                <span className="font-bold text-white">Error:</span> {qaFindingError}
-              </p>
-            </div>
-          )}
-
-          {/* Finding Description Card */}
-          {qaFindingDescription && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Finding
-                </h2>
-                <CopyButton text={qaFindingDescription} />
-              </div>
-              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                {qaFindingDescription}
-              </p>
-            </div>
-          )}
-
-          {/* Critical Chat Logs */}
-          {criticalChatLogs && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Critical Chat Logs:
-                </h2>
-                <CopyButton text={criticalChatLogs} />
-              </div>
-              <div className="space-y-6">
-                {criticalChatLogs.split('\n\n').filter(Boolean).map((block, idx) => {
-                  if (block.startsWith('**') && block.includes(':**')) {
-                    const [speaker, ...textParts] = block.split(':**');
-                    const text = textParts.join(':**').trim();
-                    const speakerName = speaker.replace(/\*\*/g, '').trim();
-                    return (
-                      <div key={idx} className="space-y-2 border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
-                        <p className="font-bold text-white text-sm">{speakerName}:</p>
-                        <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{text}</p>
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={idx} className="border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
-                      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{block.replace(/\*\*/g, '')}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* 3-in-1 Parent Card */}
-          {(expectedAgentAction || agentAction || missingExpectedAction) && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
+          {renderQaFinding()}
+          {renderCriticalChatLogs()}
+          {renderFindings()}
+          {renderActionCards()}
+          {renderAhtAnalysis()}
+          {renderReason()}
+          {renderQaConclusion()}
+        </>
+      ) : (
+        /* ═══ Fallback for old/unparsed reports ═══ */
+        <>
+          {report?.findings?.length > 0 ? (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md relative group">
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CopyButton text={`Expected Agent Action:\n${expectedAgentAction}\n\nAgent Action:\n${agentAction}\n\nMissing Expected Action:\n${missingExpectedAction}`} />
+                <CopyButton text={JSON.stringify(report.findings, null, 2)} />
               </div>
-              {expectedAgentAction && (
-                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Expected Agent Action
-                    </h2>
-                    <CopyButton text={expectedAgentAction} />
-                  </div>
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                    {expectedAgentAction.split('\n').filter(Boolean).map((line, idx) => (
-                      <p key={idx} className="break-words">{line.trim()}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {agentAction && (
-                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Agent Action
-                    </h2>
-                    <CopyButton text={agentAction} />
-                  </div>
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                    {agentAction.split('\n').filter(Boolean).map((line, idx) => (
-                      <p key={idx} className="break-words">{line.trim()}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {missingExpectedAction && (
-                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Missing Expected Action
-                    </h2>
-                    <CopyButton text={missingExpectedAction} />
-                  </div>
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                    {missingExpectedAction.split('\n').filter(Boolean).map((line, idx) => (
-                      <p key={idx} className="break-words">{line.trim()}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 2-in-1 Parent Card (Reason & Response) */}
-          {(reasonText || responseText) && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
-              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CopyButton text={`Reason:\n${reasonText}\n\nResponse:\n${responseText}`} />
-              </div>
-              {reasonText && (
-                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Reason
-                    </h2>
-                    <CopyButton text={reasonText} />
-                  </div>
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                    {reasonText.split('\n').filter(Boolean).map((line, idx) => (
-                      <p key={idx} className="break-words">{line.trim()}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {responseText && (
-                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Response
-                    </h2>
-                    <CopyButton text={responseText} />
-                  </div>
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                    {responseText.split('\n').filter(Boolean).map((line, idx) => (
-                      <p key={idx} className="break-words">{line.trim()}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* AHT Card */}
-          {ahtText && (
-            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 mb-6">
+                <AlertTriangle className="w-5 h-5 text-amber-500" />
                 <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-                  AHT
+                  Raw Analysis Report
                 </h2>
-                <CopyButton text={ahtText} />
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                {ahtText}
+              <p className="text-gray-400 text-sm mb-6">
+                The AI returned a report, but its structure didn't exactly match the expected card format. Here is the raw output:
+              </p>
+              <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]">
+                {JSON.stringify(report.findings, null, 2)}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-12 text-center space-y-3 mt-8">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white font-['Plus_Jakarta_Sans']">No Quality Issues Detected</h3>
+              <p className="text-sm text-gray-400 max-w-md mx-auto">
+                The conversation passed all factual accuracy, policy adherence, tone, and empathy benchmarks.
               </p>
             </div>
           )}
         </>
-      )}
-
-      {/* Fallback for unparsed or misformatted AI responses */}
-      {(report?.findings?.length > 0 || report?.conversationText) && 
-       !qaFindingError && 
-       !qaFindingDescription && 
-       !criticalChatLogs && 
-       !expectedAgentAction && 
-       !agentAction && 
-       !missingExpectedAction && 
-       !reasonText && 
-       !responseText && 
-       !ahtText && 
-       report.conversationText && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md relative group">
-          <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-            <CopyButton text={report.conversationText} />
-          </div>
-          <div className="flex items-center gap-2 mb-6">
-            <AlertTriangle className="w-5 h-5 text-amber-500" />
-            <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-              Raw Analysis Report
-            </h2>
-          </div>
-          <p className="text-gray-400 text-sm mb-6">
-            The AI returned a report, but its structure didn't exactly match the expected card format. Here is the raw output:
-          </p>
-          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]">
-            {report.conversationText}
-          </div>
-        </div>
-      )}
-
-      {/* Empty State when no findings */}
-      {(!report.findings || report.findings.length === 0) && !report.conversationText && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-12 text-center space-y-3 mt-8">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-white font-['Plus_Jakarta_Sans']">No Quality Issues Detected</h3>
-          <p className="text-sm text-gray-400 max-w-md mx-auto">
-            The conversation passed all factual accuracy, policy adherence, tone, and empathy benchmarks.
-          </p>
-        </div>
       )}
     </div>
   );
