@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../../store/adminStore';
-import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard, Bot, UserPlus } from 'lucide-react';
+import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboard, Bot, UserPlus, MessageSquare } from 'lucide-react';
 import { AdminRulesManager } from './AdminRulesManager';
 import { PromptStudio } from './PromptStudio';
 import { AdminUsersManager } from './AdminUsersManager';
 import { AdminProjectsManager } from './AdminProjectsManager';
+import { GptTrainingStudio } from './GptTrainingStudio';
 
 export const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -105,6 +106,18 @@ export const AdminPanel = () => {
           </button>
           
           <button 
+            onClick={() => setActiveTab('gpt')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'gpt' 
+                ? 'bg-purple-600/10 text-purple-400 border border-purple-500/20' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            GPT Examples
+          </button>
+          
+          <button 
             onClick={() => setActiveTab('projects')}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'projects' 
@@ -165,6 +178,10 @@ export const AdminPanel = () => {
 
             {activeTab === 'projects' && (
               <AdminProjectsManager />
+            )}
+
+            {activeTab === 'gpt' && (
+              <GptTrainingStudio />
             )}
           </div>
         </main>
