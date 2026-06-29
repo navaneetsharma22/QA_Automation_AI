@@ -59,20 +59,29 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
   const content = findingData[schemaNode.id];
   if (content === undefined || content === null) return null;
 
-  const isParent = schemaNode.type === 'parent';
-  const hasContent = isParent ? schemaNode.children?.some(c => findingData[c.id]) : !!content;
+  const isLayout = ['parent', 'grid-2', 'grid-3', 'row'].includes(schemaNode.type);
+  const hasContent = isLayout ? schemaNode.children?.some(c => findingData[c.id]) : !!content;
 
   if (!hasContent) return null;
 
-  if (isParent) {
+  if (isLayout) {
+    const gridClass = schemaNode.type === 'grid-3' ? 'grid grid-cols-1 md:grid-cols-3 gap-6' 
+                    : schemaNode.type === 'grid-2' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' 
+                    : schemaNode.type === 'row' ? 'flex flex-row flex-wrap gap-6'
+                    : 'space-y-6';
+
     return (
-      <div className={`bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group ${depth > 0 ? 'mt-4 p-6 bg-[#0B1020]' : ''}`}>
-        <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-bold text-white font-['Plus_Jakarta_Sans'] mb-4`}>
-          {schemaNode.heading}
-        </h2>
-        {schemaNode.children?.map(child => (
-          <DynamicCard key={child.id} schemaNode={child} findingData={findingData} depth={depth + 1} />
-        ))}
+      <div className={`bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md relative group ${depth > 0 ? 'mt-4 p-6 bg-[#0B1020]' : ''}`}>
+        {schemaNode.heading && (
+          <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-bold text-white font-['Plus_Jakarta_Sans'] ${schemaNode.type === 'row' ? 'mb-4 w-full' : 'mb-4'}`}>
+            {schemaNode.heading}
+          </h2>
+        )}
+        <div className={gridClass}>
+          {schemaNode.children?.map(child => (
+            <DynamicCard key={child.id} schemaNode={child} findingData={findingData} depth={depth + 1} />
+          ))}
+        </div>
       </div>
     );
   }

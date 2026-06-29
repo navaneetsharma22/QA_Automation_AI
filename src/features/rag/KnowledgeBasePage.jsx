@@ -10,9 +10,23 @@ export const KnowledgeBasePage = () => {
 
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const categories = [
+    "Global (All Categories)",
+    "Random (Any Issue)",
+    "Booking",
+    "Cancellation",
+    "Reschedule",
+    "Refund",
+    "Baggage",
+    "Check-in",
+    "Meal / Seat",
+    "Visa / Travel Advisory",
+    "Other"
+  ];
+
   const [formData, setFormData] = useState({
     title: '',
-    category: 'Billing Policy',
+    category: 'Global (All Categories)',
     content: '',
     fileType: 'Markdown (.md)'
   });
@@ -29,7 +43,7 @@ export const KnowledgeBasePage = () => {
     addKnowledgeDoc(formData);
     toast.success('Document uploaded & vector embeddings generated');
     setShowAddModal(false);
-    setFormData({ title: '', category: 'Billing Policy', content: '', fileType: 'Markdown (.md)' });
+    setFormData({ title: '', category: 'Global (All Categories)', content: '', fileType: 'Markdown (.md)' });
   };
 
 
@@ -155,10 +169,9 @@ export const KnowledgeBasePage = () => {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500"
                   >
-                    <option value="Billing Policy">Billing Policy</option>
-                    <option value="Product Documentation">Product Documentation</option>
-                    <option value="Technical Specs">Technical Specs</option>
-                    <option value="Support Guidelines">Support Guidelines</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
                 </div>
 

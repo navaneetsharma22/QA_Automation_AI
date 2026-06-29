@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { LayoutTemplate, Plus, Trash2, Edit2, Save, X, PlusCircle, Folder } from 'lucide-react';
+import { LayoutTemplate, Plus, Trash2, Edit2, Save, X, PlusCircle, Folder, Check, RefreshCw } from 'lucide-react';
 
 export const AdminProjectsManager = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingProject, setEditingProject] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   // Form State for new/edit
   const [name, setName] = useState('');
@@ -31,7 +33,24 @@ export const AdminProjectsManager = () => {
     fetchProjects();
   }, []);
 
+  const getTotalCards = (cardList) => {
+    let count = 0;
+    const countCards = (list) => {
+      list.forEach(c => {
+        count++;
+        if (c.children?.length) countCards(c.children);
+      });
+    };
+    countCards(cardList);
+    return count;
+  };
+
   const handleAddCard = (parentId = null) => {
+    if (getTotalCards(cards) >= 50) {
+      toast.error('Maximum limit of 50 cards reached per schema.');
+      return;
+    }
+
     const newCard = { id: 'card_' + Math.random().toString(36).substr(2, 9), heading: 'New Card', type: 'text', children: [] };
     
     if (!parentId) {
@@ -85,6 +104,7 @@ export const AdminProjectsManager = () => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       const url = editingProject ? `${apiUrl}/v1/projects/${editingProject._id}` : `${apiUrl}/v1/projects`;
@@ -97,11 +117,19 @@ export const AdminProjectsManager = () => {
       });
 
       if (!res.ok) throw new Error('Failed to save project');
+      
+      setIsSaved(true);
       toast.success(editingProject ? 'Project updated' : 'Project created');
       resetForm();
       fetchProjects();
+      
+      setTimeout(() => {
+        setIsSaved(false);
+      }, 2000);
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -152,13 +180,16 @@ export const AdminProjectsManager = () => {
             <option value="text">Text / String</option>
             <option value="list">List / Array</option>
             <option value="parent">Parent Container</option>
+            <option value="row">Horizontal Row Layout</option>
+            <option value="grid-2">2-Column Grid Layout</option>
+            <option value="grid-3">3-Column Grid Layout</option>
           </select>
           <button onClick={() => handleRemoveCard(card.id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-lg">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
         
-        {card.type === 'parent' && (
+        {['parent', 'grid-2', 'grid-3', 'row'].includes(card.type) && (
           <div className="pl-6 border-l-2 border-[#1F2937] mt-3 space-y-3">
             {card.children?.map(child => renderCardEditor(child, depth + 1))}
             <button 
@@ -197,7 +228,7 @@ export const AdminProjectsManager = () => {
                   <h3 className="text-white font-medium">{p.name}</h3>
                   <p className="text-xs text-gray-500">{p.cards?.length || 0} Dynamic Cards</p>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 transition-opacity">
                   <button onClick={() => handleEdit(p)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-md"><Edit2 className="w-4 h-4"/></button>
                   <button onClick={() => handleDelete(p._id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-md"><Trash2 className="w-4 h-4"/></button>
                 </div>
@@ -270,10 +301,29 @@ export const AdminProjectsManager = () => {
               )}
               <button 
                 onClick={handleSaveProject}
-                className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                disabled={isSubmitting || isSaved}
+                className={`flex items-center gap-2 px-6 py-2.5 font-medium rounded-xl shadow-lg transition-all ${
+                  isSaved 
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 cursor-default'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-50'
+                }`}
               >
-                <Save className="w-4 h-4" />
-                {editingProject ? 'Save Changes' : 'Create Project'}
+                {isSaved ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Saved!
+                  </>
+                ) : isSubmitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    {editingProject ? 'Save Changes' : 'Create Project'}
+                  </>
+                )}
               </button>
             </div>
           </div>
