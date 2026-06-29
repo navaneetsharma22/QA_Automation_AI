@@ -42,7 +42,8 @@ export const AdminUsersManager = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3000/api/v1/users');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users`);
       if (!res.ok) throw new Error('Failed to fetch users');
       const data = await res.json();
       setUsers(data);
@@ -66,7 +67,8 @@ export const AdminUsersManager = () => {
 
     try {
       setIsSubmitting(true);
-      const res = await fetch('http://localhost:3000/api/v1/users', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fullName, email, password, sidebarAccess })
@@ -111,7 +113,8 @@ export const AdminUsersManager = () => {
 
     try {
       setIsUpdating(true);
-      const res = await fetch(`http://localhost:3000/api/v1/users/${selectedUserId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users/${selectedUserId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -138,7 +141,8 @@ export const AdminUsersManager = () => {
 
   const handleToggleBlock = async (user) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/users/${user.id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users/${user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isBlocked: !user.isBlocked })
@@ -164,7 +168,8 @@ export const AdminUsersManager = () => {
     
     try {
       setIsDeleting(true);
-      const res = await fetch(`http://localhost:3000/api/v1/users/${userToDelete.id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users/${userToDelete.id}`, {
         method: 'DELETE'
       });
 

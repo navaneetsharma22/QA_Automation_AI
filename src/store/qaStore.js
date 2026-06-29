@@ -69,7 +69,8 @@ export const useQaStore = create(
   analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId) => {
     try {
       const startTime = Date.now();
-      const response = await fetch('http://localhost:3000/api/v1/analyze', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const response = await fetch(`${apiUrl}/v1/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId })

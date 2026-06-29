@@ -18,7 +18,8 @@ export const useAuthStore = create(
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/v1/users/login', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

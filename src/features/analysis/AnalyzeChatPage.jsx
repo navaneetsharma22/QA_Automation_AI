@@ -15,17 +15,17 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedModel, setSelectedModel] = useState(activeProviders[0]?.defaultModel || '');
   const [selectedPrompt, setSelectedPrompt] = useState(prompts[0]?.id || 'p_1');
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProject, setSelectedProject] = useState('default');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   React.useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/v1/projects');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        const res = await fetch(`${apiUrl}/v1/projects`);
         if (res.ok) {
           const data = await res.json();
           setProjects(data.filter(p => p.status === 'Active'));
-          if (data.length > 0) setSelectedProject(data[0]._id);
         }
       } catch (err) {
         console.error('Failed to load projects', err);
@@ -136,7 +136,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               onChange={(e) => setSelectedProject(e.target.value)}
               className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mb-6"
             >
-              <option value="">-- Select Project --</option>
+              <option value="default">Default Report Format</option>
               {projects.map((p) => (
                 <option key={p._id} value={p._id}>{p.name}</option>
               ))}

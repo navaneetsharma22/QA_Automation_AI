@@ -14,7 +14,8 @@ export const AdminProjectsManager = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/v1/projects');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/projects`);
       if (res.ok) {
         const data = await res.json();
         setProjects(data);
@@ -85,7 +86,8 @@ export const AdminProjectsManager = () => {
     }
 
     try {
-      const url = editingProject ? `http://localhost:3000/api/v1/projects/${editingProject._id}` : 'http://localhost:3000/api/v1/projects';
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const url = editingProject ? `${apiUrl}/v1/projects/${editingProject._id}` : `${apiUrl}/v1/projects`;
       const method = editingProject ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -120,7 +122,8 @@ export const AdminProjectsManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
       try {
-        await fetch(`http://localhost:3000/api/v1/projects/${id}`, { method: 'DELETE' });
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        await fetch(`${apiUrl}/v1/projects/${id}`, { method: 'DELETE' });
         toast.success('Project deleted');
         if (editingProject?._id === id) resetForm();
         fetchProjects();

@@ -23,7 +23,8 @@ export const AdminRulesManager = () => {
   const fetchRules = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3000/api/v1/rules');
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/rules`);
       if (!res.ok) throw new Error('Failed to fetch rules');
       const data = await res.json();
       setRules(data.rules || []);
@@ -48,7 +49,8 @@ export const AdminRulesManager = () => {
     try {
       setIsSubmitting(true);
       
-      const res = await fetch('http://localhost:3000/api/v1/rules', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category, severity, description })
@@ -78,7 +80,8 @@ export const AdminRulesManager = () => {
     try {
       setIsUpdating(true);
       
-      const res = await fetch(`http://localhost:3000/api/v1/rules/${selectedRuleId}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/rules/${selectedRuleId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category: editCategory, severity: editSeverity, description: editDescription })
@@ -110,7 +113,8 @@ export const AdminRulesManager = () => {
     if (!window.confirm('Are you sure you want to delete this rule?')) return;
     
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/rules/${id}`, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const res = await fetch(`${apiUrl}/v1/rules/${id}`, {
         method: 'DELETE'
       });
 
