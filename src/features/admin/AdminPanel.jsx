@@ -5,6 +5,7 @@ import { ShieldAlert, LogOut, Settings, Users, Activity, BookOpen, LayoutDashboa
 import { AdminRulesManager } from './AdminRulesManager';
 import { PromptStudio } from './PromptStudio';
 import { AdminUsersManager } from './AdminUsersManager';
+import { AdminProjectsManager } from './AdminProjectsManager';
 
 export const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -102,6 +103,18 @@ export const AdminPanel = () => {
             <UserPlus className="w-5 h-5" />
             Provision Accounts
           </button>
+          
+          <button 
+            onClick={() => setActiveTab('projects')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'projects' 
+                ? 'bg-emerald-600/10 text-emerald-400 border border-emerald-500/20' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
+            }`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            Report Schemas
+          </button>
         </aside>
 
         {/* Main Content */}
@@ -148,6 +161,10 @@ export const AdminPanel = () => {
 
             {activeTab === 'users' && (
               <AdminUsersManager />
+            )}
+
+            {activeTab === 'projects' && (
+              <AdminProjectsManager />
             )}
           </div>
         </main>

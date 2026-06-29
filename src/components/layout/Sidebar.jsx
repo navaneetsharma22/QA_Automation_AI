@@ -30,7 +30,10 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'profile', label: 'Profile', icon: UserCircle2 },
   ];
 
-  const visibleItems = navItems;
+  const visibleItems = navItems.filter(item => {
+    if (!user?.sidebarAccess) return true; // Legacy fallback
+    return user.sidebarAccess.includes(item.id);
+  });
 
   return (
     <aside className="w-64 bg-[#0B1020] border-r border-[#1F2937]/80 flex flex-col h-screen sticky top-0 shrink-0 select-none z-30">

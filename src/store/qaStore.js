@@ -66,13 +66,13 @@ export const useQaStore = create(
     aiProviders: state.aiProviders.map(p => p.id === id ? { ...p, active: !p.active } : p)
   })),
 
-  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion) => {
+  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId) => {
     try {
       const startTime = Date.now();
       const response = await fetch('http://localhost:3000/api/v1/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationText, aiProvider, aiModel })
+        body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId })
       });
 
       if (!response.ok) {
@@ -102,7 +102,9 @@ export const useQaStore = create(
         totalIssues: aiResult.findings?.length || 0,
         conversationText,
         overallRecommendation: aiResult.overallRecommendation || 'No findings.',
-        findings: aiResult.findings || []
+        findings: aiResult.findings || [],
+        projectId: projectId || null,
+        schemaDefinition: aiResult.schemaDefinition || null // Will store dynamic schema used
       };
 
       set(state => ({

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { UserPlus, Shield, Mail, Lock, User, Users, Edit, Trash2, Ban, CheckCircle2, XCircle } from 'lucide-react';
+import { UserPlus, Shield, Mail, Lock, User, Users, Edit, Trash2, Ban, CheckCircle2, XCircle, LayoutDashboard } from 'lucide-react';
+
+const AVAILABLE_MODULES = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'analyze', label: 'Analyze Chat' },
+  { id: 'history', label: 'Analysis History' },
+  { id: 'reports', label: 'Reports' },
+  { id: 'prompts', label: 'Prompt Management' },
+  { id: 'knowledge', label: 'Knowledge Base' },
+  { id: 'models', label: 'AI Models' },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'settings', label: 'Settings' }
+];
 
 export const AdminUsersManager = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +22,7 @@ export const AdminUsersManager = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [sidebarAccess, setSidebarAccess] = useState(AVAILABLE_MODULES.map(m => m.id));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Edit Modal State
@@ -18,6 +31,7 @@ export const AdminUsersManager = () => {
   const [editFullName, setEditFullName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editPassword, setEditPassword] = useState('');
+  const [editSidebarAccess, setEditSidebarAccess] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Delete Modal State
@@ -55,7 +69,7 @@ export const AdminUsersManager = () => {
       const res = await fetch('http://localhost:3000/api/v1/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email, password })
+        body: JSON.stringify({ fullName, email, password, sidebarAccess })
       });
 
       const data = await res.json();
@@ -70,6 +84,7 @@ export const AdminUsersManager = () => {
       setFullName('');
       setEmail('');
       setPassword('');
+      setSidebarAccess(AVAILABLE_MODULES.map(m => m.id));
       fetchUsers();
     } catch (err) {
       toast.error(err.message);
@@ -83,6 +98,7 @@ export const AdminUsersManager = () => {
     setEditFullName(user.fullName);
     setEditEmail(user.email);
     setEditPassword('');
+    setEditSidebarAccess(user.sidebarAccess || AVAILABLE_MODULES.map(m => m.id));
     setIsEditModalOpen(true);
   };
 
@@ -101,6 +117,7 @@ export const AdminUsersManager = () => {
         body: JSON.stringify({ 
           fullName: editFullName, 
           email: editEmail, 
+          sidebarAccess: editSidebarAccess,
           ...(editPassword && { password: editPassword }) 
         })
       });
@@ -226,6 +243,33 @@ export const AdminUsersManager = () => {
                 placeholder="Enter a secure password..."
                 className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
               />
+            </div>
+          </div>
+
+          {/* Sidebar Access Checkboxes */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+              <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
+              Module Access Permissions
+            </label>
+            <div className="grid grid-cols-2 gap-3 bg-[#1F2937]/50 p-4 rounded-xl border border-[#374151]/50">
+              {AVAILABLE_MODULES.map((mod) => (
+                <label key={mod.id} className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={sidebarAccess.includes(mod.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSidebarAccess([...sidebarAccess, mod.id]);
+                      } else {
+                        setSidebarAccess(sidebarAccess.filter(id => id !== mod.id));
+                      }
+                    }}
+                    className="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 bg-gray-700 transition-colors"
+                  />
+                  <span className="text-sm text-gray-300 group-hover:text-white transition-colors select-none">{mod.label}</span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -400,6 +444,33 @@ export const AdminUsersManager = () => {
                     placeholder="Leave blank to keep unchanged"
                     className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
                   />
+                </div>
+              </div>
+
+              {/* Edit Sidebar Access Checkboxes */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
+                  Module Access Permissions
+                </label>
+                <div className="grid grid-cols-2 gap-3 bg-[#0B1020]/50 p-4 rounded-xl border border-[#1F2937]">
+                  {AVAILABLE_MODULES.map((mod) => (
+                    <label key={mod.id} className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={editSidebarAccess.includes(mod.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditSidebarAccess([...editSidebarAccess, mod.id]);
+                          } else {
+                            setEditSidebarAccess(editSidebarAccess.filter(id => id !== mod.id));
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 bg-gray-700 transition-colors"
+                      />
+                      <span className="text-sm text-gray-300 group-hover:text-white transition-colors select-none">{mod.label}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 

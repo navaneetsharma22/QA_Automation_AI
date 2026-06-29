@@ -14,7 +14,25 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedProvider, setSelectedProvider] = useState(initialProvider);
   const [selectedModel, setSelectedModel] = useState(activeProviders[0]?.defaultModel || '');
   const [selectedPrompt, setSelectedPrompt] = useState(prompts[0]?.id || 'p_1');
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  React.useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/v1/projects');
+        if (res.ok) {
+          const data = await res.json();
+          setProjects(data.filter(p => p.status === 'Active'));
+          if (data.length > 0) setSelectedProject(data[0]._id);
+        }
+      } catch (err) {
+        console.error('Failed to load projects', err);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   const activeProviderObj = activeProviders.find(p => p.id === selectedProvider) || activeProviders[0] || {};
   const activePromptObj = prompts.find(p => p.id === selectedPrompt) || prompts[0];
@@ -31,6 +49,10 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       toast.error('Please paste a conversation to analyze');
       return;
     }
+    if (!selectedProject) {
+      toast.error('Please select a project layout');
+      return;
+    }
 
     setIsAnalyzing(true);
     const toastId = toast.loading(`Running multi-LLM analysis via ${activeProviderObj.name}...`);
@@ -40,7 +62,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         conversationText,
         activeProviderObj.name,
         selectedModel,
-        `v${activePromptObj?.version || 1}`
+        `v${activePromptObj?.version || 1}`,
+        selectedProject
       );
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
@@ -103,10 +126,27 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             <span>AI Engine Configuration</span>
           </h2>
 
+          {/* Project Template Selector */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              1. Project Report Layout
+            </label>
+            <select
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mb-6"
+            >
+              <option value="">-- Select Project --</option>
+              {projects.map((p) => (
+                <option key={p._id} value={p._id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+
           {/* AI Provider Selection */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              1. Select AI Model Provider
+              2. Select AI Model Provider
             </label>
             <div className="grid grid-cols-2 gap-2">
               {activeProviders.length === 0 && (
@@ -141,7 +181,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           {/* Specific Model Selector */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              2. Target Model
+              3. Target Model
             </label>
             <select
               value={selectedModel}
@@ -161,7 +201,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           {/* Prompt Template Selector */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              3. Prompt Template & Version
+              4. Prompt Template & Version
             </label>
             <select
               value={selectedPrompt}

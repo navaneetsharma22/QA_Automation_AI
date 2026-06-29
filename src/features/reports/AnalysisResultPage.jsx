@@ -53,6 +53,49 @@ const CopyButton = ({ text, className = "" }) => {
   );
 };
 
+const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
+  if (!schemaNode || !findingData) return null;
+
+  const content = findingData[schemaNode.id];
+  if (content === undefined || content === null) return null;
+
+  const isParent = schemaNode.type === 'parent';
+  const hasContent = isParent ? schemaNode.children?.some(c => findingData[c.id]) : !!content;
+
+  if (!hasContent) return null;
+
+  if (isParent) {
+    return (
+      <div className={`bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group ${depth > 0 ? 'mt-4 p-6 bg-[#0B1020]' : ''}`}>
+        <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-bold text-white font-['Plus_Jakarta_Sans'] mb-4`}>
+          {schemaNode.heading}
+        </h2>
+        {schemaNode.children?.map(child => (
+          <DynamicCard key={child.id} schemaNode={child} findingData={findingData} depth={depth + 1} />
+        ))}
+      </div>
+    );
+  }
+
+  const textContent = Array.isArray(content) ? content.join('\n') : String(content);
+
+  return (
+    <div className={`bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-md ${depth > 0 ? 'mt-0 bg-transparent border-[#374151]' : 'mt-8'}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-bold text-white font-['Plus_Jakarta_Sans']`}>
+          {schemaNode.heading}
+        </h2>
+        <CopyButton text={textContent} />
+      </div>
+      <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+        {textContent.split('\n').filter(Boolean).map((line, idx) => (
+          <p key={idx} className="break-words">{line.trim()}</p>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const AnalysisResultPage = ({ report, onBack }) => {
   const { updateReport } = useQaStore();
   
@@ -304,178 +347,197 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
       </div>
 
-      {/* QA Finding Card */}
-      {qaFindingError && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-              QA Finding
-            </h2>
-            <CopyButton text={`QA Finding\nError: ${qaFindingError}`} />
+      {/* Dynamic Project Schema Render */}
+      {report?.schemaDefinition && report.schemaDefinition.length > 0 ? (
+        report.findings?.map((finding, idx) => (
+          <div key={`finding-${idx}`} className="mt-12 first:mt-8 relative">
+            {report.findings.length > 1 && (
+              <div className="absolute -top-4 left-0 bg-blue-600/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full">
+                Finding {idx + 1}
+              </div>
+            )}
+            {report.schemaDefinition.map(schemaNode => (
+              <DynamicCard key={schemaNode.id} schemaNode={schemaNode} findingData={finding} />
+            ))}
           </div>
-          <p className="text-gray-300 text-sm">
-            <span className="font-bold text-white">Error:</span> {qaFindingError}
-          </p>
-        </div>
-      )}
+        ))
+      ) : (
+        /* Fallback Legacy Rendering */
+        <>
+          {qaFindingError && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
+                  QA Finding
+                </h2>
+                <CopyButton text={`QA Finding\nError: ${qaFindingError}`} />
+              </div>
+              <p className="text-gray-300 text-sm">
+                <span className="font-bold text-white">Error:</span> {qaFindingError}
+              </p>
+            </div>
+          )}
 
-      {/* Finding Description Card */}
-      {qaFindingDescription && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-              Finding
-            </h2>
-            <CopyButton text={qaFindingDescription} />
-          </div>
-          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-            {qaFindingDescription}
-          </p>
-        </div>
-      )}
+          {/* Finding Description Card */}
+          {qaFindingDescription && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
+                  Finding
+                </h2>
+                <CopyButton text={qaFindingDescription} />
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                {qaFindingDescription}
+              </p>
+            </div>
+          )}
 
-      {/* Critical Chat Logs */}
-      {criticalChatLogs && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-              Critical Chat Logs:
-            </h2>
-            <CopyButton text={criticalChatLogs} />
-          </div>
-          <div className="space-y-6">
-            {criticalChatLogs.split('\n\n').filter(Boolean).map((block, idx) => {
-              if (block.startsWith('**') && block.includes(':**')) {
-                const [speaker, ...textParts] = block.split(':**');
-                const text = textParts.join(':**').trim();
-                const speakerName = speaker.replace(/\*\*/g, '').trim();
-                return (
-                  <div key={idx} className="space-y-2 border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
-                    <p className="font-bold text-white text-sm">{speakerName}:</p>
-                    <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{text}</p>
+          {/* Critical Chat Logs */}
+          {criticalChatLogs && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
+                  Critical Chat Logs:
+                </h2>
+                <CopyButton text={criticalChatLogs} />
+              </div>
+              <div className="space-y-6">
+                {criticalChatLogs.split('\n\n').filter(Boolean).map((block, idx) => {
+                  if (block.startsWith('**') && block.includes(':**')) {
+                    const [speaker, ...textParts] = block.split(':**');
+                    const text = textParts.join(':**').trim();
+                    const speakerName = speaker.replace(/\*\*/g, '').trim();
+                    return (
+                      <div key={idx} className="space-y-2 border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
+                        <p className="font-bold text-white text-sm">{speakerName}:</p>
+                        <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{text}</p>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={idx} className="border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
+                      <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{block.replace(/\*\*/g, '')}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 3-in-1 Parent Card */}
+          {(expectedAgentAction || agentAction || missingExpectedAction) && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
+              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                <CopyButton text={`Expected Agent Action:\n${expectedAgentAction}\n\nAgent Action:\n${agentAction}\n\nMissing Expected Action:\n${missingExpectedAction}`} />
+              </div>
+              {expectedAgentAction && (
+                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                      Expected Agent Action
+                    </h2>
+                    <CopyButton text={expectedAgentAction} />
                   </div>
-                );
-              }
-              return (
-                <div key={idx} className="border-b border-[#1F2937] pb-6 last:border-0 last:pb-0">
-                  <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">{block.replace(/\*\*/g, '')}</p>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+                    {expectedAgentAction.split('\n').filter(Boolean).map((line, idx) => (
+                      <p key={idx} className="break-words">{line.trim()}</p>
+                    ))}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              )}
+              
+              {agentAction && (
+                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                      Agent Action
+                    </h2>
+                    <CopyButton text={agentAction} />
+                  </div>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+                    {agentAction.split('\n').filter(Boolean).map((line, idx) => (
+                      <p key={idx} className="break-words">{line.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {missingExpectedAction && (
+                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                      Missing Expected Action
+                    </h2>
+                    <CopyButton text={missingExpectedAction} />
+                  </div>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+                    {missingExpectedAction.split('\n').filter(Boolean).map((line, idx) => (
+                      <p key={idx} className="break-words">{line.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 2-in-1 Parent Card (Reason & Response) */}
+          {(reasonText || responseText) && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
+              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                <CopyButton text={`Reason:\n${reasonText}\n\nResponse:\n${responseText}`} />
+              </div>
+              {reasonText && (
+                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                      Reason
+                    </h2>
+                    <CopyButton text={reasonText} />
+                  </div>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+                    {reasonText.split('\n').filter(Boolean).map((line, idx) => (
+                      <p key={idx} className="break-words">{line.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {responseText && (
+                <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
+                      Response
+                    </h2>
+                    <CopyButton text={responseText} />
+                  </div>
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-2">
+                    {responseText.split('\n').filter(Boolean).map((line, idx) => (
+                      <p key={idx} className="break-words">{line.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AHT Card */}
+          {ahtText && (
+            <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
+                  AHT
+                </h2>
+                <CopyButton text={ahtText} />
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                {ahtText}
+              </p>
+            </div>
+          )}
+        </>
       )}
 
-      {/* 3-in-1 Parent Card */}
-      {(expectedAgentAction || agentAction || missingExpectedAction) && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
-          <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-            <CopyButton text={`Expected Agent Action:\n${expectedAgentAction}\n\nAgent Action:\n${agentAction}\n\nMissing Expected Action:\n${missingExpectedAction}`} />
-          </div>
-          {expectedAgentAction && (
-            <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Expected Agent Action
-                </h2>
-                <CopyButton text={expectedAgentAction} />
-              </div>
-              <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                {expectedAgentAction.split('\n').filter(Boolean).map((line, idx) => (
-                  <p key={idx} className="break-words">{line.trim()}</p>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {agentAction && (
-            <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Agent Action
-                </h2>
-                <CopyButton text={agentAction} />
-              </div>
-              <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                {agentAction.split('\n').filter(Boolean).map((line, idx) => (
-                  <p key={idx} className="break-words">{line.trim()}</p>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {missingExpectedAction && (
-            <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Missing Expected Action
-                </h2>
-                <CopyButton text={missingExpectedAction} />
-              </div>
-              <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                {missingExpectedAction.split('\n').filter(Boolean).map((line, idx) => (
-                  <p key={idx} className="break-words">{line.trim()}</p>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 2-in-1 Parent Card (Reason & Response) */}
-      {(reasonText || responseText) && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-8 mt-8 shadow-md space-y-6 relative group">
-          <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-            <CopyButton text={`Reason:\n${reasonText}\n\nResponse:\n${responseText}`} />
-          </div>
-          {reasonText && (
-            <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Reason
-                </h2>
-                <CopyButton text={reasonText} />
-              </div>
-              <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                {reasonText.split('\n').filter(Boolean).map((line, idx) => (
-                  <p key={idx} className="break-words">{line.trim()}</p>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {responseText && (
-            <div className="bg-[#0B1020] border border-[#1F2937] rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-white font-['Plus_Jakarta_Sans']">
-                  Response
-                </h2>
-                <CopyButton text={responseText} />
-              </div>
-              <div className="text-gray-300 text-sm leading-relaxed space-y-2">
-                {responseText.split('\n').filter(Boolean).map((line, idx) => (
-                  <p key={idx} className="break-words">{line.trim()}</p>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* AHT Card */}
-      {ahtText && (
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 mt-8 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-              AHT
-            </h2>
-            <CopyButton text={ahtText} />
-          </div>
-          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap break-words">
-            {ahtText}
-          </p>
-        </div>
-      )}
       {/* Fallback for unparsed or misformatted AI responses */}
       {(report?.findings?.length > 0 || report?.conversationText) && 
        !qaFindingError && 
