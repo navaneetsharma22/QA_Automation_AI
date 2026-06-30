@@ -446,7 +446,7 @@ export const DashboardPage = ({ onNavigate }) => {
               <button 
                 onClick={() => {
                   setIsInsightsOpen(false);
-                  onNavigate('reports');
+                  onNavigate('analytics');
                 }}
                 className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
