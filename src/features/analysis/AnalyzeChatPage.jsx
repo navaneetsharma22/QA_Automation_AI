@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQaStore } from '../../store/qaStore';
+import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
 import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const { analyzeChat, prompts, aiProviders } = useQaStore();
+  const { pendingTranscript, pendingCategory, setPendingAnalysis } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
   const activeProviders = aiProviders.filter(p => p.active);
@@ -19,7 +21,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchProjects = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -34,6 +36,21 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
     };
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (pendingTranscript) {
+      setConversationText(pendingTranscript);
+      
+      // Select the category if it matches one of our options
+      const validCategories = ['Booking', 'Cancellation', 'Reschedule', 'Refund', 'Baggage', 'Check-in', 'Meal / Seat', 'Visa / Travel Advisory', 'Other'];
+      if (pendingCategory && validCategories.includes(pendingCategory)) {
+         setSelectedCategory(pendingCategory);
+      }
+      
+      // Clear the store so it doesn't auto-fill again if they navigate away and back
+      setPendingAnalysis('', 'Auto-Detect');
+    }
+  }, [pendingTranscript, pendingCategory, setPendingAnalysis]);
 
   const activeProviderObj = activeProviders.find(p => p.id === selectedProvider) || activeProviders[0] || {};
   const activePromptObj = prompts.find(p => p.id === selectedPrompt) || prompts[0];
