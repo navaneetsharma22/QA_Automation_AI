@@ -475,11 +475,11 @@ export const AnalysisResultPage = ({ report, onBack }) => {
             Status: {conclusion.status || 'N/A'}
           </span>
           <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
-            conclusion.misleading?.toLowerCase() === 'no'
+            String(conclusion.misleading).toLowerCase() === 'no' || conclusion.misleading === false
               ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
               : 'bg-red-500/15 text-red-400 border border-red-500/30'
           }`}>
-            Misleading: {conclusion.misleading || 'N/A'}
+            Misleading: {typeof conclusion.misleading === 'boolean' ? (conclusion.misleading ? 'Yes' : 'No') : (conclusion.misleading || 'N/A')}
           </span>
           <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
             conclusion.severity?.toLowerCase() === 'none'

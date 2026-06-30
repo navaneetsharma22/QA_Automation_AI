@@ -4,7 +4,7 @@ export const AI_PROVIDERS = [
     name: 'Groq',
     badge: 'Ultra Fast',
     description: 'Llama 3.3 70B & Mixtral powered by LPU inference engine',
-    models: ['llama-3.3-70b-versatile', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
+    models: ['llama-3.3-70b-versatile', 'mixtral-8x7b-32768', 'llama-3.1-8b-instant'],
     defaultModel: 'llama-3.3-70b-versatile',
     latency: '~310ms',
     tokensPerSec: 320,
