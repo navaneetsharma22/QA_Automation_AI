@@ -34,15 +34,62 @@ export const useQaStore = create(
     const totalChatsAnalyzed = history.length;
     const successfulAnalysis = history.filter(h => h.status === 'Passed' || h.status === 'Warning').length;
     const failedAnalysis = totalChatsAnalyzed - successfulAnalysis;
-    const misleadingPercentage = 0; // %
-    const averageQaScore = Math.round(history.reduce((a, b) => a + b.qaScore, 0) / (history.length || 1)) || 0;
-    const averageAiResponseTime = '0ms';
+
+    // Misleading percentage from actual findings
+    const misleadingCount = history.filter(h =>
+      (h.findings || []).some(f => f.category?.toLowerCase().includes('mislead'))
+    ).length;
+    const misleadingPercentage = totalChatsAnalyzed
+      ? Math.round((misleadingCount / totalChatsAnalyzed) * 100)
+      : 0;
+
+    const averageQaScore = Math.round(history.reduce((a, b) => a + (b.qaScore || 0), 0) / (history.length || 1)) || 0;
+
+    // Average latency from real latencyMs values
+    const latencies = history.filter(h => h.latencyMs).map(h => h.latencyMs);
+    const avgLatency = latencies.length
+      ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
+      : 0;
+    const averageAiResponseTime = avgLatency ? `${avgLatency}ms` : '0ms';
+
     const totalReportsGenerated = totalChatsAnalyzed;
     const totalPromptTemplates = get().prompts.length;
     const knowledgeBaseDocuments = get().knowledgeBase.length;
-    const dailyAnalysis = 0;
-    const weeklyAnalysis = 0;
-    const monthlyAnalysis = 0;
+
+    // Volume counts from real dates
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const dailyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < dayMs).length;
+    const weeklyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < 7 * dayMs).length;
+    const monthlyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < 30 * dayMs).length;
+
+    // Issue category breakdowns - search ruleName in findings AND errorType on the report itself
+    const matchKeyword = (h, keyword) => {
+      const kw = keyword.toLowerCase();
+      // Check top-level errorType
+      if ((h.errorType || '').toLowerCase().includes(kw)) return true;
+      // Check each finding's ruleName, description and category
+      return (h.findings || []).some(f =>
+        (f.ruleName || '').toLowerCase().includes(kw) ||
+        (f.category || '').toLowerCase().includes(kw) ||
+        (f.description || '').toLowerCase().includes(kw)
+      );
+    };
+
+    const criticalCount = history.filter(h => matchKeyword(h, 'critical')).length;
+    const misleadingCount2 = history.filter(h => matchKeyword(h, 'mislead')).length;
+    const wrongIdentificationCount = history.filter(h =>
+      matchKeyword(h, 'wrong') || matchKeyword(h, 'identification') || matchKeyword(h, 'incorrect')
+    ).length;
+    const ahtCount = history.filter(h => matchKeyword(h, 'aht') || matchKeyword(h, 'handle time')).length;
+    const artCount = history.filter(h => matchKeyword(h, 'art') || matchKeyword(h, 'response time')).length;
+    const grammaticalCount = history.filter(h =>
+      matchKeyword(h, 'gramm') || matchKeyword(h, 'grammar') || matchKeyword(h, 'language')
+    ).length;
+    const escalationDelayCount = history.filter(h =>
+      matchKeyword(h, 'escalat')
+    ).length;
+    const inProgressCount = history.filter(h => h.status === 'In Progress').length;
 
     return {
       totalChatsAnalyzed,
@@ -56,7 +103,15 @@ export const useQaStore = create(
       knowledgeBaseDocuments,
       dailyAnalysis,
       weeklyAnalysis,
-      monthlyAnalysis
+      monthlyAnalysis,
+      criticalCount,
+      misleadingCount: misleadingCount2,
+      wrongIdentificationCount,
+      ahtCount,
+      artCount,
+      grammaticalCount,
+      escalationDelayCount,
+      inProgressCount,
     };
   },
 

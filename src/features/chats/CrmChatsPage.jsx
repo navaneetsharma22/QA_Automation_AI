@@ -61,7 +61,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       toast.success('Transcript loaded!', { id: toastId });
       
       // Store it in our global state and switch tabs
-      setPendingAnalysis(transcript, chat.category || 'Auto-Detect');
+      setPendingAnalysis(transcript, chat.category || 'Auto-Detect', chat.id);
       setActiveTab('analyze');
       
     } catch (err) {
@@ -72,11 +72,11 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-200">
-      <div className="flex items-center justify-between border-b border-[#1F2937] pb-6">
+    <div className="px-10 py-6 w-full space-y-6 animate-in fade-in duration-300">
+      <div className="flex items-center justify-between border-b border-white/10 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight flex items-center gap-3">
-            <MessageCircle className="w-6 h-6 text-blue-400" />
+          <h1 className="text-2xl font-semibold text-white tracking-wide flex items-center gap-3">
+            <MessageCircle className="w-6 h-6 text-purple-400" />
             CRM Live Chats
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -85,46 +85,46 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </div>
         <button 
           onClick={() => fetchChats(page)}
-          className="p-2 bg-[#1F2937] text-gray-300 hover:text-white rounded-lg hover:bg-[#374151] transition-colors"
+          className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-sm"
           title="Refresh List"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-[#1F2937] flex items-center justify-between bg-[#111827]">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span className="font-semibold text-white">{totalItems}</span> Total Conversations
+      <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="p-5 border-b border-white/5 flex items-center justify-between bg-black/20">
+          <div className="flex items-center gap-2 text-sm text-gray-400 font-mono tracking-wider text-[11px] uppercase">
+            <span className="font-bold text-white text-sm">{totalItems}</span> TOTAL CONVERSATIONS
           </div>
           <div className="relative">
-            <Search className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input 
               type="text"
               placeholder="Search chat ID or name..."
-              className="bg-[#0B1020] border border-[#1F2937] rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors w-64"
+              className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors w-72 shadow-inner"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-300">
-            <thead className="text-xs uppercase bg-[#0B1020] text-gray-400 border-b border-[#1F2937]">
+            <thead className="text-[11px] font-bold uppercase tracking-wider bg-black/20 text-gray-400 border-b border-white/5 font-mono">
               <tr>
-                <th className="px-6 py-4 font-semibold tracking-wider">Chat ID</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Customer</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Agent</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Category</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Date</th>
-                <th className="px-6 py-4 font-semibold tracking-wider text-right">Action</th>
+                <th className="px-6 py-4">Chat ID</th>
+                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4">Agent</th>
+                <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-white/5 text-xs">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
-                    <RefreshCw className="w-6 h-6 animate-spin text-blue-500 mx-auto mb-3" />
-                    <p className="text-gray-400 font-medium">Connecting to CRM...</p>
+                  <td colSpan="6" className="px-6 py-16 text-center">
+                    <RefreshCw className="w-6 h-6 animate-spin text-purple-500 mx-auto mb-4" />
+                    <p className="text-gray-400 font-medium tracking-wide">Connecting to CRM...</p>
                   </td>
                 </tr>
               ) : chats.length === 0 ? (
@@ -135,33 +135,33 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 </tr>
               ) : (
                 chats.map((chat) => (
-                  <tr key={chat.id} className="border-b border-[#1F2937] hover:bg-[#1F2937]/50 transition-colors group">
-                    <td className="px-6 py-4 font-mono text-xs text-gray-400">{chat.id}</td>
+                  <tr key={chat.id} className="hover:bg-white/[0.04] transition-colors group cursor-pointer">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-purple-400">{chat.id}</td>
                     <td className="px-6 py-4 font-medium text-white">{chat.customerName}</td>
-                    <td className="px-6 py-4">{chat.agentName}</td>
+                    <td className="px-6 py-4 text-gray-300">{chat.agentName}</td>
                     <td className="px-6 py-4">
-                      <span className="px-2.5 py-1 bg-[#1F2937] text-blue-400 rounded-lg text-xs font-semibold border border-blue-500/20">
+                      <span className="px-3 py-1 bg-white/5 text-purple-400 rounded-lg text-[11px] font-bold border border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
                         {chat.category || 'General'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-6 py-4 text-gray-500 font-mono text-[11px]">
                       {new Date(chat.date).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleAnalyze(chat)}
                         disabled={analyzingId !== null}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-xs transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 hover:bg-purple-600 border border-white/10 text-gray-300 hover:text-white hover:border-purple-500 font-semibold rounded-lg text-[11px] transition-all hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {analyzingId === chat.id ? (
                           <>
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                            Taking It...
+                            TAKING IT...
                           </>
                         ) : (
                           <>
                             <Sparkles className="w-3.5 h-3.5" />
-                            Take It
+                            TAKE IT
                           </>
                         )}
                       </button>
@@ -175,22 +175,22 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="p-4 border-t border-[#1F2937] flex items-center justify-between bg-[#111827]">
-            <span className="text-sm text-gray-400">
-              Showing page <span className="font-semibold text-white">{page}</span> of <span className="font-semibold text-white">{totalPages}</span>
+          <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between bg-black/20 text-[11px] font-mono tracking-wider">
+            <span className="text-gray-500">
+              SHOWING PAGE <span className="font-bold text-gray-300">{page}</span> OF <span className="font-bold text-gray-300">{totalPages}</span>
             </span>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => fetchChats(page - 1)}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-[#374151] bg-[#1F2937] text-gray-300 hover:text-white hover:bg-[#374151] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => fetchChats(page + 1)}
                 disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-[#374151] bg-[#1F2937] text-gray-300 hover:text-white hover:bg-[#374151] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

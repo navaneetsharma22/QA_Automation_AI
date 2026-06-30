@@ -51,27 +51,33 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1020] text-[#F9FAFB] flex font-['Inter'] selection:bg-blue-600 selection:text-white antialiased">
+    <div className="min-h-screen bg-[#0a0612] text-[#F9FAFB] flex font-sans selection:bg-purple-600 selection:text-white antialiased overflow-hidden relative">
+      {/* Ambient glow blobs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-900/15 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] bg-violet-900/15 rounded-full blur-[100px]" />
+      </div>
       <Sidebar activeTab={activeTab === 'result' ? resultSource : activeTab} setActiveTab={(tab) => { setActiveTab(tab); setViewingReport(null); }} />
 
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
-        <Header activeTab={activeTab} onNavigate={setActiveTab} onOpenCommandPalette={() => setIsCommandOpen(true)} />
+      <div className="flex-1 flex flex-col min-w-0 h-screen relative">
+          <Header activeTab={activeTab} onNavigate={setActiveTab} onOpenCommandPalette={() => setIsCommandOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto pb-16">
-          {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}
-          {activeTab === 'crm-chats' && <CrmChatsPage onAnalysisComplete={handleAnalysisComplete} />}
-          {activeTab === 'analyze' && <AnalyzeChatPage onAnalysisComplete={handleAnalysisComplete} />}
-          {activeTab === 'result' && <AnalysisResultPage report={viewingReport || currentReport} onBack={() => setActiveTab(resultSource)} />}
-          {activeTab === 'history' && <AnalysisHistoryPage onSelectReport={handleInspectReport} />}
-          {activeTab === 'reports' && <ReportsPage onInspectReport={handleInspectReport} />}
-          {activeTab === 'prompts' && <PromptManagerPage />}
-          {activeTab === 'knowledge' && <KnowledgeBasePage />}
-          {activeTab === 'models' && <AiModelsPage />}
-          {activeTab === 'analytics' && <AnalyticsPage />}
-          {activeTab === 'settings' && <SettingsPage />}
-          {activeTab === 'profile' && <ProfilePage />}
-        </main>
-      </div>
+          <main className="flex-1 overflow-y-auto pb-8 custom-scrollbar relative z-10">
+            {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}
+            {activeTab === 'crm-chats' && <CrmChatsPage onAnalysisComplete={handleAnalysisComplete} />}
+            {activeTab === 'analyze' && <AnalyzeChatPage onAnalysisComplete={handleAnalysisComplete} />}
+            {activeTab === 'result' && <AnalysisResultPage report={viewingReport || currentReport} onBack={() => setActiveTab(resultSource)} />}
+            {activeTab === 'history' && <AnalysisHistoryPage onSelectReport={handleInspectReport} />}
+            {activeTab === 'reports' && <ReportsPage onInspectReport={handleInspectReport} />}
+            {activeTab === 'prompts' && <PromptManagerPage />}
+            {activeTab === 'knowledge' && <KnowledgeBasePage />}
+            {activeTab === 'models' && <AiModelsPage />}
+            {activeTab === 'analytics' && <AnalyticsPage />}
+            {activeTab === 'settings' && <SettingsPage />}
+            {activeTab === 'profile' && <ProfilePage />}
+          </main>
+        </div>
 
       <CommandPalette
         isOpen={isCommandOpen}

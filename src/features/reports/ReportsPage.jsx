@@ -27,10 +27,10 @@ export const ReportsPage = ({ onInspectReport }) => {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-200">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-[#1F2937] pb-6">
+    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+          <h1 className="text-2xl font-semibold text-white tracking-wide">
             Enterprise QA Reports
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -40,7 +40,7 @@ export const ReportsPage = ({ onInspectReport }) => {
 
         <button
           onClick={handleExportAll}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 self-start md:self-auto"
+          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white text-xs font-semibold rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all flex items-center gap-2 self-start md:self-auto"
         >
           <Download className="w-4 h-4" /> Export All Reports (JSON/CSV)
         </button>
@@ -48,25 +48,25 @@ export const ReportsPage = ({ onInspectReport }) => {
 
       {/* Summary KPI header */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-[#111827] border border-[#1F2937] p-5 rounded-2xl">
-          <span className="text-xs text-gray-400 font-mono block">Total Reports Generated</span>
-          <span className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] mt-1 block">{history.length}</span>
+        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
+          <span className="text-xs text-gray-400 font-mono tracking-wider uppercase block">Total Reports Generated</span>
+          <span className="text-2xl font-bold text-white tracking-wide mt-1 block">{history.length}</span>
         </div>
-        <div className="bg-[#111827] border border-[#1F2937] p-5 rounded-2xl">
-          <span className="text-xs text-gray-400 font-mono block">Critical Severity Issues</span>
-          <span className="text-2xl font-bold text-red-400 font-['Plus_Jakarta_Sans'] mt-1 block">
+        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
+          <span className="text-xs text-gray-400 font-mono tracking-wider uppercase block">Critical Severity Issues</span>
+          <span className="text-2xl font-bold text-red-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'Critical').length}
           </span>
         </div>
-        <div className="bg-[#111827] border border-[#1F2937] p-5 rounded-2xl">
-          <span className="text-xs text-gray-400 font-mono block">High / Medium Issues</span>
-          <span className="text-2xl font-bold text-amber-400 font-['Plus_Jakarta_Sans'] mt-1 block">
+        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
+          <span className="text-xs text-gray-400 font-mono tracking-wider uppercase block">High / Medium Issues</span>
+          <span className="text-2xl font-bold text-amber-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'High' || i.severity === 'Medium').length}
           </span>
         </div>
-        <div className="bg-[#111827] border border-[#1F2937] p-5 rounded-2xl">
-          <span className="text-xs text-gray-400 font-mono block">Average Confidence</span>
-          <span className="text-2xl font-bold text-blue-400 font-['Plus_Jakarta_Sans'] mt-1 block">96.8%</span>
+        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 p-5 rounded-2xl shadow-2xl">
+          <span className="text-xs text-gray-400 font-mono tracking-wider uppercase block">Average Confidence</span>
+          <span className="text-2xl font-bold text-cyan-400 tracking-wide mt-1 block">96.8%</span>
         </div>
       </div>
 
@@ -76,13 +76,13 @@ export const ReportsPage = ({ onInspectReport }) => {
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider font-mono">
             Misleading & Policy Violation Findings ({filteredIssues.length})
           </h2>
-          <div className="flex items-center gap-1.5 bg-[#111827] p-1 rounded-xl border border-[#1F2937] text-xs">
+          <div className="flex items-center gap-1.5 bg-black/20 p-1 rounded-xl border border-white/10 text-xs">
             {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'].map(sev => (
               <button
                 key={sev}
                 onClick={() => setFilterSeverity(sev)}
-                className={`px-3 py-1 rounded-lg font-medium transition-all ${
-                  filterSeverity === sev ? 'bg-blue-600 text-white font-semibold' : 'text-gray-400 hover:text-white'
+                className={`px-4 py-1.5 rounded-lg font-medium transition-all tracking-wide ${
+                  filterSeverity === sev ? 'bg-purple-600 text-white shadow-md font-semibold' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 {sev}
@@ -95,7 +95,7 @@ export const ReportsPage = ({ onInspectReport }) => {
           {filteredIssues.map((iss, idx) => (
             <div
               key={iss.id || idx}
-              className="bg-[#111827] border border-[#1F2937] rounded-xl p-5 hover:border-gray-700 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
+              className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl p-5 hover:border-purple-500/50 hover:bg-white/[0.04] hover:shadow-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
               onClick={() => {
                 const rep = history.find(h => h.analysisId === iss.analysisId);
                 if (rep) onInspectReport(rep);
@@ -111,7 +111,7 @@ export const ReportsPage = ({ onInspectReport }) => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-sm font-semibold tracking-wide text-white group-hover:text-purple-400 transition-colors">
                       {iss.issueTitle}
                     </h3>
                     <span className="text-[11px] text-gray-500 font-mono">({iss.analysisId})</span>
@@ -122,12 +122,12 @@ export const ReportsPage = ({ onInspectReport }) => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-[#1F2937]">
+              <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-white/10">
                 <div className="text-right">
                   <span className="text-[10px] text-gray-500 block font-mono">Category</span>
                   <span className="text-xs text-gray-300 font-medium">{iss.category}</span>
                 </div>
-                <button className="px-3 py-1.5 rounded-lg bg-[#1F2937] text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all text-xs font-semibold flex items-center gap-1">
+                <button className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 group-hover:bg-purple-600 group-hover:border-purple-500 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all text-xs font-semibold flex items-center gap-1.5">
                   <span>Inspect Report</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>

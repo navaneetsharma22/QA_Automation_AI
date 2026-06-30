@@ -49,14 +49,14 @@ export const KnowledgeBasePage = () => {
 
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-200">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-[#1F2937] pb-6">
+    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 uppercase tracking-wider font-mono mb-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider font-mono mb-1">
             <Database className="w-3.5 h-3.5" />
             <span>Retrieval-Augmented Generation (RAG)</span>
           </div>
-          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+          <h1 className="text-2xl font-semibold text-white tracking-wide">
             Knowledge Base Management
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -66,7 +66,7 @@ export const KnowledgeBasePage = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 self-start md:self-auto"
+          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white text-xs font-semibold rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all flex items-center gap-2 self-start md:self-auto"
         >
           <Plus className="w-4 h-4" /> Add Knowledge Document
         </button>
@@ -80,7 +80,7 @@ export const KnowledgeBasePage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search knowledge documents or content..."
-            className="w-full bg-[#111827] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors shadow-inner"
           />
         </div>
         <div className="text-xs text-gray-400 font-mono">
@@ -93,16 +93,16 @@ export const KnowledgeBasePage = () => {
         {filtered.map((doc) => (
           <div 
             key={doc.id}
-            className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-md hover:border-gray-700 transition-all flex flex-col justify-between group"
+            className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl hover:border-purple-500/50 hover:bg-white/[0.04] transition-all flex flex-col justify-between group"
           >
             <div>
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white font-['Plus_Jakarta_Sans'] leading-snug">
+                    <h3 className="text-base font-semibold text-white tracking-wide leading-snug">
                       {doc.title}
                     </h3>
                     <span className="text-[11px] text-gray-400 font-medium block mt-0.5">{doc.category}</span>
@@ -122,12 +122,12 @@ export const KnowledgeBasePage = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-gray-300 font-mono bg-[#0B1020] p-4 rounded-xl border border-[#1F2937] line-clamp-4 leading-relaxed my-4">
+              <p className="text-xs text-gray-300 font-mono bg-black/20 p-4 rounded-xl border border-white/10 line-clamp-4 leading-relaxed my-4 custom-scrollbar">
                 {doc.content}
               </p>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono pt-3 border-t border-[#1F2937]">
+            <div className="flex items-center justify-between text-[11px] text-gray-500 font-mono pt-3 border-t border-white/10">
               <span className="flex items-center gap-1 text-emerald-400">
                 <Sparkles className="w-3 h-3" /> Embeddings Synced ({doc.chunkCount || 3} chunks)
               </span>
@@ -140,9 +140,9 @@ export const KnowledgeBasePage = () => {
       {/* ADD KNOWLEDGE DOC MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-[#1F2937] pb-4 mb-4">
-              <h3 className="text-base font-bold text-white font-['Plus_Jakarta_Sans']">Add Company Knowledge Document</h3>
+          <div className="w-full max-w-xl bg-[#0c0514] border border-white/10 rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+              <h3 className="text-base font-semibold text-white tracking-wide">Add Company Knowledge Document</h3>
               <button onClick={() => setShowAddModal(false)} className="p-1 text-gray-400 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
@@ -157,7 +157,7 @@ export const KnowledgeBasePage = () => {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Expedited Refund Fraud Verification SLA"
-                  className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500/50"
                 />
               </div>
 
@@ -167,10 +167,10 @@ export const KnowledgeBasePage = () => {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500/50"
                   >
                     {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat} className="bg-[#0c0514] text-white">{cat}</option>
                     ))}
                   </select>
                 </div>
@@ -180,11 +180,11 @@ export const KnowledgeBasePage = () => {
                   <select
                     value={formData.fileType}
                     onChange={(e) => setFormData({ ...formData, fileType: e.target.value })}
-                    className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500/50"
                   >
-                    <option value="Markdown (.md)">Markdown (.md)</option>
-                    <option value="Text (.txt)">Text (.txt)</option>
-                    <option value="PDF Transcript">PDF Transcript</option>
+                    <option value="Markdown (.md)" className="bg-[#0c0514] text-white">Markdown (.md)</option>
+                    <option value="Text (.txt)" className="bg-[#0c0514] text-white">Text (.txt)</option>
+                    <option value="PDF Transcript" className="bg-[#0c0514] text-white">PDF Transcript</option>
                   </select>
                 </div>
               </div>
@@ -197,15 +197,15 @@ export const KnowledgeBasePage = () => {
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Paste official policy text here. This content will be chunked and converted into vector embeddings for RAG search..."
-                  className="w-full bg-[#0B1020] border border-[#374151] rounded-xl p-4 text-xs font-mono text-gray-100 focus:outline-none focus:border-blue-500 leading-relaxed"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-xs font-mono text-gray-100 focus:outline-none focus:border-purple-500/50 leading-relaxed custom-scrollbar"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1F2937]">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-xs text-gray-400 hover:text-white">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-xs font-medium text-gray-400 hover:text-white transition-colors">
                   Cancel
                 </button>
-                <button type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-600/20">
+                <button type="submit" className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all">
                   Generate Embeddings & Save
                 </button>
               </div>
