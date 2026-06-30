@@ -92,8 +92,8 @@ export const AI_PROVIDERS = [
     name: 'Cerebras',
     badge: 'Blazing Fast',
     description: 'Cerebras Wafer-Scale Engine — the fastest AI inference on the planet',
-    models: ['llama3.1-8b', 'llama3.1-70b', 'zai-glm-4.7', 'gpt-oss-120b'],
-    defaultModel: 'llama3.1-70b',
+    models: ['llama3.1-8b', 'llama-3.3-70b', 'zai-glm-4.7', 'gpt-oss-120b'],
+    defaultModel: 'llama-3.3-70b',
     latency: '~120ms',
     tokensPerSec: 2100,
     color: '#F97316'
