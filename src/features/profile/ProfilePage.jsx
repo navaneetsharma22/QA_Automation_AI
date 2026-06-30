@@ -33,9 +33,9 @@ export const ProfilePage = () => {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-200">
-      <div className="border-b border-[#1F2937] pb-6">
-        <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+      <div className="border-b border-white/10 pb-6">
+        <h1 className="text-2xl font-semibold text-white tracking-wide">
           User Account & Security Profile
         </h1>
         <p className="text-sm text-gray-400 mt-1">
@@ -46,21 +46,21 @@ export const ProfilePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: ID Card & JWT Preview */}
         <div className="space-y-6">
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-xl text-center">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-blue-500/20">
+          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl text-center transition-all hover:border-purple-500/30">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-fuchsia-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg shadow-purple-500/20">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
-            <h2 className="text-base font-bold text-white font-['Plus_Jakarta_Sans']">{user?.fullName}</h2>
+            <h2 className="text-base font-semibold text-white tracking-wide">{user?.fullName}</h2>
             <p className="text-xs text-gray-400 mt-0.5">{user?.email}</p>
-            <div className="mt-4 pt-4 border-t border-[#1F2937] flex items-center justify-center gap-2">
+            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-center gap-2">
               <Shield className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-semibold text-gray-200">Full Access</span>
             </div>
           </div>
 
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-5 shadow-md">
+          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl transition-all">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold text-blue-400 uppercase font-mono">Active JWT Bearer Token</span>
+              <span className="text-[11px] font-bold text-purple-400 uppercase font-mono">Active JWT Bearer Token</span>
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(user?.token || 'jwt_bearer_token');
@@ -72,7 +72,7 @@ export const ProfilePage = () => {
                 <Copy className="w-3.5 h-3.5" />
               </button>
             </div>
-            <p className="text-[11px] font-mono text-gray-400 bg-[#0B1020] p-3 rounded-xl border border-[#1F2937] break-all">
+            <p className="text-[11px] font-mono text-gray-400 bg-black/20 p-3 rounded-xl border border-white/10 break-all shadow-inner">
               {user?.token || 'eyJhYmNkIjoiZWVlZSI...'}
             </p>
           </div>
@@ -80,9 +80,9 @@ export const ProfilePage = () => {
 
         {/* Right 2 Columns: Edit Profile & Password */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-xl">
-            <h2 className="text-sm font-bold text-white font-['Plus_Jakarta_Sans'] mb-4 flex items-center gap-2">
-              <UserCircle2 className="w-4 h-4 text-blue-400" />
+          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl transition-all">
+            <h2 className="text-sm font-semibold text-white tracking-wide mb-4 flex items-center gap-2">
+              <UserCircle2 className="w-4 h-4 text-purple-400" />
               <span>Personal Information</span>
             </h2>
             <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -93,7 +93,7 @@ export const ProfilePage = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500 max-w-md"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500/50 max-w-md shadow-inner transition-colors"
                 />
               </div>
 
@@ -104,14 +104,14 @@ export const ProfilePage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#374151] rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500 max-w-md font-mono"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500/50 max-w-md font-mono shadow-inner transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] text-white font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
               >
                 <Save className="w-3.5 h-3.5" /> Update Profile
               </button>
@@ -119,8 +119,8 @@ export const ProfilePage = () => {
           </div>
 
           {/* Change Password */}
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 shadow-xl">
-            <h2 className="text-sm font-bold text-white font-['Plus_Jakarta_Sans'] mb-4 flex items-center gap-2">
+          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl transition-all">
+            <h2 className="text-sm font-semibold text-white tracking-wide mb-4 flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-amber-400" />
               <span>Change Password</span>
             </h2>
@@ -134,7 +134,7 @@ export const ProfilePage = () => {
                     value={oldPass}
                     onChange={(e) => setOldPass(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[#0B1020] border border-[#374151] rounded-xl pl-4 pr-10 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
                   />
                   <button 
                     type="button"
@@ -155,7 +155,7 @@ export const ProfilePage = () => {
                     value={newPass}
                     onChange={(e) => setNewPass(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[#0B1020] border border-[#374151] rounded-xl pl-4 pr-10 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl pl-4 pr-10 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
                   />
                   <button 
                     type="button"
@@ -170,7 +170,7 @@ export const ProfilePage = () => {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] text-white font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
               >
                 <Lock className="w-3.5 h-3.5" /> Change Password
               </button>

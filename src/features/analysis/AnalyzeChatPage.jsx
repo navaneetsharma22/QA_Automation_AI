@@ -4,10 +4,11 @@ import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
 import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { CustomSelect } from '../../components/ui/CustomSelect';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const { analyzeChat, prompts, aiProviders } = useQaStore();
-  const { pendingTranscript, pendingCategory, setPendingAnalysis } = useUiStore();
+  const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
   const activeProviders = aiProviders.filter(p => p.active);
@@ -39,18 +40,23 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
 
   useEffect(() => {
     if (pendingTranscript) {
-      setConversationText(pendingTranscript);
+      let textToSet = pendingTranscript;
+      if (pendingChatId) {
+        textToSet = `Ticket/Chat ID: ${pendingChatId}\n\n` + textToSet;
+      }
+      setConversationText(textToSet);
       
-      // Select the category if it matches one of our options
+      // Select the category if it matches one of our options (case-insensitive)
       const validCategories = ['Booking', 'Cancellation', 'Reschedule', 'Refund', 'Baggage', 'Check-in', 'Meal / Seat', 'Visa / Travel Advisory', 'Other'];
-      if (pendingCategory && validCategories.includes(pendingCategory)) {
-         setSelectedCategory(pendingCategory);
+      if (pendingCategory) {
+         const match = validCategories.find(c => c.toLowerCase() === pendingCategory.toLowerCase());
+         if (match) setSelectedCategory(match);
       }
       
       // Clear the store so it doesn't auto-fill again if they navigate away and back
-      setPendingAnalysis('', 'Auto-Detect');
+      setPendingAnalysis('', 'Auto-Detect', '');
     }
-  }, [pendingTranscript, pendingCategory, setPendingAnalysis]);
+  }, [pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis]);
 
   const activeProviderObj = activeProviders.find(p => p.id === selectedProvider) || activeProviders[0] || {};
   const activePromptObj = prompts.find(p => p.id === selectedPrompt) || prompts[0];
@@ -94,10 +100,10 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-200">
-      <div className="flex items-center justify-between border-b border-[#1F2937] pb-6">
+    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+      <div className="flex items-center justify-between border-b border-white/10 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+          <h1 className="text-2xl font-semibold text-white tracking-wide">
             Analyze Support Conversation
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -122,67 +128,96 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </button>
           </div>
 
-          <div className="relative bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden focus-within:border-blue-500 transition-colors shadow-inner">
+          <div className="relative bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden focus-within:border-purple-500/50 transition-colors shadow-2xl">
             <textarea
               rows={14}
               required
               value={conversationText}
               onChange={(e) => setConversationText(e.target.value)}
               placeholder="Paste conversation transcript here...&#10;&#10;Customer: ...&#10;Agent: ..."
-              className="w-full bg-transparent p-5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
+              className="w-full bg-transparent p-6 text-sm text-gray-200 placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
             />
-            <div className="bg-[#0B1020] px-4 py-2.5 border-t border-[#1F2937] flex items-center justify-between text-xs text-gray-500 font-mono">
-              <span>{conversationText.length} characters</span>
-              <span>Auto-detecting markdown & metadata</span>
+            <div className="bg-black/20 px-6 py-3 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500 font-mono tracking-wider">
+              <span>{conversationText.length} CHARACTERS</span>
+              <span>AUTO-DETECTING MARKDOWN & METADATA</span>
             </div>
+          </div>
+
+          {/* Moved RAG Notice and Submit Button */}
+          <div className="flex flex-col gap-4 pt-2 w-full">
+            {/* RAG Notice */}
+            <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-xl flex items-start gap-3 w-full">
+              <Sparkles className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+              <div className="text-[11px] text-gray-400 leading-relaxed">
+                <span className="font-semibold text-purple-300">RAG Enabled:</span> Company knowledge base policies & product feature matrices will be injected into context.
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isAnalyzing}
+              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-semibold rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
+            >
+              {isAnalyzing ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  <span>Running QA Analysis...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-white" />
+                  <span>Generate QA Report</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-[#111827] p-6 rounded-2xl border border-[#1F2937] h-fit shadow-lg">
-          <h2 className="text-sm font-bold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2 pb-3 border-b border-[#1F2937]">
-            <Layers className="w-4 h-4 text-blue-400" />
+        <div className="space-y-6 bg-white/[0.03] backdrop-blur-md p-6 rounded-3xl border border-white/10 h-fit shadow-2xl">
+          <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2 pb-4 border-b border-white/10 tracking-wide">
+            <Layers className="w-4 h-4 text-purple-400" />
             <span>AI Engine Configuration</span>
           </h2>
 
           {/* Project Template Selector */}
-          <div>
+          <div className="mb-6">
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
               1. Project Report Layout
             </label>
-            <select
+            <CustomSelect
               value={selectedProject}
-              onChange={(e) => setSelectedProject(e.target.value)}
-              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mb-6"
-            >
-              <option value="default">Default Report Format</option>
-              {projects.map((p) => (
-                <option key={p._id} value={p._id}>{p.name}</option>
-              ))}
-            </select>
+              onChange={setSelectedProject}
+              options={[
+                { value: 'default', label: 'Default Report Format' },
+                ...projects.map((p) => ({ value: p._id, label: p.name }))
+              ]}
+              placeholder="Select Layout"
+            />
           </div>
 
           {/* Issue Category Selector */}
-          <div>
+          <div className="mb-6">
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
               2. Issue Category
             </label>
-            <select
+            <CustomSelect
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mb-6"
-            >
-              <option value="Auto-Detect">Auto-Detect (Scan all rules)</option>
-              <option value="Booking">Booking</option>
-              <option value="Cancellation">Cancellation</option>
-              <option value="Reschedule">Reschedule</option>
-              <option value="Refund">Refund</option>
-              <option value="Baggage">Baggage</option>
-              <option value="Check-in">Check-in</option>
-              <option value="Meal / Seat">Meal / Seat</option>
-              <option value="Visa / Travel Advisory">Visa / Travel Advisory</option>
-              <option value="Other">Other</option>
-            </select>
+              onChange={setSelectedCategory}
+              options={[
+                { value: 'Auto-Detect', label: 'Auto-Detect (Scan all rules)' },
+                { value: 'Booking', label: 'Booking' },
+                { value: 'Cancellation', label: 'Cancellation' },
+                { value: 'Reschedule', label: 'Reschedule' },
+                { value: 'Refund', label: 'Refund' },
+                { value: 'Baggage', label: 'Baggage' },
+                { value: 'Check-in', label: 'Check-in' },
+                { value: 'Meal / Seat', label: 'Meal / Seat' },
+                { value: 'Visa / Travel Advisory', label: 'Visa / Travel Advisory' },
+                { value: 'Other', label: 'Other' },
+              ]}
+              placeholder="Select Category"
+            />
           </div>
 
           {/* AI Provider Selection */}
@@ -203,17 +238,17 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
                     key={provider.id}
                     type="button"
                     onClick={() => handleProviderChange(provider.id)}
-                    className={`p-2.5 rounded-xl border text-left transition-all duration-150 flex flex-col gap-1 ${
+                    className={`p-3 rounded-xl border text-left transition-all duration-300 flex flex-col gap-1.5 ${
                       isSelected
-                        ? 'bg-blue-600/15 border-blue-500 text-white shadow-sm'
-                        : 'bg-[#1F2937]/50 border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-200'
+                        ? 'bg-gradient-to-br from-[#3b2a45]/80 to-[#251b2e]/40 border-purple-500/50 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]'
+                        : 'bg-black/20 border-white/5 text-gray-400 hover:border-white/10 hover:text-gray-200'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-bold font-['Plus_Jakarta_Sans']">{provider.name}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-blue-400" />}
+                      <span className="text-xs font-semibold tracking-wide">{provider.name}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-purple-400" />}
                     </div>
-                    <span className="text-[10px] text-gray-500 truncate">{provider.badge}</span>
+                    <span className="text-[10px] text-gray-500 truncate font-mono uppercase">{provider.badge}</span>
                   </button>
                 );
               })}
@@ -221,70 +256,24 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           </div>
 
           {/* Specific Model Selector */}
-          <div>
+          <div className="mb-6">
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
               4. Target Model
             </label>
-            <select
+            <CustomSelect
               value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs font-mono text-white focus:outline-none focus:border-blue-500 transition-colors"
-            >
-              {(activeProviderObj.models || []).map((mod) => (
-                <option key={mod} value={mod}>{mod}</option>
-              ))}
-            </select>
-            <p className="text-[11px] text-gray-500 mt-1.5 flex items-center justify-between font-mono">
-              <span>Speed: {activeProviderObj.tokensPerSec} t/s</span>
-              <span>Latency: {activeProviderObj.latency}</span>
+              onChange={setSelectedModel}
+              options={(activeProviderObj.models || []).map(m => ({ value: m, label: m }))}
+              placeholder="Select Target Model"
+              fontClass="font-mono"
+            />
+            <p className="text-[10px] text-gray-500 mt-2 flex items-center justify-between font-mono uppercase tracking-widest">
+              <span>SPEED: {activeProviderObj.tokensPerSec} T/S</span>
+              <span>LATENCY: {activeProviderObj.latency}</span>
             </p>
           </div>
-
-          {/* Prompt Template Selector */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              5. Prompt Template & Version
-            </label>
-            <select
-              value={selectedPrompt}
-              onChange={(e) => setSelectedPrompt(e.target.value)}
-              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
-            >
-              {prompts.map((p) => (
-                <option key={p.id} value={p.id}>{p.promptName} (v{p.version})</option>
-              ))}
-            </select>
-            <p className="text-[11px] text-gray-400 mt-1.5 line-clamp-2">
-              {activePromptObj?.description}
-            </p>
-          </div>
-
-          {/* RAG Notice */}
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-2.5">
-            <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-            <div className="text-[11px] text-gray-300">
-              <span className="font-semibold text-blue-400">RAG Enabled:</span> Company knowledge base policies & product feature matrices will be injected into context.
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isAnalyzing}
-            className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-          >
-            {isAnalyzing ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                <span>Running QA Analysis...</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-white" />
-                <span>Generate QA Report</span>
-              </>
-            )}
-          </button>
+          
+          {/* Spacer to push config up if needed, though h-fit handles it */}
         </div>
       </form>
     </div>

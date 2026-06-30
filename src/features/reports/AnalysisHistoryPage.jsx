@@ -16,10 +16,10 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
   });
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-200">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-[#1F2937] pb-6">
+    <div className="px-10 py-6 w-full space-y-6 animate-in fade-in duration-300">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] tracking-tight">
+          <h1 className="text-2xl font-semibold text-white tracking-wide">
             Analysis History
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -35,17 +35,17 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search ID, Agent, Model..."
-              className="w-full bg-[#111827] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors shadow-inner"
             />
           </div>
 
-          <div className="flex items-center bg-[#111827] border border-[#1F2937] rounded-xl p-1 text-xs">
+          <div className="flex items-center bg-black/20 border border-white/10 rounded-xl p-1 text-xs">
             {['ALL', 'Passed', 'Warning', 'Failed'].map(st => (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
-                  statusFilter === st ? 'bg-blue-600 text-white shadow font-semibold' : 'text-gray-400 hover:text-white'
+                className={`px-4 py-1.5 rounded-lg font-medium transition-all tracking-wide ${
+                  statusFilter === st ? 'bg-purple-600 text-white shadow-md' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 {st}
@@ -55,12 +55,12 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
         </div>
       </div>
 
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#0B1020] border-b border-[#1F2937] text-[11px] font-bold uppercase tracking-wider text-gray-400 font-mono">
-                <th className="py-3.5 px-6">Analysis ID</th>
+              <tr className="bg-black/20 border-b border-white/5 text-[11px] font-bold uppercase tracking-wider text-gray-400 font-mono">
+                <th className="py-4 px-6">Analysis ID</th>
                 <th className="py-3.5 px-6">Date & Time</th>
                 <th className="py-3.5 px-6">Agent Evaluated</th>
                 <th className="py-3.5 px-6">AI Model & Prompt</th>
@@ -69,10 +69,10 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
                 <th className="py-3.5 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1F2937]/80 text-xs">
+            <tbody className="divide-y divide-white/5 text-xs">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500 text-sm">
+                  <td colSpan={7} className="py-16 text-center text-gray-500 text-sm">
                     No historical analysis records found matching your filter.
                   </td>
                 </tr>
@@ -80,10 +80,10 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
                 filtered.map((item) => (
                   <tr 
                     key={item.analysisId}
-                    className="hover:bg-[#1F2937]/50 transition-colors cursor-pointer group"
+                    className="hover:bg-white/[0.04] transition-colors cursor-pointer group"
                     onClick={() => onSelectReport(item)}
                   >
-                    <td className="py-4 px-6 font-mono font-bold text-blue-400">
+                    <td className="py-4 px-6 font-mono font-bold text-purple-400">
                       {item.analysisId}
                     </td>
                     <td className="py-4 px-6 text-gray-300 whitespace-nowrap">
@@ -127,7 +127,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
                           e.stopPropagation();
                           onSelectReport(item);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#1F2937] hover:bg-blue-600 text-gray-300 hover:text-white transition-all text-[11px] font-semibold flex items-center gap-1.5 ml-auto"
+                        className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-purple-600 text-gray-300 hover:text-white hover:border-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all text-[11px] font-semibold flex items-center gap-1.5 ml-auto"
                       >
                         <Eye className="w-3 h-3" /> View Report
                       </button>
@@ -138,9 +138,9 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
             </tbody>
           </table>
         </div>
-        <div className="bg-[#0B1020] px-6 py-3 border-t border-[#1F2937] flex items-center justify-between text-[11px] text-gray-400 font-mono">
-          <span>Showing {filtered.length} of {history.length} records</span>
-          <span>Encrypted at rest (MongoDB + Mongoose)</span>
+        <div className="bg-black/20 px-6 py-4 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500 font-mono tracking-wider">
+          <span>SHOWING {filtered.length} OF {history.length} RECORDS</span>
+          <span>ENCRYPTED AT REST (MONGODB + MONGOOSE)</span>
         </div>
       </div>
     </div>
