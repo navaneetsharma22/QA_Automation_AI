@@ -7,6 +7,7 @@ import { PromptStudio } from './PromptStudio';
 import { AdminUsersManager } from './AdminUsersManager';
 import { AdminProjectsManager } from './AdminProjectsManager';
 import { GptTrainingStudio } from './GptTrainingStudio';
+import { AdminErrorTypesManager } from './AdminErrorTypesManager';
 
 export const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -116,6 +117,18 @@ export const AdminPanel = () => {
             <MessageSquare className="w-5 h-5" />
             GPT Examples
           </button>
+          
+          <button 
+            onClick={() => setActiveTab('errortypes')}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              activeTab === 'errortypes' 
+                ? 'bg-amber-600/10 text-amber-500 border border-amber-500/20' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1F2937]'
+            }`}
+          >
+            <ShieldAlert className="w-5 h-5" />
+            Error Types
+          </button>
           </aside>
 
         {/* Main Content */}
@@ -166,6 +179,10 @@ export const AdminPanel = () => {
 
             {activeTab === 'gpt' && (
               <GptTrainingStudio />
+            )}
+
+            {activeTab === 'errortypes' && (
+              <AdminErrorTypesManager />
             )}
           </div>
         </main>

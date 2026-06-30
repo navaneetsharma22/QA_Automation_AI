@@ -21,17 +21,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const errorTypeOptions = [
-  "AHT (Average Handle Time)",
-  "ART (Agent Response Time)",
-  "CRITICAL",
-  "MISLEADING",
-  "GRAMETICAL",
-  "WRONG IDENTIFICATION",
-  "Escalation Delay",
-  "In Progress",
-  "None"
-];
+
 
 const CopyButton = ({ text, className = "" }) => {
   const [copied, setCopied] = useState(false);
@@ -108,6 +98,7 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
 
 export const AnalysisResultPage = ({ report, onBack }) => {
   const { updateReport } = useQaStore();
+  const [errorTypes, setErrorTypes] = useState([]);
   
   const highestSeverity = report?.findings?.some(f => f.severity?.toLowerCase() === 'critical') ? 'CRITICAL' : 
                           report?.findings?.some(f => f.severity?.toLowerCase() === 'high') ? 'HIGH' :
@@ -119,12 +110,28 @@ export const AnalysisResultPage = ({ report, onBack }) => {
   const [agentName, setAgentName] = useState(report?.agentName || "");
 
   useEffect(() => {
+    const fetchErrorTypes = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+        const res = await fetch(`${apiUrl}/v1/errortypes`);
+        if (res.ok) {
+          const data = await res.json();
+          setErrorTypes(data || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch error types', err);
+      }
+    };
+    fetchErrorTypes();
+  }, []);
+
+  useEffect(() => {
     if (report) {
       setPetitionIdValue((report.petitionId || report.analysisId || "").replace(/^#+/, ''));
       setAgentName(report.agentName || "");
       setSelectedErrorType(report.errorType || highestSeverity);
     }
-  }, [report]);
+  }, [report, highestSeverity]);
 
   if (!report) return null;
 
@@ -579,12 +586,16 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               selectedErrorType === 'LOW' ? 'border-blue-500' : 'border-[#1F2937]'
             }`} 
           >
-            {(!errorTypeOptions.includes(selectedErrorType) && selectedErrorType) && (
+            {/* If the current value isn't in the dynamic list, show it anyway so we don't lose data */}
+            {selectedErrorType && !errorTypes.find(et => et.name === selectedErrorType) && (
               <option value={selectedErrorType}>{selectedErrorType}</option>
             )}
-            {errorTypeOptions.map(option => (
-              <option key={option} value={option}>{option}</option>
+            {errorTypes.map(et => (
+              <option key={et.id} value={et.name}>{et.name}</option>
             ))}
+            {errorTypes.length === 0 && (
+              <option value={selectedErrorType || "Loading..."}>{selectedErrorType || "Loading..."}</option>
+            )}
           </select>
         </div>
         <div className="space-y-2">

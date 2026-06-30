@@ -1,36 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Plus, Server, CheckCircle2, AlertTriangle, XCircle, Settings } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, Settings, AlertTriangle } from 'lucide-react';
 
-export const AdminRulesManager = () => {
-  const [rules, setRules] = useState([]);
+export const AdminErrorTypesManager = () => {
   const [errorTypes, setErrorTypes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
-  const [category, setCategory] = useState('');
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Edit Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedRuleId, setSelectedRuleId] = useState(null);
-  const [editCategory, setEditCategory] = useState('');
+  const [selectedErrorTypeId, setSelectedErrorTypeId] = useState(null);
+  const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const fetchData = async () => {
+  const fetchErrorTypes = async () => {
     try {
       setLoading(true);
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      
-      const res = await fetch(`${apiUrl}/v1/rules`);
-
-      if (!res.ok) throw new Error('Failed to fetch rules');
-
-      const rulesData = await res.json();
-      setRules(rulesData.rules || []);
-      
+      const res = await fetch(`${apiUrl}/v1/errortypes`);
+      if (!res.ok) throw new Error('Failed to fetch error types');
+      const data = await res.json();
+      setErrorTypes(data || []);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -39,12 +34,12 @@ export const AdminRulesManager = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchErrorTypes();
   }, []);
 
-  const handleAddRule = async (e) => {
+  const handleAddErrorType = async (e) => {
     e.preventDefault();
-    if (!category || !description) {
+    if (!name || !description) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -53,19 +48,22 @@ export const AdminRulesManager = () => {
       setIsSubmitting(true);
       
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      const res = await fetch(`${apiUrl}/v1/rules`, {
+      const res = await fetch(`${apiUrl}/v1/errortypes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category, description })
+        body: JSON.stringify({ name, description })
       });
 
-      if (!res.ok) throw new Error('Failed to save rule');
+      if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Failed to save error type');
+      }
 
-      toast.success('Category added to AI Reference Base successfully!');
+      toast.success('Error Type added successfully!');
       
-      setCategory('');
+      setName('');
       setDescription('');
-      fetchData();
+      fetchErrorTypes();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -73,9 +71,9 @@ export const AdminRulesManager = () => {
     }
   };
 
-  const handleUpdateRule = async (e) => {
+  const handleUpdateErrorType = async (e) => {
     e.preventDefault();
-    if (!editCategory || !editDescription) {
+    if (!editName || !editDescription) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -84,19 +82,19 @@ export const AdminRulesManager = () => {
       setIsUpdating(true);
       
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      const res = await fetch(`${apiUrl}/v1/rules/${selectedRuleId}`, {
+      const res = await fetch(`${apiUrl}/v1/errortypes/${selectedErrorTypeId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: editCategory, description: editDescription })
+        body: JSON.stringify({ name: editName, description: editDescription })
       });
 
-      if (!res.ok) throw new Error('Failed to update rule');
+      if (!res.ok) throw new Error('Failed to update error type');
 
-      toast.success('Category updated successfully!');
+      toast.success('Error Type updated successfully!');
       
       setIsEditModalOpen(false);
-      setSelectedRuleId(null);
-      fetchData();
+      setSelectedErrorTypeId(null);
+      fetchErrorTypes();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -104,79 +102,72 @@ export const AdminRulesManager = () => {
     }
   };
 
-  const handleEditClick = (rule) => {
-    setEditCategory(rule.category || rule.id);
-    setEditDescription(rule.description || JSON.stringify(rule.rules) || '');
-    setSelectedRuleId(rule.id);
+  const handleEditClick = (et) => {
+    setEditName(et.name);
+    setEditDescription(et.description);
+    setSelectedErrorTypeId(et.id);
     setIsEditModalOpen(true);
   };
 
-  const handleDeleteRule = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this rule?')) return;
+  const handleDeleteErrorType = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this error type? It might be in use by existing rules.')) return;
     
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      const res = await fetch(`${apiUrl}/v1/rules/${id}`, {
+      const res = await fetch(`${apiUrl}/v1/errortypes/${id}`, {
         method: 'DELETE'
       });
 
-      if (!res.ok) throw new Error('Failed to delete rule');
+      if (!res.ok) throw new Error('Failed to delete error type');
 
-      toast.success('Rule deleted successfully!');
-      if (isEditModalOpen && selectedRuleId === id) {
+      toast.success('Error Type deleted successfully!');
+      if (isEditModalOpen && selectedErrorTypeId === id) {
         setIsEditModalOpen(false);
-        setSelectedRuleId(null);
+        setSelectedErrorTypeId(null);
       }
-      fetchData();
+      fetchErrorTypes();
     } catch (err) {
       toast.error(err.message);
     }
-  };
-
-  const getSeverityBadge = (sev) => {
-    if (sev?.toLowerCase() === 'critical') return <span className="px-2 py-0.5 rounded text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30">CRITICAL</span>;
-    if (sev?.toLowerCase() === 'major') return <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">MAJOR</span>;
-    return <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">{sev?.toUpperCase()}</span>;
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
         <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-          <Server className="w-5 h-5 text-blue-400" />
-          AI Reference Base Manager
+          <AlertTriangle className="w-5 h-5 text-amber-500" />
+          Error Types (Severity) Manager
         </h2>
         <p className="text-sm text-gray-400 mb-6">
-          Categories added here are dynamically injected into the AI system prompt to guide how the LLM evaluates agents.
+          Define global error types (like MISLEADING, CRITICAL, AHT). These will be available in the dropdowns and injected into the AI system prompt to guide how the LLM evaluates agents.
         </p>
 
-        <form onSubmit={handleAddRule} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]/50">
+        <form onSubmit={handleAddErrorType} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]/50">
           <div className="md:col-span-4 space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category Name</label>
+            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Error Type Name</label>
             <select 
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-[#111827] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full bg-[#111827] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
             >
-              <option value="" disabled>Select Category...</option>
-              <option value="Random (Any Issue)">Random (Any Issue)</option>
-              <option value="Booking">Booking</option>
-              <option value="Cancellation">Cancellation</option>
-              <option value="Reschedule">Reschedule</option>
-              <option value="Refund">Refund</option>
-              <option value="Baggage">Baggage</option>
-              <option value="Check-in">Check-in</option>
-              <option value="Meal / Seat">Meal / Seat</option>
-              <option value="Visa / Travel Advisory">Visa / Travel Advisory</option>
-              <option value="Other">Other</option>
+              <option value="" disabled>Select Error Type</option>
+              <option value="AHT (Average Handle Time)">AHT (Average Handle Time)</option>
+              <option value="ART (Agent Response Time)">ART (Agent Response Time)</option>
+              <option value="CRITICAL">CRITICAL</option>
+              <option value="MISLEADING">MISLEADING</option>
+              <option value="GRAMMATICAL">GRAMMATICAL</option>
+              <option value="WRONG IDENTIFICATION">WRONG IDENTIFICATION</option>
+              <option value="Escalation Delay">Escalation Delay</option>
+              <option value="In Progress">In Progress</option>
+              <option value="None">None</option>
             </select>
           </div>
 
-          <div className="md:col-span-12 space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Evaluation Rules & Description</label>
+          <div className="md:col-span-8 space-y-2">
+            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Definition & Instruction</label>
             <textarea 
-              rows={3}
-              placeholder="Describe what the AI should check for (e.g. Ensure the agent informed the customer about the 20kg limit...)" 
+              rows={2}
+              placeholder="Describe exactly what constitutes this error so the AI categorizes it properly..." 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full bg-[#111827] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
@@ -192,7 +183,7 @@ export const AdminRulesManager = () => {
               {isSubmitting ? 'Saving...' : (
                 <>
                   <Plus className="w-4 h-4" />
-                  Add Category to Reference
+                  Add Error Type
                 </>
               )}
             </button>
@@ -204,40 +195,42 @@ export const AdminRulesManager = () => {
         <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
           <h3 className="text-base font-bold text-white flex items-center gap-2">
             <Settings className="w-4 h-4 text-emerald-400" />
-            Active Reference Rules ({rules.length})
+            Active Error Types ({errorTypes.length})
           </h3>
         </div>
         
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-8 text-center text-gray-400 text-sm">Loading active rules...</div>
+            <div className="p-8 text-center text-gray-400 text-sm">Loading error types...</div>
           ) : (
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-400 uppercase bg-[#0B1020] border-b border-[#1F2937]">
                 <tr>
-                  <th className="px-6 py-4 font-bold tracking-wider">Category</th>
-                  <th className="px-6 py-4 font-bold tracking-wider">Evaluation Description</th>
+                  <th className="px-6 py-4 font-bold tracking-wider">Name</th>
+                  <th className="px-6 py-4 font-bold tracking-wider">Definition</th>
                   <th className="px-6 py-4 font-bold tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1F2937]">
-                {rules.map((rule, idx) => (
-                  <tr key={rule.id || idx} className="hover:bg-[#0B1020]/50 transition-colors">
+                {errorTypes.map((et, idx) => (
+                  <tr key={et.id || idx} className="hover:bg-[#0B1020]/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-white">
-                      {rule.category || rule.id}
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                        {et.name}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-400 max-w-md truncate" title={rule.description || JSON.stringify(rule.rules)}>
-                      {rule.description || JSON.stringify(rule.rules) || "No specific rules provided."}
+                    <td className="px-6 py-4 text-gray-400 max-w-xl">
+                      {et.description}
                     </td>
                     <td className="px-6 py-4 text-right space-x-3">
                       <button 
-                        onClick={() => handleEditClick(rule)}
+                        onClick={() => handleEditClick(et)}
                         className="text-blue-400 hover:text-blue-300 font-medium text-xs uppercase"
                       >
                         Edit
                       </button>
                       <button 
-                        onClick={() => handleDeleteRule(rule.id)}
+                        onClick={() => handleDeleteErrorType(et.id)}
                         className="text-red-400 hover:text-red-300 font-medium text-xs uppercase"
                       >
                         Delete
@@ -245,10 +238,10 @@ export const AdminRulesManager = () => {
                     </td>
                   </tr>
                 ))}
-                {rules.length === 0 && (
+                {errorTypes.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
-                      No rules found in knowledge base.
+                    <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                      No error types found. Add one above.
                     </td>
                   </tr>
                 )}
@@ -265,7 +258,7 @@ export const AdminRulesManager = () => {
             <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Settings className="w-5 h-5 text-blue-400" />
-                Edit AI Reference Rule
+                Edit Error Type
               </h3>
               <button 
                 onClick={() => setIsEditModalOpen(false)}
@@ -275,33 +268,31 @@ export const AdminRulesManager = () => {
               </button>
             </div>
             
-            <form onSubmit={handleUpdateRule} className="p-6 space-y-6">
+            <form onSubmit={handleUpdateErrorType} className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category Name</label>
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Error Type Name</label>
                 <select 
-                  value={editCategory}
-                  onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full bg-[#0B1020] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
                 >
-                  <option value="" disabled>Select Category...</option>
-                  <option value="Random (Any Issue)">Random (Any Issue)</option>
-                  <option value="Booking">Booking</option>
-                  <option value="Cancellation">Cancellation</option>
-                  <option value="Reschedule">Reschedule</option>
-                  <option value="Refund">Refund</option>
-                  <option value="Baggage">Baggage</option>
-                  <option value="Check-in">Check-in</option>
-                  <option value="Meal / Seat">Meal / Seat</option>
-                  <option value="Visa / Travel Advisory">Visa / Travel Advisory</option>
-                  <option value="Other">Other</option>
+                  <option value="" disabled>Select Error Type</option>
+                  <option value="AHT (Average Handle Time)">AHT (Average Handle Time)</option>
+                  <option value="ART (Agent Response Time)">ART (Agent Response Time)</option>
+                  <option value="CRITICAL">CRITICAL</option>
+                  <option value="MISLEADING">MISLEADING</option>
+                  <option value="GRAMMATICAL">GRAMMATICAL</option>
+                  <option value="WRONG IDENTIFICATION">WRONG IDENTIFICATION</option>
+                  <option value="Escalation Delay">Escalation Delay</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="None">None</option>
                 </select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Evaluation Rules & Description</label>
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Definition & Instruction</label>
                 <textarea 
                   rows={4}
-                  placeholder="Describe what the AI should check for..." 
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   className="w-full bg-[#0B1020] border border-[#1F2937] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
@@ -324,7 +315,7 @@ export const AdminRulesManager = () => {
                   {isUpdating ? 'Updating...' : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Update Rule
+                      Update Error Type
                     </>
                   )}
                 </button>
