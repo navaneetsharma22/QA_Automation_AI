@@ -323,7 +323,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               {expectedArr.map((action, idx) => (
                 <li key={idx} className="flex items-start gap-2 break-words">
                   <span className="text-blue-400 mt-0.5 flex-shrink-0">•</span>
-                  <span>{action}</span>
+                  <span>{typeof action === 'object' ? JSON.stringify(action) : action}</span>
                 </li>
               ))}
             </ul>
@@ -390,9 +390,20 @@ export const AnalysisResultPage = ({ report, onBack }) => {
           <div className="mb-5">
             <h3 className="text-sm font-bold text-gray-300 mb-3">Conversation Timeline:</h3>
             <div className="bg-[#0B1020] rounded-xl p-4 border border-[#1F2937] space-y-1.5">
-              {aht.timeline.map((entry, idx) => (
-                <p key={idx} className="text-sm text-gray-400 font-mono">{entry}</p>
-              ))}
+              {aht.timeline.map((entry, idx) => {
+                let displayEntry = entry;
+                if (typeof entry === 'object' && entry !== null) {
+                  if (entry.start && entry.end && entry.duration_minutes !== undefined) {
+                    displayEntry = `${entry.start} → ${entry.end} — ${entry.duration_minutes} minutes`;
+                    if (entry.observation) displayEntry += ` (${entry.observation})`;
+                  } else {
+                    displayEntry = JSON.stringify(entry);
+                  }
+                }
+                return (
+                  <p key={idx} className="text-sm text-gray-400 font-mono">{displayEntry}</p>
+                );
+              })}
             </div>
           </div>
         )}
@@ -493,7 +504,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                   <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
                     {isPassed ? '✓' : '✗'}
                   </span>
-                  <span>{obs}</span>
+                  <span>{typeof obs === 'object' ? JSON.stringify(obs) : obs}</span>
                 </div>
               ))}
             </div>
