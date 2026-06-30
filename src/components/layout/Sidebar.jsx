@@ -19,7 +19,8 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
   const { user } = useAuthStore();
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'analyze', label: 'Analyze Chat', icon: MessageSquareCode },
+    { id: 'crm-chats', label: 'CRM Chats', icon: MessageSquareCode },
+    { id: 'analyze', label: 'Manual Analyze', icon: MessageSquareCode },
     { id: 'history', label: 'Analysis History', icon: History },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'prompts', label: 'Prompt Management', icon: Terminal },

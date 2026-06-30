@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQaStore } from '../../store/qaStore';
+import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
 import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const { analyzeChat, prompts, aiProviders } = useQaStore();
+  const { pendingTranscript, pendingCategory, setPendingAnalysis } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
   const activeProviders = aiProviders.filter(p => p.active);
@@ -16,9 +18,10 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedPrompt, setSelectedPrompt] = useState(prompts[0]?.id || 'p_1');
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('default');
+  const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchProjects = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -33,6 +36,21 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
     };
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (pendingTranscript) {
+      setConversationText(pendingTranscript);
+      
+      // Select the category if it matches one of our options
+      const validCategories = ['Booking', 'Cancellation', 'Reschedule', 'Refund', 'Baggage', 'Check-in', 'Meal / Seat', 'Visa / Travel Advisory', 'Other'];
+      if (pendingCategory && validCategories.includes(pendingCategory)) {
+         setSelectedCategory(pendingCategory);
+      }
+      
+      // Clear the store so it doesn't auto-fill again if they navigate away and back
+      setPendingAnalysis('', 'Auto-Detect');
+    }
+  }, [pendingTranscript, pendingCategory, setPendingAnalysis]);
 
   const activeProviderObj = activeProviders.find(p => p.id === selectedProvider) || activeProviders[0] || {};
   const activePromptObj = prompts.find(p => p.id === selectedPrompt) || prompts[0];
@@ -63,7 +81,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         activeProviderObj.name,
         selectedModel,
         `v${activePromptObj?.version || 1}`,
-        selectedProject
+        selectedProject,
+        selectedCategory
       );
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
@@ -143,10 +162,33 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </select>
           </div>
 
+          {/* Issue Category Selector */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+              2. Issue Category
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full bg-[#1F2937] border border-[#374151] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors mb-6"
+            >
+              <option value="Auto-Detect">Auto-Detect (Scan all rules)</option>
+              <option value="Booking">Booking</option>
+              <option value="Cancellation">Cancellation</option>
+              <option value="Reschedule">Reschedule</option>
+              <option value="Refund">Refund</option>
+              <option value="Baggage">Baggage</option>
+              <option value="Check-in">Check-in</option>
+              <option value="Meal / Seat">Meal / Seat</option>
+              <option value="Visa / Travel Advisory">Visa / Travel Advisory</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
           {/* AI Provider Selection */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              2. Select AI Model Provider
+              3. Select AI Model Provider
             </label>
             <div className="grid grid-cols-2 gap-2">
               {activeProviders.length === 0 && (
@@ -181,7 +223,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           {/* Specific Model Selector */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              3. Target Model
+              4. Target Model
             </label>
             <select
               value={selectedModel}
@@ -201,7 +243,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           {/* Prompt Template Selector */}
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
-              4. Prompt Template & Version
+              5. Prompt Template & Version
             </label>
             <select
               value={selectedPrompt}

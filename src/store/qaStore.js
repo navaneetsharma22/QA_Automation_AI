@@ -66,14 +66,14 @@ export const useQaStore = create(
     aiProviders: state.aiProviders.map(p => p.id === id ? { ...p, active: !p.active } : p)
   })),
 
-  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId) => {
+  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId, category) => {
     try {
       const startTime = Date.now();
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       const response = await fetch(`${apiUrl}/v1/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId })
+        body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId, category })
       });
 
       if (!response.ok) {

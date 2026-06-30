@@ -5,6 +5,7 @@ import { CommandPalette } from './components/layout/CommandPalette';
 import { AuthPage } from './features/auth/AuthPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { AnalyzeChatPage } from './features/analysis/AnalyzeChatPage';
+import { CrmChatsPage } from './features/chats/CrmChatsPage';
 import { AnalysisResultPage } from './features/reports/AnalysisResultPage';
 import { AnalysisHistoryPage } from './features/reports/AnalysisHistoryPage';
 import { ReportsPage } from './features/reports/ReportsPage';
@@ -58,6 +59,7 @@ const MainApp = () => {
 
         <main className="flex-1 overflow-y-auto pb-16">
           {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}
+          {activeTab === 'crm-chats' && <CrmChatsPage onAnalysisComplete={handleAnalysisComplete} />}
           {activeTab === 'analyze' && <AnalyzeChatPage onAnalysisComplete={handleAnalysisComplete} />}
           {activeTab === 'result' && <AnalysisResultPage report={viewingReport || currentReport} onBack={() => setActiveTab(resultSource)} />}
           {activeTab === 'history' && <AnalysisHistoryPage onSelectReport={handleInspectReport} />}
