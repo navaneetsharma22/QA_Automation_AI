@@ -108,29 +108,29 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         {/* Left 2 Cols: Chat Paste Area */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
+            <label className="text-xs font-semibold text-theme-text-secondary uppercase tracking-wider flex items-center gap-2">
               <MessageSquareCode className="w-4 h-4 text-blue-400" />
               <span>Customer – Agent Conversation Transcript</span>
             </label>
             <button
               type="button"
               onClick={() => setConversationText('')}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors font-mono"
+              className="text-xs text-theme-text-secondary/70 hover:text-theme-text-secondary transition-colors font-mono"
             >
               Clear text
             </button>
           </div>
 
-          <div className="relative bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden focus-within:border-purple-500/50 transition-colors shadow-2xl">
+          <div className="relative bg-[#150d1f] backdrop-blur-md rounded-3xl overflow-hidden transition-colors shadow-2xl">
             <textarea
               rows={14}
               required
               value={conversationText}
               onChange={(e) => setConversationText(e.target.value)}
               placeholder="Paste conversation transcript here...&#10;&#10;Customer: ...&#10;Agent: ..."
-              className="w-full bg-transparent p-6 text-sm text-gray-200 placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
+              className="w-full bg-transparent p-6 text-sm text-theme-text-primary placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
             />
-            <div className="bg-black/20 px-6 py-3 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500 font-mono tracking-wider">
+            <div className="bg-[#1d132a] px-6 py-3 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
               <span>{conversationText.length} CHARACTERS</span>
               <span>AUTO-DETECTING MARKDOWN & METADATA</span>
             </div>
@@ -139,9 +139,9 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           {/* Moved RAG Notice and Submit Button */}
           <div className="flex flex-col gap-4 pt-2 w-full">
             {/* RAG Notice */}
-            <div className="p-4 bg-purple-500/5 border border-purple-500/20 rounded-xl flex items-start gap-3 w-full">
-              <Sparkles className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
-              <div className="text-[11px] text-gray-400 leading-relaxed">
+            <div className="p-4 bg-theme-accent-yellow/5 rounded-xl flex items-start gap-3 w-full">
+              <Sparkles className="w-4 h-4 text-theme-accent-yellow shrink-0 mt-0.5" />
+              <div className="text-[11px] text-theme-text-secondary leading-relaxed">
                 <span className="font-semibold text-purple-300">RAG Enabled:</span> Company knowledge base policies & product feature matrices will be injected into context.
               </div>
             </div>
@@ -149,11 +149,11 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             <button
               type="submit"
               disabled={isAnalyzing}
-              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-semibold rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
+              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
             >
               {isAnalyzing ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-theme-text-primary" />
                   <span>Running QA Analysis...</span>
                 </>
               ) : (
@@ -167,15 +167,15 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-white/[0.03] backdrop-blur-md p-6 rounded-3xl border border-white/10 h-fit shadow-2xl">
-          <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2 pb-4 border-b border-white/10 tracking-wide">
-            <Layers className="w-4 h-4 text-purple-400" />
+        <div className="space-y-6 bg-[#150d1f] backdrop-blur-md p-6 rounded-3xl h-fit shadow-2xl">
+          <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
+            <Layers className="w-4 h-4 text-theme-accent-yellow" />
             <span>AI Engine Configuration</span>
           </h2>
 
           {/* Project Template Selector */}
           <div className="mb-6">
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               1. Project Report Layout
             </label>
             <CustomSelect
@@ -191,7 +191,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
 
           {/* Issue Category Selector */}
           <div className="mb-6">
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               2. Issue Category
             </label>
             <CustomSelect
@@ -215,12 +215,12 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
 
           {/* AI Provider Selection */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-2">
               3. Select AI Model Provider
             </label>
             <div className="grid grid-cols-2 gap-2">
               {activeProviders.length === 0 && (
-                <div className="col-span-2 text-xs text-red-400 p-2 text-center bg-red-500/10 rounded-xl border border-red-500/20">
+                <div className="col-span-2 text-xs text-red-400 p-2 text-center bg-red-500/10 rounded-xl">
                   No AI providers are currently enabled. Please enable one in Settings.
                 </div>
               )}
@@ -231,17 +231,17 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
                     key={provider.id}
                     type="button"
                     onClick={() => handleProviderChange(provider.id)}
-                    className={`p-3 rounded-xl border text-left transition-all duration-300 flex flex-col gap-1.5 ${
+                    className={`p-3 rounded-xl border border-transparent text-left transition-all duration-300 flex flex-col gap-1.5 ${
                       isSelected
-                        ? 'bg-gradient-to-br from-[#3b2a45]/80 to-[#251b2e]/40 border-purple-500/50 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                        : 'bg-black/20 border-white/5 text-gray-400 hover:border-white/10 hover:text-gray-200'
+                        ? 'bg-gradient-to-br from-[#3b2a45]/80 to-[#251b2e]/40 text-theme-text-primary shadow-[0_0_15px_rgba(168,85,247,0.15)]'
+                        : 'bg-[#110918] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a]'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="text-xs font-semibold tracking-wide">{provider.name}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-purple-400" />}
+                      {isSelected && <Check className="w-3.5 h-3.5 text-theme-accent-yellow" />}
                     </div>
-                    <span className="text-[10px] text-gray-500 truncate font-mono uppercase">{provider.badge}</span>
+                    <span className="text-[10px] text-theme-text-secondary/70 truncate font-mono uppercase">{provider.badge}</span>
                   </button>
                 );
               })}
@@ -250,7 +250,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
 
           {/* Specific Model Selector */}
           <div className="mb-6">
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               4. Target Model
             </label>
             <CustomSelect
@@ -260,7 +260,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               placeholder="Select Target Model"
               fontClass="font-mono"
             />
-            <p className="text-[10px] text-gray-500 mt-2 flex items-center justify-between font-mono uppercase tracking-widest">
+            <p className="text-[10px] text-theme-text-secondary/70 mt-2 flex items-center justify-between font-mono uppercase tracking-widest">
               <span>SPEED: {activeProviderObj.tokensPerSec} T/S</span>
               <span>LATENCY: {activeProviderObj.latency}</span>
             </p>

@@ -190,71 +190,71 @@ export const AdminUsersManager = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-theme-text-primary mb-2 flex items-center gap-2">
           <Shield className="w-5 h-5 text-indigo-400" />
           User Account Management
         </h2>
-        <p className="text-sm text-gray-400 mb-6">
+        <p className="text-sm text-theme-text-secondary mb-6">
           Public registration is disabled. Use this form to securely provision new analyst accounts.
         </p>
 
         <form onSubmit={handleCreateUser} className="max-w-xl space-y-5 bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]/50">
           
           <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               Full Name
             </label>
             <div className="relative">
-              <User className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+              <User className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Jane Doe"
-                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               Gmail / Work Email
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+              <Mail className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               Temporary Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+              <Lock className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter a secure password..."
-                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-[#1F2937] border border-[#374151] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
               />
             </div>
           </div>
 
           {/* Sidebar Access Checkboxes */}
           <div>
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
+            <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+              <LayoutDashboard className="w-3.5 h-3.5 text-theme-text-secondary" />
               Module Access Permissions
             </label>
             <div className="grid grid-cols-2 gap-3 bg-[#1F2937]/50 p-4 rounded-xl border border-[#374151]/50">
@@ -272,7 +272,7 @@ export const AdminUsersManager = () => {
                     }}
                     className="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 bg-gray-700 transition-colors"
                   />
-                  <span className="text-sm text-gray-300 group-hover:text-white transition-colors select-none">{mod.label}</span>
+                  <span className="text-sm text-theme-text-secondary group-hover:text-theme-text-primary transition-colors select-none">{mod.label}</span>
                 </label>
               ))}
             </div>
@@ -282,7 +282,7 @@ export const AdminUsersManager = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-150 shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-theme-text-primary font-semibold py-3 rounded-xl text-sm transition-all duration-150 shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isSubmitting ? 'Provisioning...' : (
                 <>
@@ -297,17 +297,17 @@ export const AdminUsersManager = () => {
       </div>
 
       <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-theme-text-primary mb-6 flex items-center gap-2">
           <Users className="w-5 h-5 text-blue-400" />
           Active Analysts ({users.length})
         </h2>
         
         <div className="overflow-x-auto rounded-xl border border-[#1F2937]">
           {loading ? (
-            <div className="p-8 text-center text-gray-400 text-sm">Loading users...</div>
+            <div className="p-8 text-center text-theme-text-secondary text-sm">Loading users...</div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="text-xs text-gray-400 uppercase bg-[#0B1020] border-b border-[#1F2937]">
+              <thead className="text-xs text-theme-text-secondary uppercase bg-[#0B1020] border-b border-[#1F2937]">
                 <tr>
                   <th className="px-6 py-4 font-bold tracking-wider">Full Name</th>
                   <th className="px-6 py-4 font-bold tracking-wider">Email</th>
@@ -319,13 +319,13 @@ export const AdminUsersManager = () => {
               <tbody className="divide-y divide-[#1F2937]">
                 {users.map((user) => (
                   <tr key={user.id} className="hover:bg-[#0B1020]/50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-white uppercase">
+                    <td className="px-6 py-4 font-medium text-theme-text-primary flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xs font-bold text-theme-text-primary uppercase">
                         {user.fullName.charAt(0)}
                       </div>
                       {user.fullName}
                     </td>
-                    <td className="px-6 py-4 text-gray-400">
+                    <td className="px-6 py-4 text-theme-text-secondary">
                       {user.email}
                     </td>
                     <td className="px-6 py-4">
@@ -375,7 +375,7 @@ export const AdminUsersManager = () => {
                 ))}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan="5" className="px-6 py-8 text-center text-theme-text-secondary/70">
                       No users found.
                     </td>
                   </tr>
@@ -391,13 +391,13 @@ export const AdminUsersManager = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#111827] border border-[#1F2937] rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-theme-text-primary flex items-center gap-2">
                 <Edit className="w-5 h-5 text-indigo-400" />
                 Edit User Details
               </h3>
               <button 
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
+                className="text-theme-text-secondary hover:text-theme-text-primary p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -405,57 +405,57 @@ export const AdminUsersManager = () => {
             
             <form onSubmit={handleUpdateUser} className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+                  <User className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     required
                     value={editFullName}
                     onChange={(e) => setEditFullName(e.target.value)}
-                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+                  <Mail className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
                   <input
                     type="email"
                     required
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
-                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
                   New Password (Optional)
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+                  <Lock className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-3.5" />
                   <input
                     type="text"
                     value={editPassword}
                     onChange={(e) => setEditPassword(e.target.value)}
                     placeholder="Leave blank to keep unchanged"
-                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl pl-10 pr-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Edit Sidebar Access Checkboxes */}
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <LayoutDashboard className="w-3.5 h-3.5 text-gray-400" />
+                <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <LayoutDashboard className="w-3.5 h-3.5 text-theme-text-secondary" />
                   Module Access Permissions
                 </label>
                 <div className="grid grid-cols-2 gap-3 bg-[#0B1020]/50 p-4 rounded-xl border border-[#1F2937]">
@@ -473,7 +473,7 @@ export const AdminUsersManager = () => {
                         }}
                         className="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900 bg-gray-700 transition-colors"
                       />
-                      <span className="text-sm text-gray-300 group-hover:text-white transition-colors select-none">{mod.label}</span>
+                      <span className="text-sm text-theme-text-secondary group-hover:text-theme-text-primary transition-colors select-none">{mod.label}</span>
                     </label>
                   ))}
                 </div>
@@ -483,14 +483,14 @@ export const AdminUsersManager = () => {
                 <button 
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-white font-medium rounded-xl transition-all border border-[#1F2937]"
+                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-theme-text-primary font-medium rounded-xl transition-all border border-[#1F2937]"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={isUpdating}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(79,70,229,0.2)]"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(79,70,229,0.2)]"
                 >
                   {isUpdating ? 'Saving...' : (
                     <>
@@ -510,21 +510,21 @@ export const AdminUsersManager = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#111827] border border-red-900/50 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-theme-text-primary flex items-center gap-2">
                 <Trash2 className="w-5 h-5 text-red-500" />
                 Confirm Deletion
               </h3>
               <button 
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
+                className="text-theme-text-secondary hover:text-theme-text-primary p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
             
             <div className="p-6">
-              <p className="text-sm text-gray-300 mb-6">
-                Are you sure you want to permanently delete <strong className="text-white">{userToDelete?.fullName}</strong> ({userToDelete?.email})? 
+              <p className="text-sm text-theme-text-secondary mb-6">
+                Are you sure you want to permanently delete <strong className="text-theme-text-primary">{userToDelete?.fullName}</strong> ({userToDelete?.email})? 
                 This action cannot be undone.
               </p>
 
@@ -532,14 +532,14 @@ export const AdminUsersManager = () => {
                 <button 
                   type="button"
                   onClick={() => setIsDeleteModalOpen(false)}
-                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-white font-medium rounded-xl transition-all border border-[#1F2937]"
+                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-theme-text-primary font-medium rounded-xl transition-all border border-[#1F2937]"
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={confirmDeleteUser}
                   disabled={isDeleting}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)]"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(220,38,38,0.2)]"
                 >
                   {isDeleting ? 'Deleting...' : (
                     <>

@@ -2,9 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+:root, [data-theme="dark"] {
+  --theme-bg-main: #0a0612;
+  --theme-bg-card: #150d1f;
+  --theme-bg-card-hover: #1d132a;
+  --theme-bg-input: #110918;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #9ca3af;
+  --theme-border: transparent;
+  --theme-accent-yellow: #fbbf24;
+}
+
+[data-theme="light"] {
+  /* User will define light mode colors later. Mirroring dark for now so UI doesn't break if toggled early. */
+  --theme-bg-main: #0a0612;
+  --theme-bg-card: rgba(255, 255, 255, 0.03);
+  --theme-bg-card-hover: rgba(255, 255, 255, 0.06);
+  --theme-bg-input: rgba(0, 0, 0, 0.2);
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #9ca3af;
+  --theme-border: transparent;
+  --theme-accent-yellow: #fbbf24;
+}
+
 html, body, #root {
   margin: 0;
   padding: 0;
-  background-color: #0a0612;
+  background-color: var(--theme-bg-main);
+  color: var(--theme-text-primary);
   min-height: 100vh;
 }

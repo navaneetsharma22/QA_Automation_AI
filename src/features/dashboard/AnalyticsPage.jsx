@@ -60,7 +60,7 @@ export const AnalyticsPage = () => {
       <div className="flex items-center justify-end gap-4 pb-2">
         <div className="flex items-center gap-2">
           
-          <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 mr-2">
+          <div className="flex bg-[#150d1f] rounded-xl p-1 mr-2">
             <button
               onClick={() => {
                 if (filterMode !== 'specific') {
@@ -71,8 +71,8 @@ export const AnalyticsPage = () => {
               }}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'specific' 
-                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
-                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                  ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
               }`}
             >
               Specific Day
@@ -87,8 +87,8 @@ export const AnalyticsPage = () => {
               }}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'range' 
-                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
-                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                  ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
               }`}
             >
               Date Range
@@ -103,7 +103,7 @@ export const AnalyticsPage = () => {
 
           {filterMode === 'range' && (
             <>
-              <span className="text-gray-500 text-sm font-medium">to</span>
+              <span className="text-theme-text-secondary/70 text-sm font-medium">to</span>
               <CustomDatePicker
                 value={endDate}
                 onChange={setEndDate}
@@ -114,11 +114,12 @@ export const AnalyticsPage = () => {
           
           <button
             onClick={() => {
-              const today = new Date().toISOString().split('T')[0];
+              const d = new Date();
+              const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
               setStartDate(today);
               if (filterMode === 'range') setEndDate(today);
             }}
-            className="px-3 py-2 bg-white/5 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
+            className="px-3 py-2 bg-[#1d132a] hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
           >
             Today
           </button>
@@ -129,7 +130,7 @@ export const AnalyticsPage = () => {
                 setStartDate('');
                 setEndDate('');
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               title="Clear Filter"
             >
               <X className="w-3.5 h-3.5" />
@@ -140,7 +141,7 @@ export const AnalyticsPage = () => {
 
         <button 
           onClick={() => toast.success('Exported analytics summary')}
-          className="px-4 py-2.5 bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg transition-all"
+          className="px-4 py-2.5 bg-[#1d132a] hover:border-white/20 hover:bg-[#1d132a] text-theme-text-primary text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg transition-all"
         >
           <Download className="w-4 h-4" /> Export Analytics Report
         </button>
@@ -148,54 +149,54 @@ export const AnalyticsPage = () => {
 
       {/* Analytics KPI bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:bg-white/[0.04] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
+        <div className="bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
           <div>
-            <span className="text-xs text-gray-400">{startDate ? 'Total Inquiries (Filtered)' : 'Total Monthly Inquiries'}</span>
-            <span className="text-3xl font-semibold text-white tracking-wide mt-1 block">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
+            <span className="text-xs text-theme-text-secondary">{startDate ? 'Total Inquiries (Filtered)' : 'Total Monthly Inquiries'}</span>
+            <span className="text-3xl font-semibold text-theme-text-primary tracking-wide mt-1 block">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
           </div>
-          <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"><BarChart3 className="w-6 h-6" /></div>
+          <div className="p-3 bg-theme-accent-yellow/10 rounded-2xl text-theme-accent-yellow group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"><BarChart3 className="w-6 h-6" /></div>
         </div>
 
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:bg-white/[0.04] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
+        <div className="bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
           <div>
-            <span className="text-xs text-gray-400">Average Inference Latency</span>
-            <span className="text-3xl font-semibold text-purple-400 tracking-wide mt-1 block">{kpis.averageAiResponseTime}</span>
+            <span className="text-xs text-theme-text-secondary">Average Inference Latency</span>
+            <span className="text-3xl font-semibold text-theme-accent-yellow tracking-wide mt-1 block">{kpis.averageAiResponseTime}</span>
           </div>
-          <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"><Clock className="w-6 h-6" /></div>
+          <div className="p-3 bg-theme-accent-yellow/10 rounded-2xl text-theme-accent-yellow group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"><Clock className="w-6 h-6" /></div>
         </div>
 
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:bg-white/[0.04] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
+        <div className="bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
           <div>
-            <span className="text-xs text-gray-400">Misleading Detection Rate</span>
+            <span className="text-xs text-theme-text-secondary">Misleading Detection Rate</span>
             <span className="text-3xl font-semibold text-amber-400 tracking-wide mt-1 block">{kpis.misleadingPercentage}%</span>
           </div>
-          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 border border-amber-500/20 group-hover:shadow-[0_0_15px_rgba(251,191,36,0.2)] transition-all"><AlertTriangle className="w-6 h-6" /></div>
+          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 group-hover:shadow-[0_0_15px_rgba(251,191,36,0.2)] transition-all"><AlertTriangle className="w-6 h-6" /></div>
         </div>
       </div>
 
       {/* Issue Category Breakdown */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-300 mb-4 tracking-widest uppercase">Issue Category Breakdown</h2>
+        <h2 className="text-sm font-semibold text-theme-text-secondary mb-4 tracking-widest uppercase">Issue Category Breakdown</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Critical', value: kpis.criticalCount, icon: Zap, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', glow: 'rgba(239,68,68,0.2)' },
             { label: 'Misleading', value: kpis.misleadingCount, icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', glow: 'rgba(245,158,11,0.2)' },
             { label: 'Wrong Identification', value: kpis.wrongIdentificationCount, icon: XCircle, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20', glow: 'rgba(244,63,94,0.2)' },
             { label: 'Grammatical', value: kpis.grammaticalCount, icon: Tag, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', glow: 'rgba(59,130,246,0.2)' },
-            { label: 'AHT (Avg Handle Time)', value: kpis.ahtCount, icon: Timer, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20', glow: 'rgba(168,85,247,0.2)' },
+            { label: 'AHT (Avg Handle Time)', value: kpis.ahtCount, icon: Timer, color: 'text-theme-accent-yellow', bg: 'bg-theme-accent-yellow/10', border: 'border-theme-accent-yellow/20', glow: 'rgba(168,85,247,0.2)' },
             { label: 'ART (Agent Response)', value: kpis.artCount, icon: Activity, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', glow: 'rgba(6,182,212,0.2)' },
             { label: 'Escalation Delay', value: kpis.escalationDelayCount, icon: GitMerge, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', glow: 'rgba(249,115,22,0.2)' },
             { label: 'In Progress', value: kpis.inProgressCount, icon: MessageCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', glow: 'rgba(16,185,129,0.2)' },
           ].map((card, idx) => (
             <div
               key={idx}
-              className={`bg-white/[0.03] backdrop-blur-md border ${card.border} hover:bg-white/[0.05] p-5 rounded-2xl flex items-center justify-between shadow-xl transition-all group`}
+              className={`bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-5 rounded-2xl flex items-center justify-between shadow-xl transition-all group`}
             >
               <div>
-                <span className="text-xs text-gray-400 leading-tight block">{card.label}</span>
+                <span className="text-xs text-theme-text-secondary leading-tight block">{card.label}</span>
                 <span className={`text-2xl font-bold tracking-tight mt-1 block ${card.color}`}>{card.value ?? 0}</span>
               </div>
-              <div className={`p-3 ${card.bg} rounded-2xl ${card.color} border ${card.border} group-hover:shadow-[0_0_15px_${card.glow}] transition-all`}>
+              <div className={`p-3 ${card.bg} rounded-2xl ${card.color} border ${card.border} transition-all group-hover:shadow-[0_0_15px_var(--hover-glow)]`} style={{ '--hover-glow': card.glow }}>
                 <card.icon className="w-5 h-5" />
               </div>
             </div>
@@ -205,15 +206,15 @@ export const AnalyticsPage = () => {
 
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 p-6 rounded-2xl h-96 flex flex-col shadow-2xl transition-all">
-          <h3 className="text-sm font-semibold text-white mb-4 tracking-wide">Multi-LLM Inference Velocity (Tokens/Sec)</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-6 rounded-2xl h-96 flex flex-col shadow-2xl transition-all">
+          <h3 className="text-sm font-semibold text-theme-text-primary mb-4 tracking-wide">Multi-LLM Inference Velocity (Tokens/Sec)</h3>
           <div className="flex-1 min-h-0">
             <Bar data={modelSpeedData} options={chartOptions} />
           </div>
         </div>
 
-        <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 p-6 rounded-2xl h-96 flex flex-col shadow-2xl transition-all">
-          <h3 className="text-sm font-semibold text-white mb-4 tracking-wide">RAG Grounded Factual Accuracy (%)</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md border border-transparent hover:bg-[#1d132a] p-6 rounded-2xl h-96 flex flex-col shadow-2xl transition-all">
+          <h3 className="text-sm font-semibold text-theme-text-primary mb-4 tracking-wide">RAG Grounded Factual Accuracy (%)</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyAccuracyData} options={chartOptions} />
           </div>

@@ -68,13 +68,13 @@ export const DashboardPage = ({ onNavigate }) => {
     { label: 'Successful', value: kpis.successfulAnalysis.toLocaleString(), icon: CheckCircle2, change: '+9.1% (0.4%)', up: true, color: 'text-emerald-400' },
     { label: 'Failed QA', value: kpis.failedAnalysis.toLocaleString(), icon: XCircle, change: '-3.2% (0.1%)', up: false, color: 'text-red-400' },
     { label: 'Misleading %', value: `${kpis.misleadingPercentage}%`, icon: AlertTriangle, change: '-1.8% (0.2%)', up: false, color: 'text-amber-400' },
-    { label: 'Avg QA Score', value: `${kpis.averageQaScore}`, icon: TrendingUp, change: '+4 pts (1.2%)', up: true, color: 'text-purple-400' },
+    { label: 'Avg QA Score', value: `${kpis.averageQaScore}`, icon: TrendingUp, change: '+4 pts (1.2%)', up: true, color: 'text-theme-accent-yellow' },
     { label: 'Avg Latency', value: kpis.averageAiResponseTime, icon: Clock, change: '-45ms (2.1%)', up: true, color: 'text-indigo-400' },
     { label: 'Reports', value: kpis.totalReportsGenerated.toLocaleString(), icon: FileText, change: '+12.4% (0.7%)', up: true, color: 'text-cyan-400' },
     { label: 'Prompts', value: kpis.totalPromptTemplates, icon: Terminal, change: '+1 active', up: true, color: 'text-blue-400' },
     { label: 'Knowledge Base', value: kpis.knowledgeBaseDocuments, icon: BookOpen, change: '+2 synced', up: true, color: 'text-emerald-400' },
     { label: 'Daily Volume', value: kpis.dailyAnalysis, icon: Calendar, change: '+8 today', up: true, color: 'text-amber-400' },
-    { label: 'Weekly Volume', value: kpis.weeklyAnalysis, icon: CalendarDays, change: '+42 this wk', up: true, color: 'text-purple-400' },
+    { label: 'Weekly Volume', value: kpis.weeklyAnalysis, icon: CalendarDays, change: '+42 this wk', up: true, color: 'text-theme-accent-yellow' },
     { label: 'Monthly Volume', value: kpis.monthlyAnalysis.toLocaleString(), icon: CalendarRange, change: '+180 this mo', up: true, color: 'text-blue-400' },
   ];
 
@@ -275,7 +275,7 @@ export const DashboardPage = ({ onNavigate }) => {
       <div className="flex items-center justify-end gap-4 pb-2">
         <div className="flex items-center gap-2">
           
-          <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 mr-2">
+          <div className="flex bg-[#150d1f] rounded-xl p-1 mr-2">
             <button
               onClick={() => {
                 if (filterMode !== 'specific') {
@@ -286,8 +286,8 @@ export const DashboardPage = ({ onNavigate }) => {
               }}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'specific' 
-                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
-                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                  ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
               }`}
             >
               Specific Day
@@ -302,8 +302,8 @@ export const DashboardPage = ({ onNavigate }) => {
               }}
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'range' 
-                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
-                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                  ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
               }`}
             >
               Date Range
@@ -318,7 +318,7 @@ export const DashboardPage = ({ onNavigate }) => {
 
           {filterMode === 'range' && (
             <>
-              <span className="text-gray-500 text-sm font-medium">to</span>
+              <span className="text-theme-text-secondary/70 text-sm font-medium">to</span>
               <CustomDatePicker
                 value={endDate}
                 onChange={setEndDate}
@@ -329,11 +329,12 @@ export const DashboardPage = ({ onNavigate }) => {
           
           <button
             onClick={() => {
-              const today = new Date().toISOString().split('T')[0];
+              const d = new Date();
+              const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
               setStartDate(today);
               if (filterMode === 'range') setEndDate(today);
             }}
-            className="px-3 py-2 bg-white/5 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
+            className="px-3 py-2 bg-[#1d132a] hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
           >
             Today
           </button>
@@ -359,17 +360,17 @@ export const DashboardPage = ({ onNavigate }) => {
         
         {/* Left Col: Main Banner & CTA */}
         <div className="col-span-1 flex flex-col gap-6">
-          <div className="bg-gradient-to-br from-[#2a1b38]/80 to-[#1a1224]/80 backdrop-blur-xl h-full w-full p-8 rounded-3xl border border-purple-500/20 shadow-2xl relative overflow-hidden flex flex-col justify-center group">
+          <div className="bg-gradient-to-br from-[#2a1b38]/80 to-[#1a1224]/80 backdrop-blur-xl h-full w-full p-8 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            <h3 className="text-gray-300 text-sm font-medium mb-2">Total Chats Analyzed</h3>
+            <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
             <div className="flex items-end gap-3">
-              <span className="text-4xl lg:text-5xl font-medium text-white tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
+              <span className="text-4xl lg:text-5xl font-medium text-theme-text-primary tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
             </div>
             <div className="mt-8 flex items-center justify-between">
-              <span className="text-xs text-gray-400">Enterprise QA Platform</span>
+              <span className="text-xs text-theme-text-secondary">Enterprise QA Platform</span>
               <button 
                 onClick={() => setIsInsightsOpen(true)}
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#d946ef] text-white text-xs font-semibold shadow-[0_0_20px_rgba(217,70,239,0.3)] hover:shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2"
+                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#d946ef] text-theme-text-primary text-xs font-semibold shadow-[0_0_20px_rgba(217,70,239,0.3)] hover:shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Explore AI Insights
@@ -381,8 +382,8 @@ export const DashboardPage = ({ onNavigate }) => {
         {/* Right Col: KPI Grid (Like Helios "My Portfolio") */}
         <div className="col-span-1 xl:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm text-gray-200 font-medium tracking-wide">Key Metrics</h2>
-            <button className="px-4 py-1.5 rounded-full border border-white/10 text-xs text-gray-300 hover:bg-white/5 transition-colors flex items-center gap-1.5">
+            <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Key Metrics</h2>
+            <button className="px-4 py-1.5 rounded-full text-xs text-theme-text-secondary hover:bg-[#1d132a] transition-colors flex items-center gap-1.5">
               See all <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
@@ -390,18 +391,18 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl p-5 hover:bg-white/[0.06] transition-all shadow-xl flex flex-col"
+                className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-5 hover:bg-[#1d132a] transition-all shadow-xl flex flex-col"
               >
-                <span className="text-white text-xl font-semibold mb-1 tracking-tight">{kpi.value}</span>
+                <span className="text-theme-text-primary text-xl font-semibold mb-1 tracking-tight">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
                   {kpi.change}
                 </span>
                 
                 <div className="mt-8 flex items-center justify-between">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-gray-300 shadow-sm">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-theme-text-secondary shadow-sm">
                     <kpi.icon className="w-4 h-4" />
                   </div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{kpi.label}</span>
+                  <span className="text-[10px] text-theme-text-secondary font-bold uppercase tracking-widest">{kpi.label}</span>
                 </div>
               </div>
             ))}
@@ -412,16 +413,16 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Main Chart Section (Like Helios "Portfolio Performance") */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm text-gray-200 font-medium tracking-wide">Daily Volume Performance</h2>
+          <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Daily Volume Performance</h2>
           <div className="flex gap-2">
             {['1D', '1W', '1M', '6M', '1Y'].map((t) => (
-              <button key={t} className={`w-8 h-8 rounded-full text-[10px] font-medium flex items-center justify-center transition-colors ${t === '1D' ? 'bg-[#2a2a2e] text-white border border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.5)]' : 'text-gray-500 hover:text-gray-300'}`}>
+              <button key={t} className={`w-8 h-8 rounded-full text-[10px] font-medium flex items-center justify-center transition-colors ${t === '1D' ? 'bg-[#2a2a2e] text-theme-text-primary shadow-[0_0_15px_rgba(0,0,0,0.5)]' : 'text-theme-text-secondary/70 hover:text-theme-text-secondary'}`}>
                 {t}
               </button>
             ))}
           </div>
         </div>
-        <div className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl h-96 flex flex-col relative overflow-hidden group">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-96 flex flex-col relative overflow-hidden group">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-pink-500/5 blur-[100px] pointer-events-none" />
           <div className="flex-1 min-h-0 relative z-10 mt-4">
             <Line data={dailyTrendData} options={defaultChartOptions} />
@@ -432,39 +433,39 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Additional Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* Weekly Trend */}
-        <div className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
-          <h3 className="text-sm font-medium text-gray-200 mb-6">Weekly Quality Trend</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+          <h3 className="text-sm font-medium text-theme-text-primary mb-6">Weekly Quality Trend</h3>
           <div className="flex-1 min-h-0">
             <Bar data={weeklyTrendData} options={{ ...defaultChartOptions, scales: { ...defaultChartOptions.scales, x: { ...defaultChartOptions.scales.x, stacked: true }, y: { ...defaultChartOptions.scales.y, stacked: true } } }} />
           </div>
         </div>
 
         {/* Monthly Trend */}
-        <div className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
-          <h3 className="text-sm font-medium text-gray-200 mb-6">Monthly Score Averages</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+          <h3 className="text-sm font-medium text-theme-text-primary mb-6">Monthly Score Averages</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyTrendData} options={defaultChartOptions} />
           </div>
         </div>
 
         {/* Issue Distribution */}
-        <div className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
-          <h3 className="text-sm font-medium text-gray-200 mb-6">Issue Category Watchlist</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+          <h3 className="text-sm font-medium text-theme-text-primary mb-6">Issue Category Watchlist</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <span className="text-xs text-gray-400 font-semibold tracking-widest uppercase">Issues</span>
+              <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Issues</span>
             </div>
           </div>
         </div>
 
         {/* AI Model Usage */}
-        <div className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
-          <h3 className="text-sm font-medium text-gray-200 mb-6">Model Distribution Portfolio</h3>
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+          <h3 className="text-sm font-medium text-theme-text-primary mb-6">Model Distribution Portfolio</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <span className="text-xs text-gray-400 font-semibold tracking-widest uppercase">Models</span>
+              <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Models</span>
             </div>
           </div>
         </div>
@@ -477,46 +478,46 @@ export const DashboardPage = ({ onNavigate }) => {
           onClick={() => setIsInsightsOpen(false)}
         >
           <div 
-            className="absolute top-0 right-0 w-[450px] max-w-full h-full bg-[#0c0514]/90 backdrop-blur-3xl border-l border-white/10 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in slide-in-from-right duration-300"
+            className="absolute top-0 right-0 w-[450px] max-w-full h-full bg-theme-main/90 backdrop-blur-3xl border-l border-theme-border shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in slide-in-from-right duration-300"
             onClick={e => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+            <div className="p-6 flex items-center justify-between bg-[#150d1f]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                  <Sparkles className="w-4 h-4 text-white" />
+                  <Sparkles className="w-4 h-4 text-theme-text-primary" />
                 </div>
-                <h2 className="text-lg font-semibold text-white tracking-wide">AI Executive Summary</h2>
+                <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">AI Executive Summary</h2>
               </div>
               <button 
                 onClick={() => setIsInsightsOpen(false)}
-                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="w-8 h-8 rounded-full bg-[#1d132a] flex items-center justify-center text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-              <div className="bg-white/[0.03] border border-purple-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[50px] pointer-events-none" />
+              <div className="bg-[#150d1f] rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent-yellow/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" /> Performance Uptrend
                 </h3>
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  Overall QA scores have improved by <strong className="text-white">4 points (1.2%)</strong> this week. This is primarily driven by a significant reduction in "Policy Violation" errors within the Booking category. The newly deployed <span className="text-purple-300 font-mono text-xs bg-purple-500/10 px-1 py-0.5 rounded">gpt-4o</span> model shows excellent adherence to the updated guidelines.
+                <p className="text-sm text-theme-text-secondary leading-relaxed">
+                  Overall QA scores have improved by <strong className="text-theme-text-primary">4 points (1.2%)</strong> this week. This is primarily driven by a significant reduction in "Policy Violation" errors within the Booking category. The newly deployed <span className="text-purple-300 font-mono text-xs bg-theme-accent-yellow/10 px-1 py-0.5 rounded">gpt-4o</span> model shows excellent adherence to the updated guidelines.
                 </p>
               </div>
 
-              <div className="bg-white/[0.03] border border-amber-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="bg-[#150d1f] rounded-2xl p-5 shadow-lg relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-amber-300 mb-2 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" /> Latency Warning
                 </h3>
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  Average AI latency is currently sitting at <strong className="text-white">845ms</strong>. While acceptable, this is a slight regression (-45ms) compared to last month. We recommend reviewing the context window size being sent to the <span className="text-amber-300 font-mono text-xs bg-amber-500/10 px-1 py-0.5 rounded">claude-3-opus</span> agent during complex routing queries.
+                <p className="text-sm text-theme-text-secondary leading-relaxed">
+                  Average AI latency is currently sitting at <strong className="text-theme-text-primary">845ms</strong>. While acceptable, this is a slight regression (-45ms) compared to last month. We recommend reviewing the context window size being sent to the <span className="text-amber-300 font-mono text-xs bg-amber-500/10 px-1 py-0.5 rounded">claude-3-opus</span> agent during complex routing queries.
                 </p>
               </div>
 
-              <div className="bg-white/[0.03] border border-blue-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="bg-[#150d1f] border border-blue-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
                   <Target className="w-4 h-4" /> Action Items
@@ -524,23 +525,23 @@ export const DashboardPage = ({ onNavigate }) => {
                 <ul className="space-y-3 mt-3">
                   <li className="flex items-start gap-3">
                     <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                    <span className="text-sm text-gray-300">Investigate the 3 recent failures tagged as <strong className="text-white font-medium">Misleading Guidance</strong> in the Refund department.</span>
+                    <span className="text-sm text-theme-text-secondary">Investigate the 3 recent failures tagged as <strong className="text-theme-text-primary font-medium">Misleading Guidance</strong> in the Refund department.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                    <span className="text-sm text-gray-300">Update the Knowledge Base document <strong className="text-white font-medium hover:text-blue-400 cursor-pointer underline decoration-white/20 underline-offset-2">Baggage_Policies_v2.md</strong> which was flagged as outdated by the RAG engine.</span>
+                    <span className="text-sm text-theme-text-secondary">Update the Knowledge Base document <strong className="text-theme-text-primary font-medium hover:text-blue-400 cursor-pointer underline decoration-white/20 underline-offset-2">Baggage_Policies_v2.md</strong> which was flagged as outdated by the RAG engine.</span>
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div className="p-6 border-t border-white/10 bg-white/[0.02]">
+            <div className="p-6 bg-[#150d1f]">
               <button 
                 onClick={() => {
                   setIsInsightsOpen(false);
                   onNavigate('analytics');
                 }}
-                className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#1d132a] hover:bg-[#1d132a] text-theme-text-primary text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
                 View Full Analytics Report <ArrowRight className="w-4 h-4" />
               </button>

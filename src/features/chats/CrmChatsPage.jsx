@@ -87,20 +87,20 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       <div className="flex justify-end items-center gap-4 pb-2">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Calendar className="w-4 h-4 text-theme-text-secondary/70 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               style={{ colorScheme: 'dark' }}
-              className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              className="bg-[#1d132a] rounded-xl pl-9 pr-4 py-2 text-sm text-theme-text-secondary hover:bg-[#1d132a] focus:outline-none focus:border-theme-accent-yellow/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               title="Filter by Date"
             />
           </div>
           {selectedDate && (
             <button
               onClick={() => setSelectedDate('')}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               title="Clear Date Filter"
             >
               <X className="w-3.5 h-3.5" />
@@ -111,7 +111,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
         <button 
           onClick={() => fetchChats(page)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] transition-all shadow-sm"
           title="Refresh List"
         >
           <RefreshCw className="w-4 h-4" />
@@ -119,24 +119,24 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </button>
       </div>
 
-      <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-        <div className="p-5 border-b border-white/5 flex items-center justify-between bg-black/20">
-          <div className="flex items-center gap-2 text-sm text-gray-400 font-mono tracking-wider text-[11px] uppercase">
-            <span className="font-bold text-white text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
+      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl">
+        <div className="p-5 flex items-center justify-between bg-[#110918]">
+          <div className="flex items-center gap-2 text-sm text-theme-text-secondary font-mono tracking-wider text-[11px] uppercase">
+            <span className="font-bold text-theme-text-primary text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
           </div>
           <div className="relative">
-            <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input 
               type="text"
               placeholder="Search chat ID or name..."
-              className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors w-72 shadow-inner"
+              className="bg-[#150d1f] backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors w-72 shadow-inner"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-300">
-            <thead className="text-[11px] font-bold uppercase tracking-wider bg-black/20 text-gray-400 border-b border-white/5 font-mono">
+          <table className="w-full text-left text-sm text-theme-text-secondary">
+            <thead className="text-[11px] font-bold uppercase tracking-wider bg-[#110918] text-theme-text-secondary font-mono">
               <tr>
                 <th className="px-6 py-4">Chat ID</th>
                 <th className="px-6 py-4">Customer</th>
@@ -151,13 +151,13 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-16 text-center">
-                    <RefreshCw className="w-6 h-6 animate-spin text-purple-500 mx-auto mb-4" />
-                    <p className="text-gray-400 font-medium tracking-wide">Connecting to CRM...</p>
+                    <RefreshCw className="w-6 h-6 animate-spin text-theme-accent-yellow mx-auto mb-4" />
+                    <p className="text-theme-text-secondary font-medium tracking-wide">Connecting to CRM...</p>
                   </td>
                 </tr>
               ) : chats.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-12 text-center text-theme-text-secondary/70">
                     No chats found.
                   </td>
                 </tr>
@@ -165,21 +165,21 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 chats.map((chat) => {
                   const isAnalyzed = history.some(h => h.petitionId === chat.id || (h.conversationText && h.conversationText.includes(`Ticket/Chat ID: ${chat.id}`)));
                   return (
-                  <tr key={chat.id} className="hover:bg-white/[0.04] transition-colors group cursor-pointer">
-                    <td className="px-6 py-4 font-mono text-xs font-bold text-purple-400">{chat.id}</td>
-                    <td className="px-6 py-4 font-medium text-white">{chat.customerName}</td>
-                    <td className="px-6 py-4 text-gray-300">{chat.agentName}</td>
+                  <tr key={chat.id} className="hover:bg-[#1d132a] transition-colors group cursor-pointer">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-theme-accent-yellow">{chat.id}</td>
+                    <td className="px-6 py-4 font-medium text-theme-text-primary">{chat.customerName}</td>
+                    <td className="px-6 py-4 text-theme-text-secondary">{chat.agentName}</td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-white/5 text-purple-400 rounded-lg text-[11px] font-bold border border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                      <span className="px-3 py-1 bg-[#1d132a] text-theme-accent-yellow rounded-lg text-[11px] font-bold shadow-[0_0_10px_rgba(168,85,247,0.1)]">
                         {chat.category || 'General'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[11px] font-bold border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[11px] font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">
                         Resolved
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 font-mono text-[11px]">
+                    <td className="px-6 py-4 text-theme-text-secondary/70 font-mono text-[11px]">
                       {new Date(chat.date).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -189,7 +189,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                           ALREADY SUBMITTED
                         </div>
                       ) : isAnalyzed ? (
-                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold rounded-lg text-[11px]">
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500/10 text-emerald-400 font-semibold rounded-lg text-[11px]">
                           <Check className="w-3.5 h-3.5" />
                           ANALYZED
                         </div>
@@ -197,7 +197,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                         <button
                           onClick={() => handleAnalyze(chat)}
                           disabled={analyzingId !== null}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 hover:bg-purple-600 border border-white/10 text-gray-300 hover:text-white hover:border-purple-500 font-semibold rounded-lg text-[11px] transition-all hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-extrabold rounded-lg text-[11px] tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {analyzingId === chat.id ? (
                             <>
@@ -222,22 +222,22 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between bg-black/20 text-[11px] font-mono tracking-wider">
-            <span className="text-gray-500">
-              SHOWING PAGE <span className="font-bold text-gray-300">{page}</span> OF <span className="font-bold text-gray-300">{totalPages}</span>
+          <div className="px-6 py-4 flex items-center justify-between bg-[#110918] text-[11px] font-mono tracking-wider">
+            <span className="text-theme-text-secondary/70">
+              SHOWING PAGE <span className="font-bold text-theme-text-secondary">{page}</span> OF <span className="font-bold text-theme-text-secondary">{totalPages}</span>
             </span>
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => fetchChats(page - 1)}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-1.5 rounded-lg bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => fetchChats(page + 1)}
                 disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-1.5 rounded-lg bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

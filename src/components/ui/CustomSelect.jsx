@@ -22,14 +22,14 @@ export const CustomSelect = ({ value, onChange, options, placeholder, fontClass 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between bg-black/20 border ${isOpen ? 'border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]' : 'border-white/10 hover:border-white/20'} rounded-xl px-4 py-3 text-xs text-gray-200 focus:outline-none transition-all appearance-none ${fontClass}`}
+        className={`w-full flex items-center justify-between bg-[#110918] ${isOpen ? 'shadow-xl' : ''} rounded-xl px-4 py-3 text-xs text-theme-primary focus:outline-none transition-all appearance-none ${fontClass}`}
       >
         <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-purple-400' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-theme-secondary transition-transform duration-300 ${isOpen ? 'rotate-180 text-theme-accent-yellow' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-[#1a1a1c]/95 backdrop-blur-2xl border border-white/10 rounded-xl shadow-2xl py-2 max-h-60 overflow-y-auto overflow-x-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 w-full mt-2 bg-[#1a1a1c]/95 backdrop-blur-2xl rounded-xl shadow-2xl py-2 max-h-60 overflow-y-auto overflow-x-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -42,8 +42,8 @@ export const CustomSelect = ({ value, onChange, options, placeholder, fontClass 
                 }}
                 className={`w-full text-left px-4 py-3 text-xs flex items-center justify-between transition-colors ${fontClass} ${
                   isSelected 
-                    ? 'bg-purple-600/20 text-purple-300 font-medium' 
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                    ? 'bg-theme-accent-yellow/20 text-purple-300 font-medium' 
+                    : 'text-theme-secondary hover:bg-white/5 hover:text-theme-primary'
                 }`}
               >
                 <span className="truncate pr-2">{opt.label}</span>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   MessageSquareCode, 
@@ -11,12 +11,27 @@ import {
   Settings, 
   UserCircle2,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 export const Sidebar = ({ activeTab, setActiveTab }) => {
   const { user } = useAuthStore();
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('app-theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'crm-chats', label: 'CRM Chats', icon: MessageSquareCode },
@@ -38,9 +53,9 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
   });
 
   return (
-    <aside className="w-[320px] flex flex-col h-[calc(100vh-2rem)] my-4 ml-4 rounded-3xl bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.5)] shrink-0 select-none z-30 py-4">
+    <aside className="w-[320px] flex flex-col h-[calc(100vh-2rem)] my-4 ml-4 rounded-3xl bg-[#1d132a] backdrop-blur-3xl border border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.5)] shrink-0 select-none z-30 py-4">
       {/* Brand Header */}
-      <div className="h-16 px-6 flex items-center gap-3 mb-4">
+      <div className="h-16 px-6 flex items-center justify-between mb-4">
         <div className="flex items-center gap-3 pointer-events-none">
           {/* Logo with purple mask */}
           <div className="relative w-9 h-9 rounded-full overflow-hidden shadow-[0_0_16px_rgba(139,92,246,0.5)]">
@@ -56,10 +71,17 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
             className="text-xl font-black tracking-tighter font-sans"
             style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}
           >
-            <span className="text-white">Qa_</span>
+            <span className="text-theme-text-primary">Qa_</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#b5c2ff] via-[#758bfd] to-[#4662eb]">automation</span>
           </span>
         </div>
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full hover:bg-white/10 transition-colors text-theme-text-secondary hover:text-theme-text-primary cursor-pointer"
+          title="Toggle Theme"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
       </div>
 
       {/* Navigation List */}

@@ -51,7 +51,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0612] text-[#F9FAFB] flex font-sans selection:bg-purple-600 selection:text-white antialiased overflow-hidden relative">
+    <div className="min-h-screen bg-theme-main text-[#F9FAFB] flex font-sans selection:bg-theme-accent-yellow selection:text-theme-primary antialiased overflow-hidden relative">
       {/* Ambient glow blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
         <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px]" />

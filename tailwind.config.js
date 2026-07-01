@@ -5,7 +5,29 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        theme: {
+          'bg-main': 'var(--theme-bg-main)',
+          'bg-card': 'var(--theme-bg-card)',
+          'card': 'var(--theme-bg-card)',
+          'bg-card-hover': 'var(--theme-bg-card-hover)',
+          'card-hover': 'var(--theme-bg-card-hover)',
+          'input': 'var(--theme-bg-input)',
+          'primary': 'var(--theme-text-primary)',
+          'secondary': 'var(--theme-text-secondary)',
+          'text-primary': 'var(--theme-text-primary)',
+          'text-secondary': 'var(--theme-text-secondary)',
+          'accent-yellow': 'var(--theme-accent-yellow)',
+          border: 'var(--theme-border)'
+        }
+      },
+      boxShadow: {
+        '2xl': '0 0 24px rgba(192, 132, 252, 0.12)',
+        'xl': '0 0 16px rgba(192, 132, 252, 0.08)',
+        'lg': '0 0 12px rgba(192, 132, 252, 0.06)',
+      }
+    },
   },
   plugins: [],
 }
