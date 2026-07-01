@@ -88,15 +88,7 @@ export const PromptManagerPage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            Prompt Management System
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Build, version, and test reusable prompt templates routed across multiple AI providers.
-          </p>
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4 pb-6">
 
         <button
           onClick={handleOpenCreate}

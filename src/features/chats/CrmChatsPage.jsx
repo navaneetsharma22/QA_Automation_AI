@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
-import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search } from 'lucide-react';
+import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search, Calendar, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const CrmChatsPage = ({ onAnalysisComplete }) => {
@@ -11,15 +11,20 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [analyzingId, setAnalyzingId] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
 
   const { analyzeChat, aiProviders, prompts } = useQaStore();
   const { setActiveTab, setPendingAnalysis } = useUiStore();
 
-  const fetchChats = async (pageToFetch) => {
+  const fetchChats = async (pageToFetch, dateToFetch = selectedDate) => {
     setLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      const res = await fetch(`${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=10`);
+      let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=10`;
+      if (dateToFetch) {
+        url += `&date=${dateToFetch}`;
+      }
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setChats(data.data || []);
@@ -38,8 +43,8 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   };
 
   useEffect(() => {
-    fetchChats(1);
-  }, []);
+    fetchChats(1, selectedDate);
+  }, [selectedDate]);
 
   const handleAnalyze = async (chat) => {
     setAnalyzingId(chat.id);
@@ -73,22 +78,34 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
   return (
     <div className="px-10 py-6 w-full space-y-6 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide flex items-center gap-3">
-            <MessageCircle className="w-6 h-6 text-purple-400" />
-            CRM Live Chats
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Browse and seamlessly analyze active or historical customer conversations from your CRM.
-          </p>
+      <div className="flex justify-end items-center gap-4 pb-2">
+        <div className="relative">
+          <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-8 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+            title="Filter by Date"
+          />
+          {selectedDate && (
+            <button
+              onClick={() => setSelectedDate('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-400 p-1 rounded-md transition-colors z-10"
+              title="Clear Date Filter"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
+
         <button 
           onClick={() => fetchChats(page)}
-          className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all shadow-sm"
           title="Refresh List"
         >
           <RefreshCw className="w-4 h-4" />
+          <span className="text-sm font-medium">Refresh</span>
         </button>
       </div>
 

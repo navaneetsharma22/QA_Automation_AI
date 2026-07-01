@@ -19,15 +19,6 @@ export const SettingsPage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="border-b border-white/10 pb-6">
-        <h1 className="text-2xl font-semibold text-white tracking-wide">
-          Organization & Engine Settings
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Configure single-organization tenant defaults, RAG retrieval thresholds, and automated alerting.
-        </p>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
         {/* SECTION 1: Organization */}
         <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl transition-all">

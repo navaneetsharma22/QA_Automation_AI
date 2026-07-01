@@ -17,16 +17,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
 
   return (
     <div className="px-10 py-6 w-full space-y-6 animate-in fade-in duration-300">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            Analysis History
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Audit logs and historical records of all customer support QA evaluations.
-          </p>
-        </div>
-
+      <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4 pb-2">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative min-w-[260px]">
             <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
