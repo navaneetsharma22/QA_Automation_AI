@@ -21,6 +21,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedProject, setSelectedProject] = useState('default');
   const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [originalPetitionId, setOriginalPetitionId] = useState('');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -42,6 +43,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
     if (pendingTranscript) {
       let textToSet = pendingTranscript;
       if (pendingChatId) {
+        setOriginalPetitionId(pendingChatId);
         textToSet = `Ticket/Chat ID: ${pendingChatId}\n\n` + textToSet;
       }
       setConversationText(textToSet);
@@ -88,7 +90,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         selectedModel,
         `v${activePromptObj?.version || 1}`,
         selectedProject,
-        selectedCategory
+        selectedCategory,
+        originalPetitionId
       );
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
@@ -101,16 +104,6 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            Analyze Support Conversation
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Unlike a simple chatbot, QA Automation acts as an autonomous QA analyst detecting misleading advice, policy violations, and inaccurate guidance.
-          </p>
-        </div>
-      </div>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left 2 Cols: Chat Paste Area */}
         <div className="lg:col-span-2 space-y-4">

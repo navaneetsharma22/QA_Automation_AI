@@ -18,15 +18,7 @@ export const AiModelsPage = () => {
 
   return (
     <div className="w-full animate-in fade-in duration-300 h-full flex flex-col relative">
-      <div className="sticky top-0 z-30 px-10 pt-6 pb-6 bg-[#0c0514]/80 backdrop-blur-2xl border-b border-white/10 flex items-center justify-between shadow-md">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            AI Provider & Model Management
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Manage inference endpoints across Groq, Gemini, OpenAI, Claude, DeepSeek, and local Ollama deployments.
-          </p>
-        </div>
+      <div className="flex items-center justify-end px-10 pt-6 pb-6">
         <button 
           onClick={() => toast.success('AI Provider configuration saved successfully!')}
           className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white text-sm font-semibold rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2"

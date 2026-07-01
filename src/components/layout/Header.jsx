@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Settings, LogOut, UserCircle2, ChevronDown } from 'lucide-react';
+import { Search, Bell, Settings, LogOut, UserCircle2, ChevronDown, MessageCircle, Database } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -18,23 +18,129 @@ export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getTitle = () => {
+  const renderHeaderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return 'Welcome';
-      default: return '';
+      case 'dashboard':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-medium text-white tracking-wide">
+              Welcome, <span className="text-purple-300 font-semibold">{user?.fullName?.split(' ')[0] || 'User'}</span>
+            </h2>
+            <p className="text-sm text-gray-400 mt-1 tracking-wide">Here's your quality assurance overview</p>
+          </div>
+        );
+      case 'crm-chats':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide flex items-center gap-3">
+              <MessageCircle className="w-6 h-6 text-purple-400" />
+              CRM Live Chats
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Browse and seamlessly analyze active or historical customer conversations from your CRM.
+            </p>
+          </div>
+        );
+      case 'analyze':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Analyze Support Conversation
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Unlike a simple chatbot, QA Automation acts as an autonomous QA analyst detecting misleading advice, policy violations, and inaccurate guidance.
+            </p>
+          </div>
+        );
+      case 'history':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Analysis History
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Audit logs and historical records of all customer support QA evaluations.
+            </p>
+          </div>
+        );
+      case 'reports':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Enterprise QA Reports
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Aggregated misleading response findings, critical policy violations, and corrective coaching reports.
+            </p>
+          </div>
+        );
+      case 'prompts':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Prompt Management System
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Build, version, and test reusable prompt templates routed across multiple AI providers.
+            </p>
+          </div>
+        );
+      case 'knowledge':
+        return (
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider font-mono mb-1">
+              <Database className="w-3.5 h-3.5" />
+              <span>Retrieval-Augmented Generation (RAG)</span>
+            </div>
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Knowledge Base Management
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Upload company policy guidelines, SLAs, and feature docs to ground AI evaluation and eliminate hallucinations.
+            </p>
+          </div>
+        );
+      case 'models':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              AI Provider & Model Management
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Manage inference endpoints across Groq, Gemini, OpenAI, Claude, DeepSeek, and local Ollama deployments.
+            </p>
+          </div>
+        );
+      case 'analytics':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Enterprise QA Analytics
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Deep-dive performance benchmarks, latency profiling, and automated misleading response detection ratios.
+            </p>
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-white tracking-wide">
+              Organization & Engine Settings
+            </h2>
+            <p className="text-sm text-gray-400 mt-1">
+              Configure single-organization tenant defaults, RAG retrieval thresholds, and automated alerting.
+            </p>
+          </div>
+        );
+      default:
+        return <div className="flex flex-col"></div>;
     }
   };
 
   return (
-    <header className="h-24 px-10 flex items-center justify-between sticky top-0 z-20 shrink-0">
-      <div className="flex flex-col">
-        <h2 className="text-2xl font-medium text-white tracking-wide">
-          {getTitle()}{activeTab === 'dashboard' ? <>, <span className="text-purple-300 font-semibold">{user?.fullName?.split(' ')[0] || 'User'}</span></> : ''}
-        </h2>
-        {activeTab === 'dashboard' && (
-          <p className="text-sm text-gray-400 mt-1 tracking-wide">Here's your quality assurance overview</p>
-        )}
-      </div>
+    <header className="h-24 px-10 flex items-center justify-between sticky top-0 z-20 shrink-0 bg-[#0a0612]/80 backdrop-blur-md border-b border-white/5">
+      {renderHeaderContent()}
 
       <div className="flex items-center gap-4">
         {/* Search Pill */}

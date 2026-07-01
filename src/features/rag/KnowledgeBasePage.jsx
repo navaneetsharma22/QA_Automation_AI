@@ -50,19 +50,7 @@ export const KnowledgeBasePage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider font-mono mb-1">
-            <Database className="w-3.5 h-3.5" />
-            <span>Retrieval-Augmented Generation (RAG)</span>
-          </div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            Knowledge Base Management
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Upload company policy guidelines, SLAs, and feature docs to ground AI evaluation and eliminate hallucinations.
-          </p>
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4 pb-2">
 
         <button
           onClick={() => setShowAddModal(true)}

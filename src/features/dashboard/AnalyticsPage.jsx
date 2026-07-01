@@ -48,15 +48,7 @@ export const AnalyticsPage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="flex items-center justify-between border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            Enterprise QA Analytics
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Deep-dive performance benchmarks, latency profiling, and automated misleading response detection ratios.
-          </p>
-        </div>
+      <div className="flex items-center justify-end pb-2">
 
         <button 
           onClick={() => toast.success('Exported analytics summary')}
