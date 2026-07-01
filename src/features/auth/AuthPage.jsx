@@ -141,8 +141,8 @@ export const AuthPage = () => {
           <div className="absolute top-10 left-10 z-30 flex items-center gap-4 pointer-events-none">
             {/* Logo Image with Purple Glow + Mask */}
             <div className="relative">
-              <div className="absolute inset-0 rounded-2xl bg-purple-500/60 blur-[20px] scale-110" />
-              <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-purple-400/30 shadow-[0_0_28px_rgba(139,92,246,0.7)]">
+              <div className="absolute inset-0 rounded-full bg-purple-500/60 blur-[20px] scale-110" />
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-400/30 shadow-[0_0_28px_rgba(139,92,246,0.7)]">
                 <img
                   src="/logo.png"
                   alt="QA Automation Logo"
@@ -151,7 +151,7 @@ export const AuthPage = () => {
                 {/* Purple color mask */}
                 <div className="absolute inset-0 bg-purple-600/45 mix-blend-color" />
                 {/* Inner highlight ring */}
-                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-purple-300/30" />
+                <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-purple-300/30" />
               </div>
             </div>
             <span 

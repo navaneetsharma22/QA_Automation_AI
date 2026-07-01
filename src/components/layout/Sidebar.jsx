@@ -43,14 +43,14 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
       <div className="h-16 px-6 flex items-center gap-3 mb-4">
         <div className="flex items-center gap-3 pointer-events-none">
           {/* Logo with purple mask */}
-          <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-[0_0_16px_rgba(139,92,246,0.5)]">
+          <div className="relative w-9 h-9 rounded-full overflow-hidden shadow-[0_0_16px_rgba(139,92,246,0.5)]">
             <img
               src="/logo.png"
               alt="QA Automation Logo"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-purple-600/40 mix-blend-color rounded-xl" />
-            <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-purple-400/30" />
+            <div className="absolute inset-0 bg-purple-600/40 mix-blend-color rounded-full" />
+            <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-purple-400/30" />
           </div>
           <span
             className="text-xl font-black tracking-tighter font-sans"

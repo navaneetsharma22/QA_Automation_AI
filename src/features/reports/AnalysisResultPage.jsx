@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQaStore } from '../../store/qaStore';
 import { 
   CheckCircle2, 
@@ -43,6 +43,71 @@ const CopyButton = ({ text, className = "" }) => {
     >
       {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
     </button>
+  );
+};
+
+const CustomDropdown = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const options = [
+    { value: 'AHT', label: 'AHT (Average Handle Time)' },
+    { value: 'ART', label: 'ART (Agent Response Time)' },
+    { value: 'CRITICAL', label: 'CRITICAL' },
+    { value: 'MISLEADING', label: 'MISLEADING' },
+    { value: 'GRAMETICAL', label: 'GRAMETICAL' },
+    { value: 'WRONG IDENTIFICATION', label: 'WRONG IDENTIFICATION' },
+    { value: 'Escalation Delay', label: 'Escalation Delay' },
+    { value: 'In Progress', label: 'In Progress' }
+  ];
+
+  // If the current value is not in options, add it dynamically
+  if (!options.some(o => o.value === value)) {
+    options.unshift({ value, label: value });
+  }
+
+  const selectedOption = options.find(o => o.value === value) || options[0];
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <div 
+        className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm font-semibold rounded-xl px-4 py-3.5 focus:outline-none focus:border-purple-500/50 hover:border-purple-500/30 transition-all cursor-pointer flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{selectedOption.label}</span>
+        <div className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-2 bg-[#161324] border border-purple-500/30 rounded-xl shadow-[0_10px_40px_rgba(168,85,247,0.3)] overflow-hidden max-h-[260px] overflow-y-auto custom-scrollbar flex flex-col p-1.5">
+          {options.map((opt) => (
+            <div 
+              key={opt.value}
+              className={`px-3 py-2.5 text-[13px] font-medium cursor-pointer rounded-lg transition-colors ${value === opt.value ? 'bg-purple-600/30 text-purple-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+              onClick={() => {
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -647,6 +712,28 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
       </div>
 
+      {/* Metadata Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
+        <div className="space-y-2.5">
+          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Petition Number</label>
+          <div className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3.5 flex items-center">
+            {petitionIdValue || 'N/A'}
+          </div>
+        </div>
+        <div className="space-y-2.5">
+          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
+          <div className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm font-semibold rounded-xl px-4 py-3.5 flex items-center">
+            {selectedErrorType || 'N/A'}
+          </div>
+        </div>
+        <div className="space-y-2.5">
+          <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Agent Name</label>
+          <div className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3.5 flex items-center">
+            {agentName || 'N/A'}
+          </div>
+        </div>
+      </div>
+
       {/* ═══ Dynamic Project Schema Render ═══ */}
       {isDynamicSchema ? (
         report.findings?.map((finding, idx) => (
@@ -710,7 +797,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       {/* QC Modal */}
       {isQcModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#0b0914] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.15)] relative p-8">
+          <div className="bg-[#0b0914] border border-white/10 rounded-2xl w-full max-w-4xl overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.15)] relative p-8">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-8">
@@ -743,24 +830,10 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                 </div>
                 <div className="space-y-2.5">
                   <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
-                  <select 
+                  <CustomDropdown 
                     value={selectedErrorType} 
-                    onChange={(e) => setSelectedErrorType(e.target.value)}
-                    style={{ colorScheme: 'dark' }}
-                    className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm font-semibold rounded-xl px-4 py-3.5 focus:outline-none focus:border-purple-500/50 transition-colors appearance-none cursor-pointer"
-                  >
-                    {!['AHT', 'ART', 'CRITICAL', 'MISLEADING', 'GRAMETICAL', 'WRONG IDENTIFICATION', 'Escalation Delay', 'In Progress'].includes(selectedErrorType) && (
-                      <option value={selectedErrorType}>{selectedErrorType}</option>
-                    )}
-                    <option value="AHT">AHT (Average Handle Time)</option>
-                    <option value="ART">ART (Agent Response Time)</option>
-                    <option value="CRITICAL">CRITICAL</option>
-                    <option value="MISLEADING">MISLEADING</option>
-                    <option value="GRAMETICAL">GRAMETICAL</option>
-                    <option value="WRONG IDENTIFICATION">WRONG IDENTIFICATION</option>
-                    <option value="Escalation Delay">Escalation Delay</option>
-                    <option value="In Progress">In Progress</option>
-                  </select>
+                    onChange={setSelectedErrorType} 
+                  />
                 </div>
                 <div className="space-y-2.5">
                   <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Agent Name</label>
@@ -780,7 +853,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                   placeholder="Describe the anomaly..." 
                   value={observationValue}
                   onChange={(e) => setObservationValue(e.target.value)}
-                  className="w-full h-[120px] resize-none bg-black/20 border border-white/10 text-gray-200 text-sm leading-relaxed rounded-xl px-5 py-4 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600" 
+                  className="w-full min-h-[350px] resize-y bg-black/20 border border-white/10 text-gray-200 text-sm leading-relaxed rounded-xl px-5 py-4 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600 custom-scrollbar" 
                 />
               </div>
 

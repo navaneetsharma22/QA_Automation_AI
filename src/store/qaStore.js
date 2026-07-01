@@ -29,8 +29,20 @@ export const useQaStore = create(
   },
 
   // KPI Calculations
-  getKpis: () => {
-    const history = get().history;
+  getKpis: (dateFilter = {}) => {
+    let history = get().history;
+    
+    if (dateFilter.startDate) {
+      const start = new Date(dateFilter.startDate);
+      start.setHours(0, 0, 0, 0);
+      history = history.filter(h => new Date(h.date) >= start);
+    }
+    
+    if (dateFilter.endDate) {
+      const end = new Date(dateFilter.endDate);
+      end.setHours(23, 59, 59, 999);
+      history = history.filter(h => new Date(h.date) <= end);
+    }
     const totalChatsAnalyzed = history.length;
     const successfulAnalysis = history.filter(h => h.status === 'Passed' || h.status === 'Warning').length;
     const failedAnalysis = totalChatsAnalyzed - successfulAnalysis;

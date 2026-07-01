@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQaStore } from '../../store/qaStore';
-import { BarChart3, TrendingUp, Cpu, Clock, AlertTriangle, ShieldCheck, Download, Zap, XCircle, Tag, Activity, MessageCircle, GitMerge, Timer } from 'lucide-react';
+import { BarChart3, TrendingUp, Cpu, Clock, AlertTriangle, ShieldCheck, Download, Zap, XCircle, Tag, Activity, MessageCircle, GitMerge, Timer, Calendar, X } from 'lucide-react';
 import { Bar, Line } from 'react-chartjs-2';
 import toast from 'react-hot-toast';
 
 export const AnalyticsPage = () => {
+  const [filterMode, setFilterMode] = useState('specific'); // 'specific' or 'range'
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // If in 'specific' mode, we use startDate as the specific day, and pass it as both start and end to the store
   const { getKpis } = useQaStore();
-  const kpis = getKpis();
+  const kpis = getKpis({
+    startDate,
+    endDate: filterMode === 'specific' ? startDate : endDate
+  });
 
   const chartOptions = {
     responsive: true,
@@ -48,7 +56,98 @@ export const AnalyticsPage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="flex items-center justify-end pb-2">
+      <div className="flex items-center justify-end gap-4 pb-2">
+        <div className="flex items-center gap-2">
+          
+          <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 mr-2">
+            <button
+              onClick={() => {
+                if (filterMode !== 'specific') {
+                  setFilterMode('specific');
+                  setStartDate('');
+                  setEndDate('');
+                }
+              }}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
+                filterMode === 'specific' 
+                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+              }`}
+            >
+              Specific Day
+            </button>
+            <button
+              onClick={() => {
+                if (filterMode !== 'range') {
+                  setFilterMode('range');
+                  setStartDate('');
+                  setEndDate('');
+                }
+              }}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
+                filterMode === 'range' 
+                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+              }`}
+            >
+              Date Range
+            </button>
+          </div>
+
+          <div className="relative">
+            <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ colorScheme: 'dark' }}
+              className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              title={filterMode === 'specific' ? "Select Date" : "Start Date"}
+            />
+          </div>
+
+          {filterMode === 'range' && (
+            <>
+              <span className="text-gray-500 text-sm font-medium">to</span>
+              <div className="relative">
+                <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  style={{ colorScheme: 'dark' }}
+                  className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                  title="End Date"
+                />
+              </div>
+            </>
+          )}
+          
+          <button
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              setStartDate(today);
+              if (filterMode === 'range') setEndDate(today);
+            }}
+            className="px-3 py-2 bg-white/5 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
+          >
+            Today
+          </button>
+
+          {startDate && (
+            <button
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              title="Clear Filter"
+            >
+              <X className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          )}
+        </div>
 
         <button 
           onClick={() => toast.success('Exported analytics summary')}
@@ -62,8 +161,8 @@ export const AnalyticsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:bg-white/[0.04] p-6 rounded-2xl flex items-center justify-between shadow-2xl transition-all group">
           <div>
-            <span className="text-xs text-gray-400">Total Monthly Inquiries</span>
-            <span className="text-3xl font-semibold text-white tracking-wide mt-1 block">{kpis.monthlyAnalysis.toLocaleString()}</span>
+            <span className="text-xs text-gray-400">{startDate ? 'Total Inquiries (Filtered)' : 'Total Monthly Inquiries'}</span>
+            <span className="text-3xl font-semibold text-white tracking-wide mt-1 block">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
           </div>
           <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"><BarChart3 className="w-6 h-6" /></div>
         </div>
