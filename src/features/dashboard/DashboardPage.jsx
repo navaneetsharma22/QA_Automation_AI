@@ -11,16 +11,18 @@ import {
   Cpu, 
   FileText, 
   Terminal, 
-  BookOpen, 
-  Calendar, 
-  CalendarDays, 
+  BookOpen,
+  Calendar,
+  CalendarDays,
   CalendarRange,
   ArrowUpRight,
   ArrowDownRight,
   Sparkles,
   Target,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
+import { CustomDatePicker } from '../../components/ui/CustomDatePicker';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -50,8 +52,15 @@ ChartJS.register(
 );
 
 export const DashboardPage = ({ onNavigate }) => {
+  const [filterMode, setFilterMode] = useState('specific'); // 'specific' or 'range'
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const { getKpis, history } = useQaStore();
-  const kpis = getKpis();
+  const kpis = getKpis({
+    startDate,
+    endDate: filterMode === 'specific' ? startDate : endDate
+  });
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
 
   const kpiCards = [
@@ -262,6 +271,89 @@ export const DashboardPage = ({ onNavigate }) => {
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       
+      {/* Date Filters */}
+      <div className="flex items-center justify-end gap-4 pb-2">
+        <div className="flex items-center gap-2">
+          
+          <div className="flex bg-white/[0.03] border border-white/10 rounded-xl p-1 mr-2">
+            <button
+              onClick={() => {
+                if (filterMode !== 'specific') {
+                  setFilterMode('specific');
+                  setStartDate('');
+                  setEndDate('');
+                }
+              }}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
+                filterMode === 'specific' 
+                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+              }`}
+            >
+              Specific Day
+            </button>
+            <button
+              onClick={() => {
+                if (filterMode !== 'range') {
+                  setFilterMode('range');
+                  setStartDate('');
+                  setEndDate('');
+                }
+              }}
+              className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
+                filterMode === 'range' 
+                  ? 'bg-purple-500/20 text-purple-300 shadow-sm' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+              }`}
+            >
+              Date Range
+            </button>
+          </div>
+
+          <CustomDatePicker
+            value={startDate}
+            onChange={setStartDate}
+            placeholder={filterMode === 'specific' ? "Select Date" : "Start Date"}
+          />
+
+          {filterMode === 'range' && (
+            <>
+              <span className="text-gray-500 text-sm font-medium">to</span>
+              <CustomDatePicker
+                value={endDate}
+                onChange={setEndDate}
+                placeholder="End Date"
+              />
+            </>
+          )}
+          
+          <button
+            onClick={() => {
+              const today = new Date().toISOString().split('T')[0];
+              setStartDate(today);
+              if (filterMode === 'range') setEndDate(today);
+            }}
+            className="px-3 py-2 bg-white/5 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
+          >
+            Today
+          </button>
+
+          {startDate && (
+            <button
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              title="Clear Filter"
+            >
+              <X className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Top Section Grid (Like Helios: Left big cards, Right mini cards) */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
