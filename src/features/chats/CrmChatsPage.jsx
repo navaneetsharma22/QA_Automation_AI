@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
-import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search, Calendar, X } from 'lucide-react';
+import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search, Calendar, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const CrmChatsPage = ({ onAnalysisComplete }) => {
@@ -11,9 +11,15 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [analyzingId, setAnalyzingId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return localStorage.getItem('crmSelectedDate') || '';
+  });
 
-  const { analyzeChat, aiProviders, prompts } = useQaStore();
+  useEffect(() => {
+    localStorage.setItem('crmSelectedDate', selectedDate);
+  }, [selectedDate]);
+
+  const { analyzeChat, aiProviders, prompts, history } = useQaStore();
   const { setActiveTab, setPendingAnalysis } = useUiStore();
 
   const fetchChats = async (pageToFetch, dateToFetch = selectedDate) => {
@@ -79,22 +85,26 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   return (
     <div className="px-10 py-6 w-full space-y-6 animate-in fade-in duration-300">
       <div className="flex justify-end items-center gap-4 pb-2">
-        <div className="relative">
-          <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-8 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-            title="Filter by Date"
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Calendar className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              style={{ colorScheme: 'dark' }}
+              className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm text-gray-300 hover:bg-white/10 focus:outline-none focus:border-purple-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              title="Filter by Date"
+            />
+          </div>
           {selectedDate && (
             <button
               onClick={() => setSelectedDate('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-400 p-1 rounded-md transition-colors z-10"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
               title="Clear Date Filter"
             >
               <X className="w-3.5 h-3.5" />
+              Clear Date
             </button>
           )}
         </div>
@@ -112,7 +122,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
         <div className="p-5 border-b border-white/5 flex items-center justify-between bg-black/20">
           <div className="flex items-center gap-2 text-sm text-gray-400 font-mono tracking-wider text-[11px] uppercase">
-            <span className="font-bold text-white text-sm">{totalItems}</span> TOTAL CONVERSATIONS
+            <span className="font-bold text-white text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
           </div>
           <div className="relative">
             <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -132,6 +142,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 <th className="px-6 py-4">Customer</th>
                 <th className="px-6 py-4">Agent</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4 text-right">Action</th>
               </tr>
@@ -151,7 +162,9 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                   </td>
                 </tr>
               ) : (
-                chats.map((chat) => (
+                chats.map((chat) => {
+                  const isAnalyzed = history.some(h => h.petitionId === chat.id || (h.conversationText && h.conversationText.includes(`Ticket/Chat ID: ${chat.id}`)));
+                  return (
                   <tr key={chat.id} className="hover:bg-white/[0.04] transition-colors group cursor-pointer">
                     <td className="px-6 py-4 font-mono text-xs font-bold text-purple-400">{chat.id}</td>
                     <td className="px-6 py-4 font-medium text-white">{chat.customerName}</td>
@@ -161,30 +174,47 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                         {chat.category || 'General'}
                       </span>
                     </td>
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[11px] font-bold border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                        Resolved
+                      </span>
+                    </td>
                     <td className="px-6 py-4 text-gray-500 font-mono text-[11px]">
                       {new Date(chat.date).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleAnalyze(chat)}
-                        disabled={analyzingId !== null}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 hover:bg-purple-600 border border-white/10 text-gray-300 hover:text-white hover:border-purple-500 font-semibold rounded-lg text-[11px] transition-all hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {analyzingId === chat.id ? (
-                          <>
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                            TAKING IT...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-3.5 h-3.5" />
-                            TAKE IT
-                          </>
-                        )}
-                      </button>
+                      {chat.qcSubmitted ? (
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 font-semibold rounded-lg text-[11px]">
+                          <Check className="w-3.5 h-3.5" />
+                          ALREADY SUBMITTED
+                        </div>
+                      ) : isAnalyzed ? (
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-semibold rounded-lg text-[11px]">
+                          <Check className="w-3.5 h-3.5" />
+                          ANALYZED
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleAnalyze(chat)}
+                          disabled={analyzingId !== null}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 hover:bg-purple-600 border border-white/10 text-gray-300 hover:text-white hover:border-purple-500 font-semibold rounded-lg text-[11px] transition-all hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {analyzingId === chat.id ? (
+                            <>
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                              TAKING IT...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-3.5 h-3.5" />
+                              TAKE IT
+                            </>
+                          )}
+                        </button>
+                      )}
                     </td>
                   </tr>
-                ))
+                )})
               )}
             </tbody>
           </table>

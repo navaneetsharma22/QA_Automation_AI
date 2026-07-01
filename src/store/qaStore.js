@@ -121,7 +121,7 @@ export const useQaStore = create(
     aiProviders: state.aiProviders.map(p => p.id === id ? { ...p, active: !p.active } : p)
   })),
 
-  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId, category) => {
+  analyzeChat: async (conversationText, aiProvider, aiModel, promptVersion, projectId, category, providedPetitionId) => {
     try {
       const startTime = Date.now();
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -146,7 +146,7 @@ export const useQaStore = create(
         date: new Date().toISOString(),
         agentName: aiResult.agentName || 'Agent Support',
         customerName: 'Customer',
-        petitionId: aiResult.petitionId || null,
+        petitionId: providedPetitionId || aiResult.petitionId || null,
         errorType: aiResult.errorType || null,
         aiModelUsed: `${aiProvider} (${aiModel})`,
         promptVersion: promptVersion || 'v4',

@@ -21,6 +21,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedProject, setSelectedProject] = useState('default');
   const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [originalPetitionId, setOriginalPetitionId] = useState('');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -42,6 +43,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
     if (pendingTranscript) {
       let textToSet = pendingTranscript;
       if (pendingChatId) {
+        setOriginalPetitionId(pendingChatId);
         textToSet = `Ticket/Chat ID: ${pendingChatId}\n\n` + textToSet;
       }
       setConversationText(textToSet);
@@ -88,7 +90,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         selectedModel,
         `v${activePromptObj?.version || 1}`,
         selectedProject,
-        selectedCategory
+        selectedCategory,
+        originalPetitionId
       );
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);

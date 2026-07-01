@@ -111,6 +111,33 @@ export const AnalysisResultPage = ({ report, onBack }) => {
   const [selectedErrorType, setSelectedErrorType] = useState(report?.errorType || highestSeverity);
   const [petitionIdValue, setPetitionIdValue] = useState((report?.petitionId || report?.analysisId || "").replace(/^#+/, ''));
   const [agentName, setAgentName] = useState(report?.agentName || "");
+  const [isQcModalOpen, setIsQcModalOpen] = useState(false);
+  const formatDefaultObservation = () => {
+    if (!report) return '';
+    let chatLogText = '';
+    const logs = report.criticalChatLogs;
+    if (logs && Array.isArray(logs) && logs.length > 0) {
+      if (typeof logs[0] === 'object') {
+        chatLogText = logs.map(l => `${l.speaker}:\n${l.message}`).join('\n\n');
+      } else {
+        chatLogText = logs.join('\n\n');
+      }
+    } else if (typeof logs === 'string') {
+      chatLogText = logs;
+    }
+
+    const reasonText = report.reason || report.qaFinding || report.overallRecommendation || '';
+    
+    let obsText = '';
+    if (report.qaConclusion?.observations && Array.isArray(report.qaConclusion.observations) && report.qaConclusion.observations.length > 0) {
+      obsText = 'Observation:\n- ' + report.qaConclusion.observations.join('\n- ');
+    }
+    
+    const parts = [chatLogText, reasonText, obsText].filter(Boolean);
+    return parts.join('\n\n');
+  };
+
+  const [observationValue, setObservationValue] = useState(formatDefaultObservation());
 
   useEffect(() => {
     const fetchErrorTypes = async () => {
@@ -133,6 +160,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       setPetitionIdValue((report.petitionId || report.analysisId || "").replace(/^#+/, ''));
       setAgentName(report.agentName || "");
       setSelectedErrorType(report.errorType || highestSeverity);
+      setObservationValue(formatDefaultObservation());
     }
   }, [report, highestSeverity]);
 
@@ -181,15 +209,31 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const toastId = toast.loading('Sending report to QC Platform...');
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      
+      const payload = {
+        ...report,
+        petitionId: petitionIdValue,
+        errorType: selectedErrorType,
+        agentName: agentName,
+        observation: observationValue
+      };
+
       const res = await fetch(`${apiUrl}/v1/qc/post-report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(report)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to send to QC');
+      if (!res.ok) {
+        let errMsg = data.error || 'Failed to send to QC';
+        if (data.details && data.details.message) {
+          errMsg += ': ' + data.details.message;
+        }
+        throw new Error(errMsg);
+      }
       
       toast.success('Successfully sent to QC Platform!', { id: toastId });
+      setIsQcModalOpen(false);
     } catch (err) {
       console.error(err);
       toast.error(err.message, { id: toastId });
@@ -578,7 +622,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={handleSendToQC}
+            onClick={() => setIsQcModalOpen(true)}
             disabled={isSendingQC}
             className="px-3.5 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/50 text-purple-400 hover:text-purple-300 text-xs font-semibold transition-all flex items-center gap-2 disabled:opacity-50"
           >
@@ -600,60 +644,6 @@ export const AnalysisResultPage = ({ report, onBack }) => {
           >
             <Download className="w-3.5 h-3.5" /> Export Report
           </button>
-        </div>
-      </div>
-
-      {/* Metadata Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Petition ID</label>
-            {petitionIdValue && <CopyButton text={petitionIdValue} />}
-          </div>
-          <input 
-            type="text" 
-            placeholder="e.g. PET-12345" 
-            value={petitionIdValue}
-            onChange={(e) => setPetitionIdValue(e.target.value)}
-            className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500/50 transition-colors" 
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
-            <select 
-            value={selectedErrorType} 
-            onChange={(e) => setSelectedErrorType(e.target.value)}
-            className={`w-full bg-black/20 border text-gray-200 text-sm font-semibold rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500/50 transition-colors appearance-none cursor-pointer ${
-              selectedErrorType === 'CRITICAL' ? 'border-red-500/50' :
-              selectedErrorType === 'HIGH' ? 'border-amber-500/50' :
-              selectedErrorType === 'MEDIUM' ? 'border-yellow-500/50' :
-              selectedErrorType === 'LOW' ? 'border-blue-500/50' : 'border-white/10'
-            }`} 
-          >
-            {/* If the current value isn't in the dynamic list, show it anyway so we don't lose data */}
-            {selectedErrorType && !errorTypes.find(et => et.name === selectedErrorType) && (
-              <option value={selectedErrorType}>{selectedErrorType}</option>
-            )}
-            {errorTypes.map(et => (
-              <option key={et.id} value={et.name}>{et.name}</option>
-            ))}
-            {errorTypes.length === 0 && (
-              <option value={selectedErrorType || "Loading..."}>{selectedErrorType || "Loading..."}</option>
-            )}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Agent Name</label>
-            {agentName && <CopyButton text={agentName} />}
-          </div>
-          <input 
-            type="text" 
-            placeholder="Optional" 
-            value={agentName}
-            onChange={(e) => setAgentName(e.target.value)}
-            className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500/50 transition-colors" 
-          />
         </div>
       </div>
 
@@ -715,6 +705,95 @@ export const AnalysisResultPage = ({ report, onBack }) => {
             </div>
           )}
         </>
+      )}
+
+      {/* QC Modal */}
+      {isQcModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#0b0914] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.15)] relative p-8">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <FileCheck className="w-5 h-5 text-purple-400" />
+                <h2 className="text-[15px] font-extrabold text-white tracking-widest uppercase">QA Observations</h2>
+              </div>
+              <button 
+                onClick={() => setIsQcModalOpen(false)}
+                className="rounded-full text-gray-400 hover:text-purple-400 transition-colors bg-white/5 p-1 hover:bg-white/10"
+              >
+                <XCircle className="w-5 h-5 stroke-[2]" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="space-y-6">
+              <h3 className="text-sm font-extrabold text-purple-400 uppercase tracking-widest mb-6">Log New Quality Observation</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Petition Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. PET-12345" 
+                    value={petitionIdValue}
+                    onChange={(e) => setPetitionIdValue(e.target.value)}
+                    className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600" 
+                  />
+                </div>
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Error Type</label>
+                  <select 
+                    value={selectedErrorType} 
+                    onChange={(e) => setSelectedErrorType(e.target.value)}
+                    style={{ colorScheme: 'dark' }}
+                    className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm font-semibold rounded-xl px-4 py-3.5 focus:outline-none focus:border-purple-500/50 transition-colors appearance-none cursor-pointer"
+                  >
+                    {!['AHT', 'ART', 'CRITICAL', 'MISLEADING', 'GRAMETICAL', 'WRONG IDENTIFICATION', 'Escalation Delay', 'In Progress'].includes(selectedErrorType) && (
+                      <option value={selectedErrorType}>{selectedErrorType}</option>
+                    )}
+                    <option value="AHT">AHT (Average Handle Time)</option>
+                    <option value="ART">ART (Agent Response Time)</option>
+                    <option value="CRITICAL">CRITICAL</option>
+                    <option value="MISLEADING">MISLEADING</option>
+                    <option value="GRAMETICAL">GRAMETICAL</option>
+                    <option value="WRONG IDENTIFICATION">WRONG IDENTIFICATION</option>
+                    <option value="Escalation Delay">Escalation Delay</option>
+                    <option value="In Progress">In Progress</option>
+                  </select>
+                </div>
+                <div className="space-y-2.5">
+                  <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Agent Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="Optional" 
+                    value={agentName}
+                    onChange={(e) => setAgentName(e.target.value)}
+                    className="w-full bg-black/20 border border-white/10 text-gray-200 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600" 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Observation Description</label>
+                <textarea 
+                  placeholder="Describe the anomaly..." 
+                  value={observationValue}
+                  onChange={(e) => setObservationValue(e.target.value)}
+                  className="w-full h-[120px] resize-none bg-black/20 border border-white/10 text-gray-200 text-sm leading-relaxed rounded-xl px-5 py-4 focus:outline-none focus:border-purple-500/50 transition-colors placeholder:text-gray-600" 
+                />
+              </div>
+
+              <button
+                onClick={handleSendToQC}
+                disabled={isSendingQC}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-extrabold text-[13px] tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 mt-4"
+              >
+                {isSendingQC ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>+ Log Observation</span>}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
