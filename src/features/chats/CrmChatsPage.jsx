@@ -30,7 +30,9 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       if (dateToFetch) {
         url += `&date=${dateToFetch}`;
       }
-      const res = await fetch(url);
+      const crmToken = localStorage.getItem('crm-token') || '';
+      const headers = crmToken ? { 'x-crm-token': crmToken } : {};
+      const res = await fetch(url, { headers });
       if (res.ok) {
         const data = await res.json();
         setChats(data.data || []);
@@ -59,7 +61,9 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       
-      const transcriptRes = await fetch(`${apiUrl}/v1/crm/chats/${chat.id}/transcript`);
+      const crmToken = localStorage.getItem('crm-token') || '';
+      const headers = crmToken ? { 'x-crm-token': crmToken } : {};
+      const transcriptRes = await fetch(`${apiUrl}/v1/crm/chats/${chat.id}/transcript`, { headers });
       if (!transcriptRes.ok) throw new Error('Failed to fetch transcript');
       
       const transcriptData = await transcriptRes.json();

@@ -283,9 +283,13 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         observation: observationValue
       };
 
+      const qcToken = localStorage.getItem('qc-token') || '';
+      const headers = { 'Content-Type': 'application/json' };
+      if (qcToken) headers['x-qc-token'] = qcToken;
+
       const res = await fetch(`${apiUrl}/v1/qc/post-report`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify(payload)
       });
       const data = await res.json();

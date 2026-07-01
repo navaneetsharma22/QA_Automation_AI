@@ -22,6 +22,8 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('app-theme') || 'dark';
   });
+  const [crmToken, setCrmToken] = useState(() => localStorage.getItem('crm-token') || '');
+  const [qcToken, setQcToken] = useState(() => localStorage.getItem('qc-token') || '');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -110,6 +112,24 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
 
       {/* Footer Settings & Support */}
       <div className="p-6 pb-8 space-y-2 mt-auto">
+        <div className="space-y-2 mb-4 border-b border-white/5 pb-4">
+            <label className="text-[10px] uppercase font-bold text-theme-text-secondary/70 tracking-widest pl-2">Integrations</label>
+            <input 
+              type="password"
+              placeholder="Paste CRM Access Token..."
+              value={crmToken}
+              onChange={(e) => { setCrmToken(e.target.value); localStorage.setItem('crm-token', e.target.value); }}
+              className="w-full bg-[#110918] text-theme-text-primary text-[11px] font-mono rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-purple-500/50 placeholder:text-gray-600 border border-transparent transition-all"
+            />
+            <input 
+              type="password"
+              placeholder="Paste QC Platform Token..."
+              value={qcToken}
+              onChange={(e) => { setQcToken(e.target.value); localStorage.setItem('qc-token', e.target.value); }}
+              className="w-full bg-[#110918] text-theme-text-primary text-[11px] font-mono rounded-xl px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-purple-500/50 placeholder:text-gray-600 border border-transparent transition-all"
+            />
+        </div>
+
         <button 
           onClick={() => setActiveTab('profile')}
           className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-[13px] font-medium transition-all duration-300 group ${
