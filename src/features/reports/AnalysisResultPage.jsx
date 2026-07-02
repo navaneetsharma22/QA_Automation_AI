@@ -129,7 +129,7 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
                     : 'space-y-6';
 
     return (
-      <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl relative group ${depth > 0 ? 'mt-4 p-6 bg-[#110918] backdrop-blur-none' : ''}`}>
+      <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group ${depth > 0 ? 'mt-4 p-6 bg-[#110918] backdrop-blur-none' : ''}`}>
         {schemaNode.heading && (
           <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-semibold text-theme-text-primary tracking-wide ${schemaNode.type === 'row' ? 'mb-4 w-full' : 'mb-4'}`}>
             {schemaNode.heading}
@@ -147,7 +147,7 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
   const textContent = Array.isArray(content) ? content.join('\n') : String(content);
 
   return (
-    <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 shadow-2xl ${depth > 0 ? 'mt-0 bg-transparent border-theme-border' : 'mt-8'}`}>
+    <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all ${depth > 0 ? 'mt-0 bg-transparent border-theme-border' : 'mt-8'}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-semibold text-theme-text-primary tracking-wide`}>
           {schemaNode.heading}
@@ -283,7 +283,8 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         observation: observationValue
       };
 
-      const qcToken = localStorage.getItem('qc-token') || '';
+      const qcActive = localStorage.getItem('qc-active') === 'true';
+      const qcToken = qcActive ? (localStorage.getItem('qc-token') || '') : '';
       const headers = { 'Content-Type': 'application/json' };
       if (qcToken) headers['x-qc-token'] = qcToken;
 
@@ -319,7 +320,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!content) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-blue-400" />
@@ -346,7 +347,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       : (Array.isArray(logs) ? logs.join('\n\n') : String(logs));
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-amber-400" />
@@ -382,7 +383,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!hasRuleFormat) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <FileCheck className="w-5 h-5 text-indigo-400" />
@@ -443,14 +444,14 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `Expected Agent Action:\n${expectedArr.join('\n')}\n\nAgent Action:\n${actual || 'N/A'}\n\nMissing Expected Action:\n${missing || 'None'}`;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl space-y-6 relative group">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 space-y-6 transition-all relative group">
         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
           <CopyButton text={copyText} />
         </div>
 
         {/* Expected Agent Action */}
         {expectedArr.length > 0 && (
-          <div className="bg-[#110918] rounded-xl p-6 shadow-sm">
+          <div className="bg-[#110918] rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Expected Agent Action
@@ -470,7 +471,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
         {/* Agent Action */}
         {actual && (
-          <div className="bg-[#110918] rounded-xl p-6 shadow-sm">
+          <div className="bg-[#110918] rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Agent Action
@@ -483,7 +484,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
         {/* Missing Expected Action */}
         {missing && (
-          <div className="bg-[#110918] rounded-xl p-6 shadow-sm">
+          <div className="bg-[#110918] rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Missing Expected Action
@@ -505,7 +506,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `AHT Delay Analysis\nResult: ${aht.result || 'N/A'}\n\nConversation Timeline:\n${(aht.timeline || []).join('\n')}\n\nObservation:\n${aht.observation || 'N/A'}`;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Clock className="w-5 h-5 text-cyan-400" />
@@ -564,7 +565,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!reason) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-theme-accent-yellow" />
@@ -588,7 +589,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `QA Conclusion\nStatus: ${conclusion.status}\nMisleading: ${conclusion.misleading}\nSeverity: ${conclusion.severity}\n\nQA Observations:\n${(conclusion.observations || []).join('\n')}\n\nQA Decision:\n${conclusion.decision || 'N/A'}`;
 
     return (
-      <div className={`bg-[#150d1f] backdrop-blur-md border rounded-2xl p-8 mt-8 shadow-2xl ${
+      <div className={`bg-[#150d1f] backdrop-blur-md border rounded-2xl p-8 mt-8 transition-all ${
         isPassed ? 'border-emerald-500/30' : 'border-red-500/30'
       }`}>
         <div className="flex items-center justify-between mb-6">
@@ -717,7 +718,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       </div>
 
       {/* Metadata Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 shadow-xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
         <div className="space-y-2.5">
           <label className="text-[11px] font-bold text-theme-text-secondary uppercase tracking-wider">Petition Number</label>
           <div className="w-full bg-[#110918] text-theme-text-primary text-sm rounded-xl px-4 py-3.5 flex items-center">
@@ -767,7 +768,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         /* ═══ Fallback for old/unparsed reports ═══ */
         <>
           {report?.findings?.length > 0 ? (
-            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 shadow-2xl relative group">
+            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group">
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
                 <CopyButton text={JSON.stringify(report.findings, null, 2)} />
               </div>
@@ -785,7 +786,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               </div>
             </div>
           ) : (
-            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-12 text-center space-y-3 mt-8 shadow-2xl">
+            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-12 text-center space-y-3 mt-8 transition-all">
               <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
@@ -801,7 +802,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       {/* QC Modal */}
       {isQcModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#150d1f] border-transparent rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl relative p-8">
+          <div className="bg-[#150d1f] border-transparent rounded-2xl w-full max-w-4xl overflow-hidden transition-all relative p-8">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-8">

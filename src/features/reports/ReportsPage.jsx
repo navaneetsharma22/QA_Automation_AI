@@ -40,23 +40,23 @@ export const ReportsPage = ({ onInspectReport }) => {
 
       {/* Summary KPI header */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl shadow-2xl">
+        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Total Reports Generated</span>
           <span className="text-2xl font-bold text-theme-text-primary tracking-wide mt-1 block">{history.length}</span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl shadow-2xl">
+        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Critical Severity Issues</span>
           <span className="text-2xl font-bold text-red-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'Critical').length}
           </span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl shadow-2xl">
+        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">High / Medium Issues</span>
           <span className="text-2xl font-bold text-amber-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'High' || i.severity === 'Medium').length}
           </span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl shadow-2xl">
+        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Average Confidence</span>
           <span className="text-2xl font-bold text-cyan-400 tracking-wide mt-1 block">96.8%</span>
         </div>
@@ -87,7 +87,7 @@ export const ReportsPage = ({ onInspectReport }) => {
           {filteredIssues.map((iss, idx) => (
             <div
               key={iss.id || idx}
-              className="bg-[#150d1f] border border-transparent backdrop-blur-md rounded-xl p-5 hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] hover:shadow-xl transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
+              className="bg-[#150d1f] border border-transparent backdrop-blur-md rounded-xl p-5 hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
               onClick={() => {
                 const rep = history.find(h => h.analysisId === iss.analysisId);
                 if (rep) onInspectReport(rep);

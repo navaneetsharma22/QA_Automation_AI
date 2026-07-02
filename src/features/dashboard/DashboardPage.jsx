@@ -360,7 +360,7 @@ export const DashboardPage = ({ onNavigate }) => {
         
         {/* Left Col: Main Banner & CTA */}
         <div className="col-span-1 flex flex-col gap-6">
-          <div className="bg-gradient-to-br from-[#2a1b38]/80 to-[#1a1224]/80 backdrop-blur-xl h-full w-full p-8 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-center group">
+          <div className="bg-gradient-to-br from-[#2a1b38]/80 to-[#1a1224]/80 backdrop-blur-xl h-full w-full p-8 rounded-3xl relative overflow-hidden flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
             <div className="flex items-end gap-3">
@@ -391,7 +391,7 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-5 hover:bg-[#1d132a] transition-all shadow-xl flex flex-col"
+                className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-5 hover:bg-[#1d132a] transition-all flex flex-col"
               >
                 <span className="text-theme-text-primary text-xl font-semibold mb-1 tracking-tight">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
@@ -422,7 +422,7 @@ export const DashboardPage = ({ onNavigate }) => {
             ))}
           </div>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-96 flex flex-col relative overflow-hidden group">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-96 flex flex-col relative overflow-hidden group">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-pink-500/5 blur-[100px] pointer-events-none" />
           <div className="flex-1 min-h-0 relative z-10 mt-4">
             <Line data={dailyTrendData} options={defaultChartOptions} />
@@ -433,7 +433,7 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Additional Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* Weekly Trend */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Weekly Quality Trend</h3>
           <div className="flex-1 min-h-0">
             <Bar data={weeklyTrendData} options={{ ...defaultChartOptions, scales: { ...defaultChartOptions.scales, x: { ...defaultChartOptions.scales.x, stacked: true }, y: { ...defaultChartOptions.scales.y, stacked: true } } }} />
@@ -441,7 +441,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Monthly Trend */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Monthly Score Averages</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyTrendData} options={defaultChartOptions} />
@@ -449,7 +449,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Issue Distribution */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Issue Category Watchlist</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
@@ -460,7 +460,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* AI Model Usage */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 shadow-2xl h-80 flex flex-col">
+        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Model Distribution Portfolio</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />

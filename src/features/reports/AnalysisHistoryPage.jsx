@@ -46,7 +46,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
         </div>
       </div>
 
-      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

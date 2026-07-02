@@ -12,6 +12,7 @@ import { ReportsPage } from './features/reports/ReportsPage';
 import { PromptManagerPage } from './features/prompts/PromptManagerPage';
 import { KnowledgeBasePage } from './features/rag/KnowledgeBasePage';
 import { AiModelsPage } from './features/settings/AiModelsPage';
+import { ApisPage } from './features/apis/ApisPage';
 import { AnalyticsPage } from './features/dashboard/AnalyticsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
 import { ProfilePage } from './features/profile/ProfilePage';
@@ -74,6 +75,7 @@ const MainApp = () => {
             {activeTab === 'knowledge' && <KnowledgeBasePage />}
             {activeTab === 'models' && <AiModelsPage />}
             {activeTab === 'analytics' && <AnalyticsPage />}
+            {activeTab === 'apis' && <ApisPage />}
             {activeTab === 'settings' && <SettingsPage />}
             {activeTab === 'profile' && <ProfilePage />}
           </main>

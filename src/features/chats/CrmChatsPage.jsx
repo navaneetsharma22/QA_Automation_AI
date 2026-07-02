@@ -26,12 +26,19 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
     setLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=10`;
+      let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=50`;
       if (dateToFetch) {
         url += `&date=${dateToFetch}`;
       }
-      const crmToken = localStorage.getItem('crm-token') || '';
-      const headers = crmToken ? { 'x-crm-token': crmToken } : {};
+      const crmActive = localStorage.getItem('crm-active') === 'true';
+      const crmToken = crmActive ? (localStorage.getItem('crm-token') || '') : '';
+      
+      const qcActive = localStorage.getItem('qc-active') === 'true';
+      const qcToken = qcActive ? (localStorage.getItem('qc-token') || '') : '';
+      
+      const headers = {};
+      if (crmToken) headers['x-crm-token'] = crmToken;
+      if (qcToken) headers['x-qc-token'] = qcToken;
       const res = await fetch(url, { headers });
       if (res.ok) {
         const data = await res.json();
@@ -123,7 +130,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </button>
       </div>
 
-      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl">
+      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden">
         <div className="p-5 flex items-center justify-between bg-[#110918]">
           <div className="flex items-center gap-2 text-sm text-theme-text-secondary font-mono tracking-wider text-[11px] uppercase">
             <span className="font-bold text-theme-text-primary text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
@@ -238,6 +245,23 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
+              
+              <div className="flex items-center gap-1 mx-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => fetchChats(p)}
+                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
+                      page === p 
+                        ? 'bg-gradient-to-r from-purple-600 to-[#d946ef] text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
+                        : 'bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#2a1b3d]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
               <button 
                 onClick={() => fetchChats(page + 1)}
                 disabled={page === totalPages}

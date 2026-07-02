@@ -121,7 +121,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </button>
           </div>
 
-          <div className="relative bg-[#150d1f] backdrop-blur-md rounded-3xl overflow-hidden transition-colors shadow-2xl">
+          <div className="relative bg-[#150d1f] backdrop-blur-md rounded-3xl overflow-hidden transition-colors">
             <textarea
               rows={14}
               required
@@ -167,7 +167,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-[#150d1f] backdrop-blur-md p-6 rounded-3xl h-fit shadow-2xl">
+        <div className="space-y-6 bg-[#150d1f] backdrop-blur-md p-6 rounded-3xl h-fit">
           <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
             <Layers className="w-4 h-4 text-theme-accent-yellow" />
             <span>AI Engine Configuration</span>

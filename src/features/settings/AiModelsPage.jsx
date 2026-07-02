@@ -32,7 +32,7 @@ export const AiModelsPage = () => {
         {aiProviders.map((p) => (
           <div
             key={p.id}
-            className={`bg-[#150d1f] backdrop-blur-xl rounded-3xl p-6 transition-all shadow-2xl flex flex-col justify-between relative overflow-hidden group ${
+            className={`bg-[#150d1f] backdrop-blur-xl rounded-3xl p-6 transition-all flex flex-col justify-between relative overflow-hidden group ${
               p.active ? 'hover:bg-[#1d132a]' : 'opacity-70'
             }`}
           >

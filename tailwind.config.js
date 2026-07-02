@@ -23,9 +23,9 @@ export default {
         }
       },
       boxShadow: {
-        '2xl': '0 0 24px rgba(192, 132, 252, 0.12)',
-        'xl': '0 0 16px rgba(192, 132, 252, 0.08)',
-        'lg': '0 0 12px rgba(192, 132, 252, 0.06)',
+        '2xl': 'none',
+        'xl': 'none',
+        'lg': 'none',
       }
     },
   },

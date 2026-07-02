@@ -34,19 +34,11 @@ export const ProfilePage = () => {
 
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <div className="border-b border-theme-border pb-6">
-        <h1 className="text-2xl font-semibold text-theme-text-primary tracking-wide">
-          User Account & Security Profile
-        </h1>
-        <p className="text-sm text-theme-text-secondary mt-1">
-          Manage your personal organization profile, role access, and JWT Bearer security credentials.
-        </p>
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: ID Card & JWT Preview */}
         <div className="space-y-6">
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 shadow-2xl text-center transition-all hover:border-theme-accent-yellow/30">
+          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 text-center transition-all hover:border-theme-accent-yellow/30">
             <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-fuchsia-600 flex items-center justify-center text-theme-text-primary text-2xl font-bold mx-auto mb-4 shadow-lg shadow-purple-500/20">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
@@ -58,7 +50,7 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-5 shadow-2xl transition-all">
+          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-5 transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold text-theme-accent-yellow uppercase font-mono">Active JWT Bearer Token</span>
               <button 
@@ -80,7 +72,7 @@ export const ProfilePage = () => {
 
         {/* Right 2 Columns: Edit Profile & Password */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 shadow-2xl transition-all">
+          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide mb-4 flex items-center gap-2">
               <UserCircle2 className="w-4 h-4 text-theme-accent-yellow" />
               <span>Personal Information</span>
@@ -119,7 +111,7 @@ export const ProfilePage = () => {
           </div>
 
           {/* Change Password */}
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 shadow-2xl transition-all">
+          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide mb-4 flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-amber-400" />
               <span>Change Password</span>

@@ -133,6 +133,28 @@ export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
             </p>
           </div>
         );
+      case 'apis':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-theme-primary tracking-wide">
+              Manage Your API and Token Here
+            </h2>
+            <p className="text-sm text-theme-secondary mt-1">
+              Add your personal AI API keys and Platform Integration tokens to override server defaults.
+            </p>
+          </div>
+        );
+      case 'profile':
+        return (
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-semibold text-theme-primary tracking-wide">
+              User Account & Security Profile
+            </h2>
+            <p className="text-sm text-theme-secondary mt-1">
+              Manage your personal organization profile, role access, and JWT Bearer security credentials.
+            </p>
+          </div>
+        );
       default:
         return <div className="flex flex-col"></div>;
     }
