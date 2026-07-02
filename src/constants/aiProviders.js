@@ -127,5 +127,5 @@ export const SEVERITY_LEVELS = [
   { name: 'High', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30', border: '#F59E0B' },
   { name: 'Medium', color: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30', border: '#EAB308' },
   { name: 'Low', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30', border: '#3B82F6' },
-  { name: 'Informational', color: 'bg-gray-500/10 text-gray-300 border-gray-500/30', border: '#6B7280' }
+  { name: 'Informational', color: 'bg-gray-500/10 text-theme-text-secondary border-gray-500/30', border: '#6B7280' }
 ];
