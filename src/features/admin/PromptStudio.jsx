@@ -104,7 +104,7 @@ export const PromptStudio = () => {
   };
 
   if (loading) {
-    return <div className="text-gray-400 p-8 text-center animate-pulse">Loading Prompt Studio...</div>;
+    return <div className="text-theme-text-secondary p-8 text-center animate-pulse">Loading Prompt Studio...</div>;
   }
 
   const currentInstructions = promptData[selectedCategory]?.globalInstructions || '';
@@ -124,11 +124,11 @@ export const PromptStudio = () => {
     <div className="space-y-8 animate-in fade-in duration-200">
       <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden shadow-xl flex flex-col" style={{ height: 'calc(100vh - 120px)', minHeight: '600px' }}>
         <div className="shrink-0 px-8 py-6 border-b border-[#1F2937] bg-gradient-to-r from-blue-900/20 to-purple-900/10 z-10">
-          <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-theme-text-primary mb-2 flex items-center gap-3">
             <Bot className="w-7 h-7 text-blue-400" />
             AI Prompt Studio
           </h2>
-          <p className="text-sm text-gray-300 max-w-3xl leading-relaxed">
+          <p className="text-sm text-theme-text-secondary max-w-3xl leading-relaxed">
             Directly inject global rules and few-shot examples into the AI's core system prompt. Data saved here acts as the absolute ground truth for all future chat analyses.
           </p>
         </div>
@@ -138,13 +138,13 @@ export const PromptStudio = () => {
           {/* Category Selector */}
           <div className="bg-[#0B1020] border border-[#1F2937] p-6 rounded-xl shadow-inner mb-8 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-1">Issue Category</h3>
-              <p className="text-xs text-gray-500">Select the category to define its specific policies and examples.</p>
+              <h3 className="text-sm font-bold text-theme-text-secondary uppercase tracking-wider mb-1">Issue Category</h3>
+              <p className="text-xs text-theme-text-secondary/70">Select the category to define its specific policies and examples.</p>
             </div>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-72 bg-[#111827] border border-[#374151] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer font-bold"
+              className="w-72 bg-[#111827] border border-[#374151] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer font-bold"
             >
               <option value="" disabled>Select Category...</option>
               {categories.map(c => (
@@ -157,11 +157,11 @@ export const PromptStudio = () => {
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <h3 className="text-lg font-bold text-theme-text-primary flex items-center gap-2">
                   <Info className="w-5 h-5 text-emerald-400" />
                   Category Policy & Context
                 </h3>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-theme-text-secondary mt-1">
                   Paste company policies, baggage rules, or strict conditions specific to this category. <br/>
                   <span className="text-emerald-400 font-medium">Format: Plain text or Markdown (No JSON required).</span>
                 </p>
@@ -173,7 +173,7 @@ export const PromptStudio = () => {
                 onChange={handleInstructionChange}
                 disabled={!selectedCategory}
                 placeholder={selectedCategory ? "e.g. Always assume the baggage limit is strictly 15kg unless stated otherwise by the agent..." : "Select a category above to start typing..."}
-                className="w-full min-h-[300px] h-full bg-[#0B1020] border border-[#1F2937] text-gray-200 text-sm rounded-xl p-5 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none shadow-inner font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full min-h-[300px] h-full bg-[#0B1020] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl p-5 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all resize-none shadow-inner font-mono disabled:opacity-50 disabled:cursor-not-allowed"
                 spellCheck="false"
               />
             </div>
@@ -186,8 +186,8 @@ export const PromptStudio = () => {
               disabled={isSubmitting || isSaved}
               className={`flex items-center gap-2 px-8 py-3 disabled:opacity-80 font-bold rounded-xl transition-all shadow-md transform hover:-translate-y-0.5 active:translate-y-0 ${
                 isSaved 
-                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20' 
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-indigo-500/30'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-theme-text-primary shadow-emerald-500/20' 
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-theme-text-primary shadow-indigo-500/30'
               }`}
             >
               {isSubmitting ? (
@@ -210,15 +210,15 @@ export const PromptStudio = () => {
       {/* Active Contexts List */}
       <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden mt-8 shadow-xl">
         <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <List className="w-5 h-5 text-purple-400" />
+          <h3 className="text-base font-bold text-theme-text-primary flex items-center gap-2">
+            <List className="w-5 h-5 text-theme-accent-yellow" />
             Active Category Contexts ({activeCategories.length})
           </h3>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-400 uppercase bg-[#0B1020] border-b border-[#1F2937]">
+            <thead className="text-xs text-theme-text-secondary uppercase bg-[#0B1020] border-b border-[#1F2937]">
               <tr>
                 <th className="px-6 py-4 font-bold tracking-wider">Category</th>
                 <th className="px-6 py-4 font-bold tracking-wider">Policy Preview</th>
@@ -228,10 +228,10 @@ export const PromptStudio = () => {
             <tbody className="divide-y divide-[#1F2937]">
               {activeCategories.map(([category, data]) => (
                 <tr key={category} className="hover:bg-[#0B1020]/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
+                  <td className="px-6 py-4 font-medium text-theme-text-primary whitespace-nowrap">
                     {category}
                   </td>
-                  <td className="px-6 py-4 text-gray-400 max-w-2xl truncate">
+                  <td className="px-6 py-4 text-theme-text-secondary max-w-2xl truncate">
                     {data.globalInstructions}
                   </td>
                   <td className="px-6 py-4 text-right space-x-3 whitespace-nowrap">
@@ -252,7 +252,7 @@ export const PromptStudio = () => {
               ))}
               {activeCategories.length === 0 && (
                 <tr>
-                  <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="3" className="px-6 py-8 text-center text-theme-text-secondary/70">
                     No active category contexts found. Select a category above and save to create one.
                   </td>
                 </tr>

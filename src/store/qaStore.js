@@ -29,8 +29,20 @@ export const useQaStore = create(
   },
 
   // KPI Calculations
-  getKpis: () => {
-    const history = get().history;
+  getKpis: (dateFilter = {}) => {
+    let history = get().history;
+    
+    if (dateFilter.startDate) {
+      const start = new Date(dateFilter.startDate);
+      start.setHours(0, 0, 0, 0);
+      history = history.filter(h => new Date(h.date) >= start);
+    }
+    
+    if (dateFilter.endDate) {
+      const end = new Date(dateFilter.endDate);
+      end.setHours(23, 59, 59, 999);
+      history = history.filter(h => new Date(h.date) <= end);
+    }
     const totalChatsAnalyzed = history.length;
     const successfulAnalysis = history.filter(h => h.status === 'Passed' || h.status === 'Warning').length;
     const failedAnalysis = totalChatsAnalyzed - successfulAnalysis;
@@ -125,9 +137,24 @@ export const useQaStore = create(
     try {
       const startTime = Date.now();
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const customHeaders = { 'Content-Type': 'application/json' };
+      
+      // Always flag to use personal keys. If a key is empty, the backend falls back to server default (.env).
+      customHeaders['x-use-personal-keys'] = 'true';
+      customHeaders['x-groq-key'] = localStorage.getItem('x-groq-active') === 'true' ? (localStorage.getItem('x-groq-key') || '') : '';
+      customHeaders['x-openai-key'] = localStorage.getItem('x-openai-active') === 'true' ? (localStorage.getItem('x-openai-key') || '') : '';
+      customHeaders['x-anthropic-key'] = localStorage.getItem('x-anthropic-active') === 'true' ? (localStorage.getItem('x-anthropic-key') || '') : '';
+      customHeaders['x-gemini-key'] = localStorage.getItem('x-gemini-active') === 'true' ? (localStorage.getItem('x-gemini-key') || '') : '';
+      customHeaders['x-deepseek-key'] = localStorage.getItem('x-deepseek-active') === 'true' ? (localStorage.getItem('x-deepseek-key') || '') : '';
+      customHeaders['x-openrouter-key'] = localStorage.getItem('x-openrouter-active') === 'true' ? (localStorage.getItem('x-openrouter-key') || '') : '';
+      customHeaders['x-huggingface-key'] = localStorage.getItem('x-huggingface-active') === 'true' ? (localStorage.getItem('x-huggingface-key') || '') : '';
+      customHeaders['x-cerebras-key'] = localStorage.getItem('x-cerebras-active') === 'true' ? (localStorage.getItem('x-cerebras-key') || '') : '';
+      customHeaders['x-cohere-key'] = localStorage.getItem('x-cohere-active') === 'true' ? (localStorage.getItem('x-cohere-key') || '') : '';
+      customHeaders['x-github-key'] = localStorage.getItem('x-github-active') === 'true' ? (localStorage.getItem('x-github-key') || '') : '';
+
       const response = await fetch(`${apiUrl}/v1/analyze`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: customHeaders,
         body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId, category })
       });
 
