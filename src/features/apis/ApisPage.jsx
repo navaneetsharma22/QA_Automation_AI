@@ -70,7 +70,7 @@ export const ApisPage = () => {
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       <div className="max-w-4xl space-y-6">
-        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
+        <div className="premium-glass-card no-hover p-8 space-y-6">
           <div className="border-b border-theme-border pb-4">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
               <Check className="w-4 h-4 text-theme-accent-yellow" />
@@ -119,7 +119,7 @@ export const ApisPage = () => {
           </div>
         </div>
 
-        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
+        <div className="premium-glass-card no-hover p-8 space-y-6">
           <div className="border-b border-theme-border pb-4">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
               <Check className="w-4 h-4 text-theme-accent-yellow" />

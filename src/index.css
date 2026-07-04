@@ -105,7 +105,7 @@ html, body, #root {
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-radius: 28px;
+  border-radius: 16px;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   overflow: hidden;
@@ -127,6 +127,12 @@ html, body, #root {
   transform: translateY(-6px) scale(1.02);
   border-color: var(--glass-border-hover);
   box-shadow: var(--glass-shadow-hover);
+}
+
+.premium-glass-card.no-hover:hover {
+  transform: none;
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .premium-glass-card::after {

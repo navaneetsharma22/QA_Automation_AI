@@ -32,8 +32,8 @@ export const AiModelsPage = () => {
         {aiProviders.map((p) => (
           <div
             key={p.id}
-            className={`bg-theme-card backdrop-blur-xl rounded-3xl p-6 transition-all flex flex-col justify-between relative overflow-hidden group ${
-              p.active ? 'hover:bg-theme-card-hover' : 'opacity-70'
+            className={`premium-glass-card no-hover p-6 transition-all flex flex-col justify-between relative overflow-hidden group ${
+              p.active ? '' : 'opacity-50 grayscale'
             }`}
           >
             <div>

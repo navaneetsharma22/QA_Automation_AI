@@ -149,7 +149,7 @@ export const AnalyticsPage = () => {
 
       {/* Analytics KPI bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-6 rounded-2xl flex items-center justify-between transition-all group">
+        <div className="premium-glass-card p-6 flex items-center justify-between group">
           <div>
             <span className="text-xs text-theme-text-secondary">{startDate ? 'Total Inquiries (Filtered)' : 'Total Monthly Inquiries'}</span>
             <span className="text-3xl font-semibold text-theme-text-primary tracking-wide mt-1 block">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
@@ -157,7 +157,7 @@ export const AnalyticsPage = () => {
           <div className="p-3 bg-theme-accent-yellow/10 rounded-2xl text-theme-accent-yellow group-hover:shadow-md transition-all"><BarChart3 className="w-6 h-6" /></div>
         </div>
 
-        <div className="bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-6 rounded-2xl flex items-center justify-between transition-all group">
+        <div className="premium-glass-card p-6 flex items-center justify-between group">
           <div>
             <span className="text-xs text-theme-text-secondary">Average Inference Latency</span>
             <span className="text-3xl font-semibold text-theme-accent-yellow tracking-wide mt-1 block">{kpis.averageAiResponseTime}</span>
@@ -165,7 +165,7 @@ export const AnalyticsPage = () => {
           <div className="p-3 bg-theme-accent-yellow/10 rounded-2xl text-theme-accent-yellow group-hover:shadow-md transition-all"><Clock className="w-6 h-6" /></div>
         </div>
 
-        <div className="bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-6 rounded-2xl flex items-center justify-between transition-all group">
+        <div className="premium-glass-card p-6 flex items-center justify-between group">
           <div>
             <span className="text-xs text-theme-text-secondary">Misleading Detection Rate</span>
             <span className="text-3xl font-semibold text-amber-400 tracking-wide mt-1 block">{kpis.misleadingPercentage}%</span>
@@ -190,7 +190,7 @@ export const AnalyticsPage = () => {
           ].map((card, idx) => (
             <div
               key={idx}
-              className={`bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-5 rounded-2xl flex items-center justify-between transition-all group`}
+              className={`premium-glass-card p-5 flex items-center justify-between group`}
             >
               <div>
                 <span className="text-xs text-theme-text-secondary leading-tight block">{card.label}</span>
@@ -206,14 +206,14 @@ export const AnalyticsPage = () => {
 
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-6 rounded-2xl h-96 flex flex-col transition-all">
+        <div className="premium-glass-card no-hover p-6 h-96 flex flex-col group">
           <h3 className="text-sm font-semibold text-theme-text-primary mb-4 tracking-wide">Multi-LLM Inference Velocity (Tokens/Sec)</h3>
           <div className="flex-1 min-h-0">
             <Bar data={modelSpeedData} options={chartOptions} />
           </div>
         </div>
 
-        <div className="bg-theme-card backdrop-blur-md border border-transparent hover:bg-theme-card-hover p-6 rounded-2xl h-96 flex flex-col transition-all">
+        <div className="premium-glass-card no-hover p-6 h-96 flex flex-col group">
           <h3 className="text-sm font-semibold text-theme-text-primary mb-4 tracking-wide">RAG Grounded Factual Accuracy (%)</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyAccuracyData} options={chartOptions} />
