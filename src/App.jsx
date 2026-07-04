@@ -57,11 +57,13 @@ const MainApp = () => {
 
   return (
     <div className="min-h-screen bg-theme-main text-theme-primary flex font-sans selection:bg-theme-accent-yellow selection:text-theme-primary antialiased overflow-hidden relative">
-      {/* Ambient glow blobs */}
+      {/* Ambient glow blobs & Matte Grain Overlay */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[120px]" style={{ backgroundColor: 'var(--glow-1)' }} />
-        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ backgroundColor: 'var(--glow-2)' }} />
-        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: 'var(--glow-3)' }} />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[120px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-1)' }} />
+        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full blur-[120px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-2)' }} />
+        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full blur-[100px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-3)' }} />
+        {/* Grain/Noise Texture for Premium Feel */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.25] mix-blend-overlay z-10" />
       </div>
       <Sidebar activeTab={activeTab === 'result' ? resultSource : activeTab} setActiveTab={(tab) => { setActiveTab(tab); setViewingReport(null); }} />
 

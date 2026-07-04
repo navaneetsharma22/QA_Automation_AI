@@ -360,11 +360,11 @@ export const DashboardPage = ({ onNavigate }) => {
         
         {/* Left Col: Main Banner & CTA */}
         <div className="col-span-1 flex flex-col gap-6">
-          <div className="bg-theme-card backdrop-blur-xl h-full w-full p-8 rounded-3xl relative overflow-hidden flex flex-col justify-center group">
+          <div className="premium-glass-card h-full w-full p-8 relative flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
             <div className="flex items-end gap-3">
-              <span className="text-4xl lg:text-5xl font-medium text-theme-text-primary tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
+              <span className="text-4xl lg:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
             </div>
             <div className="mt-8 flex items-center justify-between">
               <span className="text-xs text-theme-text-secondary">Enterprise QA Platform</span>
@@ -391,9 +391,9 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-theme-card backdrop-blur-md rounded-3xl p-5 hover:bg-theme-card-hover transition-all flex flex-col"
+                className="premium-glass-card p-5 flex flex-col"
               >
-                <span className="text-theme-text-primary text-xl font-semibold mb-1 tracking-tight">{kpi.value}</span>
+                <span className="text-xl font-semibold mb-1 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
                   {kpi.change}
                 </span>
@@ -422,7 +422,7 @@ export const DashboardPage = ({ onNavigate }) => {
             ))}
           </div>
         </div>
-        <div className="bg-theme-card backdrop-blur-md rounded-3xl p-6 h-96 flex flex-col relative overflow-hidden group">
+        <div className="premium-glass-card p-6 h-96 flex flex-col relative group">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-pink-500/5 blur-[100px] pointer-events-none" />
           <div className="flex-1 min-h-0 relative z-10 mt-4">
             <Line data={dailyTrendData} options={defaultChartOptions} />
@@ -433,7 +433,7 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Additional Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* Weekly Trend */}
-        <div className="bg-theme-card backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Weekly Quality Trend</h3>
           <div className="flex-1 min-h-0">
             <Bar data={weeklyTrendData} options={{ ...defaultChartOptions, scales: { ...defaultChartOptions.scales, x: { ...defaultChartOptions.scales.x, stacked: true }, y: { ...defaultChartOptions.scales.y, stacked: true } } }} />
@@ -441,7 +441,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Monthly Trend */}
-        <div className="bg-theme-card backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Monthly Score Averages</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyTrendData} options={defaultChartOptions} />
@@ -449,7 +449,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Issue Distribution */}
-        <div className="bg-theme-card backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Issue Category Watchlist</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
@@ -460,7 +460,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* AI Model Usage */}
-        <div className="bg-theme-card backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Model Distribution Portfolio</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
             <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
@@ -497,7 +497,7 @@ export const DashboardPage = ({ onNavigate }) => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-              <div className="bg-theme-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent-yellow/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" /> Performance Uptrend
@@ -507,7 +507,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="bg-theme-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-amber-300 mb-2 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" /> Latency Warning
@@ -517,7 +517,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="bg-theme-card border border-blue-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
                   <Target className="w-4 h-4" /> Action Items

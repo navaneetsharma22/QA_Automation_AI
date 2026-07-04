@@ -97,10 +97,14 @@ export const AuthPage = () => {
 
   return (
     <div ref={containerRef} className="min-h-screen bg-theme-main flex items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans transition-colors duration-300">
-      {/* Blurred background glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-theme-accent-yellow/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] bg-pink-600/10 blur-[120px] rounded-full pointer-events-none" />
+      {/* Aurora Mesh Gradient & Matte Grain Overlay */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        <div className="absolute -top-32 -left-32 w-[60%] h-[60%] rounded-full blur-[140px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-1)' }} />
+        <div className="absolute top-1/4 -right-32 w-[50%] h-[50%] rounded-full blur-[140px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-2)' }} />
+        <div className="absolute -bottom-40 left-1/4 w-[60%] h-[60%] rounded-full blur-[140px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-3)' }} />
+        {/* Grain/Noise Texture for Premium Feel */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.25] mix-blend-overlay z-10" />
+      </div>
 
       {/* Theme Toggle */}
       <button
