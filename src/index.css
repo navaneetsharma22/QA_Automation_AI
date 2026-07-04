@@ -9,20 +9,33 @@
   --theme-bg-input: #110918;
   --theme-text-primary: #ffffff;
   --theme-text-secondary: #9ca3af;
-  --theme-border: transparent;
+  --theme-border: rgba(255, 255, 255, 0.05);
   --theme-accent-yellow: #fbbf24;
+  --glow-1: rgba(88, 28, 135, 0.2);
+  --glow-2: rgba(49, 46, 129, 0.15);
+  --glow-3: rgba(76, 29, 149, 0.15);
+  --sidebar-active-bg: linear-gradient(to right, rgba(59, 42, 69, 0.8), rgba(37, 27, 46, 0.4));
+  --sidebar-active-text: #ffffff;
+  --sidebar-inactive-text: #9ca3af;
+  --sidebar-inactive-hover: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="light"] {
-  /* User will define light mode colors later. Mirroring dark for now so UI doesn't break if toggled early. */
-  --theme-bg-main: #0a0612;
-  --theme-bg-card: rgba(255, 255, 255, 0.03);
-  --theme-bg-card-hover: rgba(255, 255, 255, 0.06);
-  --theme-bg-input: rgba(0, 0, 0, 0.2);
-  --theme-text-primary: #ffffff;
-  --theme-text-secondary: #9ca3af;
-  --theme-border: transparent;
-  --theme-accent-yellow: #fbbf24;
+  --theme-bg-main: #f8f7fa;
+  --theme-bg-card: #ffffff;
+  --theme-bg-card-hover: #f1f0f5;
+  --theme-bg-input: #f3f2f7;
+  --theme-text-primary: #1e1b26;
+  --theme-text-secondary: #6b7280;
+  --theme-border: rgba(0, 0, 0, 0.06);
+  --theme-accent-yellow: #d97706;
+  --glow-1: rgba(233, 213, 255, 0.5);
+  --glow-2: rgba(199, 210, 254, 0.4);
+  --glow-3: rgba(221, 214, 254, 0.4);
+  --sidebar-active-bg: linear-gradient(to right, rgba(233, 213, 255, 0.8), rgba(216, 180, 254, 0.3));
+  --sidebar-active-text: #4c1d95;
+  --sidebar-inactive-text: #6b7280;
+  --sidebar-inactive-hover: rgba(0, 0, 0, 0.04);
 }
 
 html, body, #root {

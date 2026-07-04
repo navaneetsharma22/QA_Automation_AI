@@ -38,7 +38,7 @@ export const ProfilePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: ID Card & JWT Preview */}
         <div className="space-y-6">
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 text-center transition-all hover:border-theme-accent-yellow/30">
+          <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 text-center transition-all hover:border-theme-accent-yellow/30">
             <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-fuchsia-600 flex items-center justify-center text-theme-text-primary text-2xl font-bold mx-auto mb-4 shadow-lg shadow-purple-500/20">
               {user?.fullName?.charAt(0) || 'A'}
             </div>
@@ -50,7 +50,7 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-5 transition-all">
+          <div className="bg-theme-card backdrop-blur-md rounded-2xl p-5 transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold text-theme-accent-yellow uppercase font-mono">Active JWT Bearer Token</span>
               <button 
@@ -64,7 +64,7 @@ export const ProfilePage = () => {
                 <Copy className="w-3.5 h-3.5" />
               </button>
             </div>
-            <p className="text-[11px] font-mono text-theme-text-secondary bg-[#110918] p-3 rounded-xl break-all shadow-inner">
+            <p className="text-[11px] font-mono text-theme-text-secondary bg-theme-input p-3 rounded-xl break-all shadow-inner">
               {user?.token || 'eyJhYmNkIjoiZWVlZSI...'}
             </p>
           </div>
@@ -72,7 +72,7 @@ export const ProfilePage = () => {
 
         {/* Right 2 Columns: Edit Profile & Password */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
+          <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 transition-all">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide mb-4 flex items-center gap-2">
               <UserCircle2 className="w-4 h-4 text-theme-accent-yellow" />
               <span>Personal Information</span>
@@ -85,7 +85,7 @@ export const ProfilePage = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md shadow-inner transition-colors"
+                  className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md shadow-inner transition-colors"
                 />
               </div>
 
@@ -96,14 +96,14 @@ export const ProfilePage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md font-mono shadow-inner transition-colors"
+                  className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md font-mono shadow-inner transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] text-theme-text-primary font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] shadow-sm hover:shadow-md text-theme-text-primary font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
               >
                 <Save className="w-3.5 h-3.5" /> Update Profile
               </button>
@@ -111,7 +111,7 @@ export const ProfilePage = () => {
           </div>
 
           {/* Change Password */}
-          <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
+          <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 transition-all">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide mb-4 flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-amber-400" />
               <span>Change Password</span>
@@ -126,7 +126,7 @@ export const ProfilePage = () => {
                     value={oldPass}
                     onChange={(e) => setOldPass(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[#110918] rounded-xl pl-4 pr-10 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
+                    className="w-full bg-theme-input rounded-xl pl-4 pr-10 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
                   />
                   <button 
                     type="button"
@@ -147,7 +147,7 @@ export const ProfilePage = () => {
                     value={newPass}
                     onChange={(e) => setNewPass(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full bg-[#110918] rounded-xl pl-4 pr-10 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
+                    className="w-full bg-theme-input rounded-xl pl-4 pr-10 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-amber-500/50 shadow-inner transition-colors"
                   />
                   <button 
                     type="button"
@@ -162,7 +162,7 @@ export const ProfilePage = () => {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] text-theme-text-primary font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 shadow-sm hover:shadow-md text-theme-text-primary font-semibold text-xs rounded-xl transition-all flex items-center gap-1.5"
               >
                 <Lock className="w-3.5 h-3.5" /> Change Password
               </button>

@@ -141,7 +141,7 @@ export const AdminRulesManager = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
+      <div className="bg-theme-main border border-theme-border rounded-2xl p-6">
         <h2 className="text-xl font-bold text-theme-text-primary mb-2 flex items-center gap-2">
           <Server className="w-5 h-5 text-blue-400" />
           AI Reference Base Manager
@@ -150,13 +150,13 @@ export const AdminRulesManager = () => {
           Categories added here are dynamically injected into the AI system prompt to guide how the LLM evaluates agents.
         </p>
 
-        <form onSubmit={handleAddRule} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]/50">
+        <form onSubmit={handleAddRule} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-theme-input p-6 rounded-xl border border-theme-border/50">
           <div className="md:col-span-4 space-y-2">
             <label className="text-xs font-bold text-theme-text-secondary uppercase tracking-wider">Category Name</label>
             <select 
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-[#111827] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+              className="w-full bg-theme-main border border-theme-border text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
             >
               <option value="" disabled>Select Category...</option>
               <option value="Random (Any Issue)">Random (Any Issue)</option>
@@ -179,7 +179,7 @@ export const AdminRulesManager = () => {
               placeholder="Describe what the AI should check for (e.g. Ensure the agent informed the customer about the 20kg limit...)" 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-[#111827] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
+              className="w-full bg-theme-main border border-theme-border text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
             />
           </div>
 
@@ -187,7 +187,7 @@ export const AdminRulesManager = () => {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-sm"
             >
               {isSubmitting ? 'Saving...' : (
                 <>
@@ -200,8 +200,8 @@ export const AdminRulesManager = () => {
         </form>
       </div>
 
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
+      <div className="bg-theme-main border border-theme-border rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-theme-border flex items-center justify-between">
           <h3 className="text-base font-bold text-theme-text-primary flex items-center gap-2">
             <Settings className="w-4 h-4 text-emerald-400" />
             Active Reference Rules ({rules.length})
@@ -213,7 +213,7 @@ export const AdminRulesManager = () => {
             <div className="p-8 text-center text-theme-text-secondary text-sm">Loading active rules...</div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="text-xs text-theme-text-secondary uppercase bg-[#0B1020] border-b border-[#1F2937]">
+              <thead className="text-xs text-theme-text-secondary uppercase bg-theme-input border-b border-theme-border">
                 <tr>
                   <th className="px-6 py-4 font-bold tracking-wider">Category</th>
                   <th className="px-6 py-4 font-bold tracking-wider">Evaluation Description</th>
@@ -222,7 +222,7 @@ export const AdminRulesManager = () => {
               </thead>
               <tbody className="divide-y divide-[#1F2937]">
                 {rules.map((rule, idx) => (
-                  <tr key={rule.id || idx} className="hover:bg-[#0B1020]/50 transition-colors">
+                  <tr key={rule.id || idx} className="hover:bg-theme-input/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-theme-text-primary">
                       {rule.category || rule.id}
                     </td>
@@ -261,15 +261,15 @@ export const AdminRulesManager = () => {
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
+          <div className="bg-theme-main border border-theme-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-theme-border flex items-center justify-between">
               <h3 className="text-lg font-bold text-theme-text-primary flex items-center gap-2">
                 <Settings className="w-5 h-5 text-blue-400" />
                 Edit AI Reference Rule
               </h3>
               <button 
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-theme-text-secondary hover:text-theme-text-primary p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
+                className="text-theme-text-secondary hover:text-theme-text-primary p-1 rounded-lg hover:bg-theme-card transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -281,7 +281,7 @@ export const AdminRulesManager = () => {
                 <select 
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
+                  className="w-full bg-theme-input border border-theme-border text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors" 
                 >
                   <option value="" disabled>Select Category...</option>
                   <option value="Random (Any Issue)">Random (Any Issue)</option>
@@ -304,22 +304,22 @@ export const AdminRulesManager = () => {
                   placeholder="Describe what the AI should check for..." 
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
+                  className="w-full bg-theme-input border border-theme-border text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#1F2937]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-theme-border">
                 <button 
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-theme-text-primary font-medium rounded-xl transition-all border border-[#1F2937]"
+                  className="px-6 py-2.5 bg-transparent hover:bg-theme-card text-theme-text-primary font-medium rounded-xl transition-all border border-theme-border"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={isUpdating}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-text-primary font-medium rounded-xl transition-all shadow-sm"
                 >
                   {isUpdating ? 'Updating...' : (
                     <>

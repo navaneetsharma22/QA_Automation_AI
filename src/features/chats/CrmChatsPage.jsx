@@ -104,14 +104,14 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               style={{ colorScheme: 'dark' }}
-              className="bg-[#1d132a] rounded-xl pl-9 pr-4 py-2 text-sm text-theme-text-secondary hover:bg-[#1d132a] focus:outline-none focus:border-theme-accent-yellow/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              className="bg-theme-card-hover rounded-xl pl-9 pr-4 py-2 text-sm text-theme-text-secondary hover:bg-theme-card-hover focus:outline-none focus:border-theme-accent-yellow/50 transition-colors [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               title="Filter by Date"
             />
           </div>
           {selectedDate && (
             <button
               onClick={() => setSelectedDate('')}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium shadow-sm hover:shadow-md"
               title="Clear Date Filter"
             >
               <X className="w-3.5 h-3.5" />
@@ -122,7 +122,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
         <button 
           onClick={() => fetchChats(page)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] transition-all shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover transition-all shadow-sm"
           title="Refresh List"
         >
           <RefreshCw className="w-4 h-4" />
@@ -130,8 +130,8 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </button>
       </div>
 
-      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden">
-        <div className="p-5 flex items-center justify-between bg-[#110918]">
+      <div className="bg-theme-card backdrop-blur-xl rounded-3xl overflow-hidden">
+        <div className="p-5 flex items-center justify-between bg-theme-input">
           <div className="flex items-center gap-2 text-sm text-theme-text-secondary font-mono tracking-wider text-[11px] uppercase">
             <span className="font-bold text-theme-text-primary text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
           </div>
@@ -140,14 +140,14 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
             <input 
               type="text"
               placeholder="Search chat ID or name..."
-              className="bg-[#150d1f] backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors w-72 shadow-inner"
+              className="bg-theme-card backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors w-72 shadow-inner"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-theme-text-secondary">
-            <thead className="text-[11px] font-bold uppercase tracking-wider bg-[#110918] text-theme-text-secondary font-mono">
+            <thead className="text-[11px] font-bold uppercase tracking-wider bg-theme-input text-theme-text-secondary font-mono">
               <tr>
                 <th className="px-6 py-4">Chat ID</th>
                 <th className="px-6 py-4">Customer</th>
@@ -176,17 +176,17 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 chats.map((chat) => {
                   const isAnalyzed = history.some(h => h.petitionId === chat.id || (h.conversationText && h.conversationText.includes(`Ticket/Chat ID: ${chat.id}`)));
                   return (
-                  <tr key={chat.id} className="hover:bg-[#1d132a] transition-colors group cursor-pointer">
+                  <tr key={chat.id} className="hover:bg-theme-card-hover transition-colors group cursor-pointer">
                     <td className="px-6 py-4 font-mono text-xs font-bold text-theme-accent-yellow">{chat.id}</td>
                     <td className="px-6 py-4 font-medium text-theme-text-primary">{chat.customerName}</td>
                     <td className="px-6 py-4 text-theme-text-secondary">{chat.agentName}</td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-[#1d132a] text-theme-accent-yellow rounded-lg text-[11px] font-bold shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                      <span className="px-3 py-1 bg-theme-card-hover text-theme-accent-yellow rounded-lg text-[11px] font-bold shadow-sm">
                         {chat.category || 'General'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[11px] font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                      <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[11px] font-bold shadow-sm">
                         Resolved
                       </span>
                     </td>
@@ -208,7 +208,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                         <button
                           onClick={() => handleAnalyze(chat)}
                           disabled={analyzingId !== null}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-extrabold rounded-lg text-[11px] tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-extrabold rounded-lg text-[11px] tracking-wider uppercase transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {analyzingId === chat.id ? (
                             <>
@@ -233,7 +233,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="px-6 py-4 flex items-center justify-between bg-[#110918] text-[11px] font-mono tracking-wider">
+          <div className="px-6 py-4 flex items-center justify-between bg-theme-input text-[11px] font-mono tracking-wider">
             <span className="text-theme-text-secondary/70">
               SHOWING PAGE <span className="font-bold text-theme-text-secondary">{page}</span> OF <span className="font-bold text-theme-text-secondary">{totalPages}</span>
             </span>
@@ -241,7 +241,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               <button 
                 onClick={() => fetchChats(page - 1)}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -253,8 +253,8 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                     onClick={() => fetchChats(p)}
                     className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
                       page === p 
-                        ? 'bg-gradient-to-r from-purple-600 to-[#d946ef] text-white shadow-[0_0_10px_rgba(168,85,247,0.3)]' 
-                        : 'bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#2a1b3d]'
+                        ? 'bg-gradient-to-r from-purple-600 to-[#d946ef] text-white shadow-sm' 
+                        : 'bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#2a1b3d]'
                     }`}
                   >
                     {p}
@@ -265,7 +265,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               <button 
                 onClick={() => fetchChats(page + 1)}
                 disabled={page === totalPages}
-                className="p-1.5 rounded-lg bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

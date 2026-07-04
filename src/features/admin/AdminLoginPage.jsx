@@ -27,7 +27,7 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1020] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-['Inter'] selection:bg-blue-600 selection:text-theme-text-primary">
+    <div className="min-h-screen bg-theme-input flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-['Inter'] selection:bg-blue-600 selection:text-theme-text-primary">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/30">
@@ -43,7 +43,7 @@ export const AdminLoginPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-[#111827] py-8 px-4 shadow sm:rounded-2xl sm:px-10 border border-[#1F2937]">
+        <div className="bg-theme-main py-8 px-4 shadow sm:rounded-2xl sm:px-10 border border-theme-border">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label className="block text-sm font-medium text-theme-text-secondary">
@@ -58,7 +58,7 @@ export const AdminLoginPage = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-[#374151] rounded-xl bg-[#0B1020] text-theme-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-theme-border rounded-xl bg-theme-input text-theme-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm transition-colors"
                   placeholder="Enter admin username"
                 />
               </div>
@@ -77,7 +77,7 @@ export const AdminLoginPage = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-[#374151] rounded-xl bg-[#0B1020] text-theme-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-theme-border rounded-xl bg-theme-input text-theme-text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm transition-colors"
                   placeholder="Enter password"
                 />
               </div>
@@ -86,7 +86,7 @@ export const AdminLoginPage = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-theme-text-primary bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-[#111827] transition-all hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] items-center gap-2"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-theme-text-primary bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-[#111827] transition-all hover:shadow-md items-center gap-2"
               >
                 Sign In to Admin Panel
                 <ArrowRight className="w-4 h-4" />

@@ -26,11 +26,11 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search ID, Agent, Model..."
-              className="w-full bg-[#150d1f] backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors shadow-inner"
+              className="w-full bg-theme-card backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors shadow-inner"
             />
           </div>
 
-          <div className="flex items-center bg-[#110918] rounded-xl p-1 text-xs">
+          <div className="flex items-center bg-theme-input rounded-xl p-1 text-xs">
             {['ALL', 'Passed', 'Warning', 'Failed'].map(st => (
               <button
                 key={st}
@@ -46,11 +46,11 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
         </div>
       </div>
 
-      <div className="bg-[#150d1f] backdrop-blur-xl rounded-3xl overflow-hidden">
+      <div className="bg-theme-card backdrop-blur-xl rounded-3xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#110918] text-[11px] font-bold uppercase tracking-wider text-theme-text-secondary font-mono">
+              <tr className="bg-theme-input text-[11px] font-bold uppercase tracking-wider text-theme-text-secondary font-mono">
                 <th className="py-4 px-6">Analysis ID</th>
                 <th className="py-3.5 px-6">Date & Time</th>
                 <th className="py-3.5 px-6">Agent Evaluated</th>
@@ -71,7 +71,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
                 filtered.map((item) => (
                   <tr 
                     key={item.analysisId}
-                    className="hover:bg-[#1d132a] transition-colors cursor-pointer group"
+                    className="hover:bg-theme-card-hover transition-colors cursor-pointer group"
                     onClick={() => onSelectReport(item)}
                   >
                     <td className="py-4 px-6 font-mono font-bold text-theme-accent-yellow">
@@ -118,7 +118,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
                           e.stopPropagation();
                           onSelectReport(item);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-[#1d132a] hover:bg-theme-accent-yellow text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-accent-yellow hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all text-[11px] font-semibold flex items-center gap-1.5 ml-auto"
+                        className="px-3 py-1.5 rounded-lg bg-theme-card-hover hover:bg-theme-accent-yellow text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-accent-yellow hover:shadow-md transition-all text-[11px] font-semibold flex items-center gap-1.5 ml-auto"
                       >
                         <Eye className="w-3 h-3" /> View Report
                       </button>
@@ -129,7 +129,7 @@ export const AnalysisHistoryPage = ({ onSelectReport }) => {
             </tbody>
           </table>
         </div>
-        <div className="bg-[#110918] px-6 py-4 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
+        <div className="bg-theme-input px-6 py-4 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
           <span>SHOWING {filtered.length} OF {history.length} RECORDS</span>
           <span>ENCRYPTED AT REST (MONGODB + MONGOOSE)</span>
         </div>

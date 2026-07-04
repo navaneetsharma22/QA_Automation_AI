@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { CommandPalette } from './components/layout/CommandPalette';
@@ -27,8 +27,12 @@ import { AdminPanel } from './features/admin/AdminPanel';
 const MainApp = () => {
   const { isAuthenticated, user } = useAuthStore();
   const { currentReport, setCurrentReport } = useQaStore();
-  const { activeTab, setActiveTab, resultSource, setResultSource, viewingReport, setViewingReport } = useUiStore();
+  const { activeTab, setActiveTab, resultSource, setResultSource, viewingReport, setViewingReport, theme } = useUiStore();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme || 'dark');
+  }, [theme]);
 
   if (!isAuthenticated) {
     return (
@@ -52,12 +56,12 @@ const MainApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-theme-main text-[#F9FAFB] flex font-sans selection:bg-theme-accent-yellow selection:text-theme-primary antialiased overflow-hidden relative">
+    <div className="min-h-screen bg-theme-main text-theme-primary flex font-sans selection:bg-theme-accent-yellow selection:text-theme-primary antialiased overflow-hidden relative">
       {/* Ambient glow blobs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-900/15 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] bg-violet-900/15 rounded-full blur-[100px]" />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full blur-[120px]" style={{ backgroundColor: 'var(--glow-1)' }} />
+        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ backgroundColor: 'var(--glow-2)' }} />
+        <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full blur-[100px]" style={{ backgroundColor: 'var(--glow-3)' }} />
       </div>
       <Sidebar activeTab={activeTab === 'result' ? resultSource : activeTab} setActiveTab={(tab) => { setActiveTab(tab); setViewingReport(null); }} />
 

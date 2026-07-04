@@ -24,7 +24,7 @@ export const SettingsPage = () => {
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
         {/* SECTION 1: Organization */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Shield className="w-4 h-4 text-theme-accent-yellow" />
             <span>Organization Profile</span>
@@ -36,7 +36,7 @@ export const SettingsPage = () => {
               required
               value={formData.orgName}
               onChange={(e) => setFormData({ ...formData, orgName: e.target.value })}
-              className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md shadow-inner transition-colors"
+              className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-md shadow-inner transition-colors"
             />
           </div>
           <div>
@@ -48,14 +48,14 @@ export const SettingsPage = () => {
               required
               value={formData.minPassingScore}
               onChange={(e) => setFormData({ ...formData, minPassingScore: Number(e.target.value) })}
-              className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-xs font-mono shadow-inner transition-colors"
+              className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-xs font-mono shadow-inner transition-colors"
             />
             <p className="text-[11px] text-theme-text-secondary/70 mt-1">Scores below this threshold are flagged as Failed or Warning.</p>
           </div>
         </div>
 
         {/* SECTION 2: RAG Configuration */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Database className="w-4 h-4 text-emerald-400" />
             <span>RAG Engine Configuration</span>
@@ -79,7 +79,7 @@ export const SettingsPage = () => {
             <select
               value={formData.retrievalTopK}
               onChange={(e) => setFormData({ ...formData, retrievalTopK: Number(e.target.value) })}
-              className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-xs font-mono shadow-inner transition-colors"
+              className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 max-w-xs font-mono shadow-inner transition-colors"
             >
               <option value={2} className="bg-theme-main">Top 2 Documents</option>
               <option value={4} className="bg-theme-main">Top 4 Documents (Recommended)</option>
@@ -90,7 +90,7 @@ export const SettingsPage = () => {
         </div>
 
         {/* SECTION 3: Webhooks */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Bell className="w-4 h-4 text-theme-accent-yellow" />
             <span>Webhook Notifications</span>
@@ -117,7 +117,7 @@ export const SettingsPage = () => {
                 value={formData.webhookUrl}
                 onChange={(e) => setFormData({ ...formData, webhookUrl: e.target.value })}
                 placeholder="https://hooks.slack.com/services/..."
-                className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors"
+                className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors"
               />
             </div>
           )}
@@ -127,7 +127,7 @@ export const SettingsPage = () => {
 
         <button
           type="submit"
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold text-xs rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all flex items-center gap-2"
+          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2"
         >
           <Save className="w-4 h-4" /> Save All Settings
         </button>

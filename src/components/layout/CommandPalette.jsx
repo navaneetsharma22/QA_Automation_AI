@@ -40,8 +40,8 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
-      <div className="w-full max-w-xl bg-[#111827] border border-[#1F2937] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="flex items-center px-4 border-b border-[#1F2937] bg-[#0B1020]">
+      <div className="w-full max-w-xl bg-theme-main border border-theme-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center px-4 border-b border-theme-border bg-theme-input">
           <Search className="w-4 h-4 text-theme-secondary mr-3" />
           <input
             type="text"
@@ -69,13 +69,13 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
                     onSelectTab(item.id);
                     onClose();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-[#1F2937] text-left transition-colors text-sm text-theme-primary group"
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-theme-card text-left transition-colors text-sm text-theme-primary group"
                 >
                   <div className="flex items-center gap-3">
                     <Icon className="w-4 h-4 text-blue-400" />
                     <span>{item.label}</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-[#0B1020] text-theme-secondary border border-[#1F2937]">
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-theme-input text-theme-secondary border border-theme-border">
                     {item.category}
                   </span>
                 </button>
@@ -84,7 +84,7 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
           )}
         </div>
 
-        <div className="px-4 py-2.5 bg-[#0B1020] border-t border-[#1F2937] flex items-center justify-between text-[11px] text-theme-secondary font-mono">
+        <div className="px-4 py-2.5 bg-theme-input border-t border-theme-border flex items-center justify-between text-[11px] text-theme-secondary font-mono">
           <span>Navigate with mouse or click</span>
           <span>ESC to close</span>
         </div>

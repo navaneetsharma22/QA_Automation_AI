@@ -70,8 +70,8 @@ export const ApisPage = () => {
   return (
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       <div className="max-w-4xl space-y-6">
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
-          <div className="border-b border-white/5 pb-4">
+        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
+          <div className="border-b border-theme-border pb-4">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
               <Check className="w-4 h-4 text-theme-accent-yellow" />
               <span>AI API Keys (Bring Your Own Key)</span>
@@ -93,7 +93,7 @@ export const ApisPage = () => {
                     value={keys[p.id]}
                     onChange={(e) => handleKeyChange(p.id, e.target.value)}
                     placeholder={p.placeholder}
-                    className={`w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors ${!toggles[p.id] ? 'opacity-30' : ''}`}
+                    className={`w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors ${!toggles[p.id] ? 'opacity-30' : ''}`}
                     disabled={!toggles[p.id]}
                   />
                 </div>
@@ -102,14 +102,14 @@ export const ApisPage = () => {
                    <span className="text-[9px] text-theme-text-secondary/70 mb-1 font-semibold uppercase tracking-wider">Active</span>
                    <label className="relative inline-flex items-center cursor-pointer">
                      <input type="checkbox" className="sr-only peer" checked={toggles[p.id]} onChange={() => handleToggleChange(p.id, p.activeKey)} />
-                     <div className="w-8 h-4 bg-[#110918] border border-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-theme-accent-yellow peer-checked:after:bg-black"></div>
+                     <div className="w-8 h-4 bg-theme-input border border-theme-border rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-theme-accent-yellow peer-checked:after:bg-black"></div>
                    </label>
                 </div>
 
                 <div className="flex items-end h-[62px] pb-1.5">
                   <button
                     onClick={() => saveKey(p.id, p.storageKey, p.activeKey, p.name)}
-                    className="px-4 h-[38px] bg-[#1d132a] hover:bg-[#2a1b38] text-theme-text-primary font-semibold text-xs rounded-xl border border-white/5 shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 w-24"
+                    className="px-4 h-[38px] bg-theme-card-hover hover:bg-[#2a1b38] text-theme-text-primary font-semibold text-xs rounded-xl border border-theme-border shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 w-24"
                   >
                     <Save className="w-3.5 h-3.5 text-theme-accent-yellow" /> Save
                   </button>
@@ -119,8 +119,8 @@ export const ApisPage = () => {
           </div>
         </div>
 
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
-          <div className="border-b border-white/5 pb-4">
+        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-6 transition-all border border-purple-500/10">
+          <div className="border-b border-theme-border pb-4">
             <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
               <Check className="w-4 h-4 text-theme-accent-yellow" />
               <span>Platform Access Keys</span>
@@ -142,7 +142,7 @@ export const ApisPage = () => {
                     value={keys[p.id]}
                     onChange={(e) => handleKeyChange(p.id, e.target.value)}
                     placeholder={p.placeholder}
-                    className={`w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors ${!toggles[p.id] ? 'opacity-30' : ''}`}
+                    className={`w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs font-mono text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50 shadow-inner transition-colors ${!toggles[p.id] ? 'opacity-30' : ''}`}
                     disabled={!toggles[p.id]}
                   />
                 </div>
@@ -151,14 +151,14 @@ export const ApisPage = () => {
                    <span className="text-[9px] text-theme-text-secondary/70 mb-1 font-semibold uppercase tracking-wider">Active</span>
                    <label className="relative inline-flex items-center cursor-pointer">
                      <input type="checkbox" className="sr-only peer" checked={toggles[p.id]} onChange={() => handleToggleChange(p.id, p.activeKey)} />
-                     <div className="w-8 h-4 bg-[#110918] border border-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-theme-accent-yellow peer-checked:after:bg-black"></div>
+                     <div className="w-8 h-4 bg-theme-input border border-theme-border rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-theme-accent-yellow peer-checked:after:bg-black"></div>
                    </label>
                 </div>
 
                 <div className="flex items-end h-[62px] pb-1.5">
                   <button
                     onClick={() => saveKey(p.id, p.storageKey, p.activeKey, p.name)}
-                    className="px-4 h-[38px] bg-[#1d132a] hover:bg-[#2a1b38] text-theme-text-primary font-semibold text-xs rounded-xl border border-white/5 shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 w-24"
+                    className="px-4 h-[38px] bg-theme-card-hover hover:bg-[#2a1b38] text-theme-text-primary font-semibold text-xs rounded-xl border border-theme-border shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 w-24"
                   >
                     <Save className="w-3.5 h-3.5 text-theme-accent-yellow" /> Save
                   </button>

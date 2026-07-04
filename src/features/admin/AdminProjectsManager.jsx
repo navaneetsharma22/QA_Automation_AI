@@ -187,19 +187,19 @@ export const AdminProjectsManager = () => {
 
   const renderCardEditor = (card, depth = 0) => {
     return (
-      <div key={card.id} className={`border border-[#374151] rounded-xl p-4 bg-[#111827] mb-3 ml-${depth * 6}`}>
+      <div key={card.id} className={`border border-theme-border rounded-xl p-4 bg-theme-main mb-3 ml-${depth * 6}`}>
         <div className="flex items-center gap-4 mb-3">
           <input
             type="text"
             value={card.heading}
             onChange={(e) => handleUpdateCard(card.id, { heading: e.target.value })}
-            className="flex-1 bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-1.5 text-sm text-theme-text-primary focus:border-indigo-500"
+            className="flex-1 bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm text-theme-text-primary focus:border-indigo-500"
             placeholder="Card Heading"
           />
           <select
             value={card.type}
             onChange={(e) => handleUpdateCard(card.id, { type: e.target.value })}
-            className="bg-[#1F2937] border border-[#374151] rounded-lg px-3 py-1.5 text-sm text-theme-text-primary focus:border-indigo-500"
+            className="bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm text-theme-text-primary focus:border-indigo-500"
           >
             <option value="text">Text / String</option>
             <option value="list">List / Array</option>
@@ -214,7 +214,7 @@ export const AdminProjectsManager = () => {
         </div>
         
         {['parent', 'grid-2', 'grid-3', 'row'].includes(card.type) && (
-          <div className="pl-6 border-l-2 border-[#1F2937] mt-3 space-y-3">
+          <div className="pl-6 border-l-2 border-theme-border mt-3 space-y-3">
             {card.children?.map(child => renderCardEditor(child, depth + 1))}
             <button 
               onClick={() => handleAddCard(card.id)}
@@ -232,7 +232,7 @@ export const AdminProjectsManager = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* List Projects */}
       <div className="lg:col-span-1 space-y-4">
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
+        <div className="bg-theme-main border border-theme-border rounded-2xl p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-theme-text-primary flex items-center gap-2">
               <Folder className="w-5 h-5 text-indigo-400" />
@@ -247,7 +247,7 @@ export const AdminProjectsManager = () => {
             {loading ? <p className="text-theme-text-secondary text-sm">Loading...</p> : 
              projects.length === 0 ? <p className="text-theme-text-secondary text-sm">No projects created yet.</p> :
              projects.map(p => (
-              <div key={p._id} className={`p-4 bg-[#0B1020] border border-[#1F2937] rounded-xl flex items-center justify-between group transition-opacity ${p.status === 'Archived' ? 'opacity-50' : ''}`}>
+              <div key={p._id} className={`p-4 bg-theme-input border border-theme-border rounded-xl flex items-center justify-between group transition-opacity ${p.status === 'Archived' ? 'opacity-50' : ''}`}>
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-theme-text-primary font-medium">{p.name}</h3>
@@ -274,7 +274,7 @@ export const AdminProjectsManager = () => {
 
       {/* Editor */}
       <div className="lg:col-span-2">
-        <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
+        <div className="bg-theme-main border border-theme-border rounded-2xl p-6">
           <h2 className="text-xl font-bold text-theme-text-primary mb-6 flex items-center gap-2">
             <LayoutTemplate className="w-5 h-5 text-emerald-400" />
             {editingProject ? 'Edit Project Schema' : 'Create New Project Schema'}
@@ -288,7 +288,7 @@ export const AdminProjectsManager = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl px-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-theme-input border border-theme-border rounded-xl px-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500"
                   placeholder="e.g. Technical Support QA"
                 />
               </div>
@@ -298,14 +298,14 @@ export const AdminProjectsManager = () => {
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] rounded-xl px-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-theme-input border border-theme-border rounded-xl px-4 py-2.5 text-sm text-theme-text-primary focus:outline-none focus:border-indigo-500"
                   placeholder="Optional description"
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-4 mt-8 border-t border-[#1F2937] pt-6">
+              <div className="flex items-center justify-between mb-4 mt-8 border-t border-theme-border pt-6">
                 <label className="block text-sm font-bold text-theme-text-primary uppercase tracking-wider">Dynamic Report Cards</label>
                 <button 
                   onClick={() => handleAddCard()}
@@ -315,7 +315,7 @@ export const AdminProjectsManager = () => {
                 </button>
               </div>
 
-              <div className="bg-[#0B1020] p-4 rounded-xl border border-[#1F2937] min-h-[300px]">
+              <div className="bg-theme-input p-4 rounded-xl border border-theme-border min-h-[300px]">
                 {cards.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-[200px] text-theme-text-secondary/70">
                     <LayoutTemplate className="w-8 h-8 mb-3 opacity-50" />
@@ -327,9 +327,9 @@ export const AdminProjectsManager = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-[#1F2937]">
+            <div className="flex justify-end gap-3 pt-6 border-t border-theme-border">
               {editingProject && (
-                <button onClick={resetForm} className="px-6 py-2.5 rounded-xl border border-[#374151] text-theme-text-secondary font-medium hover:bg-[#1F2937]">
+                <button onClick={resetForm} className="px-6 py-2.5 rounded-xl border border-theme-border text-theme-text-secondary font-medium hover:bg-theme-card">
                   Cancel
                 </button>
               )}
@@ -341,7 +341,7 @@ export const AdminProjectsManager = () => {
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 cursor-default'
                     : cards.length === 0
                     ? 'bg-gray-700 text-theme-text-secondary cursor-not-allowed shadow-none'
-                    : 'bg-emerald-600 hover:bg-emerald-500 text-theme-text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)] disabled:opacity-50'
+                    : 'bg-emerald-600 hover:bg-emerald-500 text-theme-text-primary shadow-sm disabled:opacity-50'
                 }`}
               >
                 {isSaved ? (

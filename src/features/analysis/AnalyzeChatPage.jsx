@@ -121,7 +121,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </button>
           </div>
 
-          <div className="relative bg-[#150d1f] backdrop-blur-md rounded-3xl overflow-hidden transition-colors">
+          <div className="relative bg-theme-card backdrop-blur-md rounded-3xl overflow-hidden transition-colors">
             <textarea
               rows={14}
               required
@@ -130,7 +130,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               placeholder="Paste conversation transcript here...&#10;&#10;Customer: ...&#10;Agent: ..."
               className="w-full bg-transparent p-6 text-sm text-theme-text-primary placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
             />
-            <div className="bg-[#1d132a] px-6 py-3 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
+            <div className="bg-theme-card-hover px-6 py-3 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
               <span>{conversationText.length} CHARACTERS</span>
               <span>AUTO-DETECTING MARKDOWN & METADATA</span>
             </div>
@@ -149,7 +149,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             <button
               type="submit"
               disabled={isAnalyzing}
-              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
+              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
             >
               {isAnalyzing ? (
                 <>
@@ -167,7 +167,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-[#150d1f] backdrop-blur-md p-6 rounded-3xl h-fit">
+        <div className="space-y-6 bg-theme-card backdrop-blur-md p-6 rounded-3xl h-fit">
           <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
             <Layers className="w-4 h-4 text-theme-accent-yellow" />
             <span>AI Engine Configuration</span>
@@ -231,11 +231,15 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
                     key={provider.id}
                     type="button"
                     onClick={() => handleProviderChange(provider.id)}
-                    className={`p-3 rounded-xl border border-transparent text-left transition-all duration-300 flex flex-col gap-1.5 ${
+                    className={`p-3 rounded-xl border text-left transition-all duration-300 flex flex-col gap-1.5 ${
                       isSelected
-                        ? 'bg-gradient-to-br from-[#3b2a45]/80 to-[#251b2e]/40 text-theme-text-primary shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                        : 'bg-[#110918] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a]'
+                        ? 'shadow-sm border-theme-border'
+                        : 'border-transparent bg-theme-input text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover'
                     }`}
+                    style={{
+                      background: isSelected ? 'var(--sidebar-active-bg)' : undefined,
+                      color: isSelected ? 'var(--sidebar-active-text)' : undefined
+                    }}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="text-xs font-semibold tracking-wide">{provider.name}</span>

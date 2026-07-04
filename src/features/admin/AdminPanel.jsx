@@ -28,9 +28,9 @@ export const AdminPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1020] text-[#F9FAFB] flex flex-col font-['Inter'] selection:bg-blue-600 selection:text-theme-text-primary">
+    <div className="min-h-screen bg-theme-input text-theme-primary flex flex-col font-['Inter'] selection:bg-blue-600 selection:text-theme-text-primary">
       {/* Admin Header */}
-      <header className="bg-[#111827] border-b border-[#1F2937] px-6 py-4 flex items-center justify-between">
+      <header className="bg-theme-main border-b border-theme-border px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
             <ShieldAlert className="w-5 h-5 text-blue-400" />
@@ -59,13 +59,13 @@ export const AdminPanel = () => {
       <div className="flex-1 flex overflow-hidden">
         
         {/* Admin Sidebar */}
-        <aside className="w-64 bg-[#111827] border-r border-[#1F2937] p-4 flex flex-col gap-2">
+        <aside className="w-64 bg-theme-main border-r border-theme-border p-4 flex flex-col gap-2">
           <button 
             onClick={() => setActiveTab('dashboard')}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'dashboard' 
                 ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -77,7 +77,7 @@ export const AdminPanel = () => {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'rules' 
                 ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <BookOpen className="w-5 h-5" />
@@ -88,7 +88,7 @@ export const AdminPanel = () => {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'prompt' 
                 ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <Bot className="w-5 h-5" />
@@ -99,7 +99,7 @@ export const AdminPanel = () => {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'users' 
                 ? 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <UserPlus className="w-5 h-5" />
@@ -111,7 +111,7 @@ export const AdminPanel = () => {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'gpt' 
                 ? 'bg-theme-accent-yellow/10 text-theme-accent-yellow border border-theme-accent-yellow/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <MessageSquare className="w-5 h-5" />
@@ -123,7 +123,7 @@ export const AdminPanel = () => {
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
               activeTab === 'errortypes' 
                 ? 'bg-amber-600/10 text-amber-500 border border-amber-500/20' 
-                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1F2937]'
+                : 'text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card'
             }`}
           >
             <ShieldAlert className="w-5 h-5" />
@@ -136,7 +136,7 @@ export const AdminPanel = () => {
           <div className="max-w-7xl mx-auto w-full">
             {activeTab === 'dashboard' && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 hover:border-blue-500/30 transition-colors">
+                <div className="bg-theme-main border border-theme-border rounded-2xl p-6 hover:border-blue-500/30 transition-colors">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
                     <Users className="w-6 h-6 text-blue-400" />
                   </div>
@@ -145,7 +145,7 @@ export const AdminPanel = () => {
                   <button className="mt-4 text-sm text-blue-400 hover:text-blue-300 font-medium">Manage Users &rarr;</button>
                 </div>
 
-                <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 hover:border-emerald-500/30 transition-colors">
+                <div className="bg-theme-main border border-theme-border rounded-2xl p-6 hover:border-emerald-500/30 transition-colors">
                   <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
                     <Settings className="w-6 h-6 text-emerald-400" />
                   </div>
@@ -154,7 +154,7 @@ export const AdminPanel = () => {
                   <button className="mt-4 text-sm text-emerald-400 hover:text-emerald-300 font-medium">Edit Settings &rarr;</button>
                 </div>
 
-                <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6 hover:border-theme-accent-yellow/30 transition-colors">
+                <div className="bg-theme-main border border-theme-border rounded-2xl p-6 hover:border-theme-accent-yellow/30 transition-colors">
                   <div className="w-12 h-12 bg-theme-accent-yellow/10 rounded-xl flex items-center justify-center mb-4">
                     <Activity className="w-6 h-6 text-theme-accent-yellow" />
                   </div>

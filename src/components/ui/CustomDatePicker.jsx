@@ -75,7 +75,7 @@ export const CustomDatePicker = ({ value, onChange, placeholder = "Select Date" 
             handleSelectDate(d);
           }}
           className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-medium transition-colors mx-auto
-            ${isSelected ? 'bg-theme-accent-yellow text-theme-primary shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 
+            ${isSelected ? 'bg-theme-accent-yellow text-theme-primary shadow-sm' : 
               isToday ? 'bg-white/10 text-purple-300 border border-theme-accent-yellow/30' : 
               'text-theme-secondary hover:bg-white/10 hover:text-theme-primary'}`}
         >

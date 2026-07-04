@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuthStore } from '../../store/authStore';
-import { Mail, Lock, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
+import { useUiStore } from '../../store/uiStore';
+import { Mail, Lock, ArrowRight, AlertCircle, Sparkles, Sun, Moon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -11,6 +12,7 @@ export const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [resetToken, setResetToken] = useState('');
   const { login, forgotPassword, resetPassword, isLoading, error } = useAuthStore();
+  const { theme, toggleTheme } = useUiStore();
 
   const containerRef = useRef(null);
   const gradientRef = useRef(null);
@@ -94,14 +96,23 @@ export const AuthPage = () => {
   };
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#050505] flex items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans">
+    <div ref={containerRef} className="min-h-screen bg-theme-main flex items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans transition-colors duration-300">
       {/* Blurred background glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-theme-accent-yellow/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] bg-pink-600/10 blur-[120px] rounded-full pointer-events-none" />
 
+      {/* Theme Toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-6 right-6 sm:top-10 sm:right-10 z-50 p-3 rounded-full bg-theme-card border border-theme-border shadow-sm hover:shadow-md transition-all text-theme-text-secondary hover:text-theme-accent-yellow cursor-pointer"
+        title="Toggle Theme"
+      >
+        {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      </button>
+
       {/* Main Split Card */}
-      <div className="w-full max-w-[1200px] min-h-[700px] flex flex-col md:flex-row bg-white rounded-[32px] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative z-10">
+      <div className="w-full max-w-[1200px] min-h-[700px] flex flex-col md:flex-row bg-white rounded-[32px] overflow-hidden shadow-sm relative z-10 transition-colors duration-300">
         
         {/* Left Side: Artwork Panel (Hidden on small screens) */}
         <div className="hidden md:flex md:w-[45%] relative bg-slate-900 overflow-hidden border-r border-gray-100 rounded-l-[32px] group">
@@ -142,7 +153,7 @@ export const AuthPage = () => {
             {/* Logo Image with Purple Glow + Mask */}
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-theme-accent-yellow/60 blur-[20px] scale-110" />
-              <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-400/30 shadow-[0_0_28px_rgba(139,92,246,0.7)]">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border border-purple-400/30 shadow-sm">
                 <img
                   src="/logo.png"
                   alt="QA Automation Logo"
@@ -200,7 +211,7 @@ export const AuthPage = () => {
                 {mode === 'forgot' && 'Reset Password'}
                 {mode === 'reset' && 'Set New Password'}
               </h1>
-              <p className="text-theme-text-secondary/70 text-sm">
+              <p className="text-gray-500 text-sm">
                 {mode === 'login' && 'Please enter your details to sign in to your workspace.'}
                 {mode === 'forgot' && 'Enter your work email to receive a recovery token.'}
                 {mode === 'reset' && 'Enter the reset token sent to your inbox to securely set a new password.'}
@@ -222,7 +233,7 @@ export const AuthPage = () => {
                     Email address
                   </label>
                   <div className="relative">
-                    <Mail className="w-5 h-5 text-theme-text-secondary absolute left-4 top-1/2 -translate-y-1/2 transition-colors group-focus-within/field:text-black" />
+                    <Mail className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 transition-colors group-focus-within/field:text-black" />
                     <input
                       type="email"
                       required
@@ -259,7 +270,7 @@ export const AuthPage = () => {
                     </label>
                   </div>
                   <div className="relative">
-                    <Lock className="w-5 h-5 text-theme-text-secondary absolute left-4 top-1/2 -translate-y-1/2 transition-colors group-focus-within/field:text-black" />
+                    <Lock className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 transition-colors group-focus-within/field:text-black" />
                     <input
                       type="password"
                       required
@@ -286,7 +297,7 @@ export const AuthPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-[54px] bg-black hover:bg-gray-900 text-theme-text-primary font-medium rounded-xl text-sm transition-all duration-300 shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_20px_-6px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-8 disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)] group/btn"
+                className="w-full h-[54px] bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-white font-medium rounded-xl text-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-8 disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-md group/btn"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
@@ -313,7 +324,7 @@ export const AuthPage = () => {
               {(mode === 'forgot' || mode === 'reset') && (
                 <button 
                   onClick={() => setMode('login')} 
-                  className="text-theme-text-secondary/70 hover:text-black font-medium text-sm transition-colors"
+                  className="text-gray-500 hover:text-black font-medium text-sm transition-colors"
                 >
                   Back to Sign In
                 </button>
