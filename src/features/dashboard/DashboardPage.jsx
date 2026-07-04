@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { useQaStore } from '../../store/qaStore';
+import { useUiStore } from '../../store/uiStore';
 import { 
   MessageSquare, 
   CheckCircle2, 
@@ -53,15 +56,54 @@ ChartJS.register(
 
 export const DashboardPage = ({ onNavigate }) => {
   const [filterMode, setFilterMode] = useState('specific'); // 'specific' or 'range'
+  const { getKpis, history } = useQaStore();
+  const { theme } = useUiStore();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const { getKpis, history } = useQaStore();
   const kpis = getKpis({
     startDate,
     endDate: filterMode === 'specific' ? startDate : endDate
   });
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+  const container = useRef();
+
+  useGSAP(() => {
+    // Initial states
+    gsap.set('.gsap-hero, .gsap-kpi, .gsap-chart', { opacity: 0, y: 20, scale: 0.98 });
+
+    const tl = gsap.timeline();
+
+    // 1. Hero banner enters very fast
+    tl.to('.gsap-hero', {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.4,
+      ease: 'power2.out'
+    }, 0)
+    
+    // 2. KPIs stagger in extremely quickly
+    .to('.gsap-kpi', {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.3,
+      stagger: 0.02,
+      ease: 'power2.out'
+    }, 0.1)
+    
+    // 3. Charts stagger in right behind them
+    .to('.gsap-chart', {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.5,
+      stagger: 0.08,
+      ease: 'power2.out'
+    }, 0.2);
+
+  }, { scope: container });
 
   const kpiCards = [
     { label: 'Total Analyzed', value: kpis.totalChatsAnalyzed.toLocaleString(), icon: MessageSquare, change: '+12.4% (0.7%)', up: true, color: 'text-blue-400' },
@@ -78,37 +120,79 @@ export const DashboardPage = ({ onNavigate }) => {
     { label: 'Monthly Volume', value: kpis.monthlyAnalysis.toLocaleString(), icon: CalendarRange, change: '+180 this mo', up: true, color: 'text-blue-400' },
   ];
 
-  // Dark Premium Chart options
+  // Dynamic Chart Colors based on Theme
+  const chartTextColor = theme === 'light' ? '#6B7280' : '#71717a';
+  const chartTooltipBg = theme === 'light' ? '#FFFFFF' : '#2a2a2e';
+  const chartTooltipText = theme === 'light' ? '#111827' : '#ffffff';
+  const chartBorder = theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.03)';
+
+  // Custom Plugin for Hover Vertical Line
+  const verticalLinePlugin = {
+    id: 'verticalLine',
+    afterDraw: chart => {
+      if (chart.tooltip?._active?.length) {
+        const activePoint = chart.tooltip._active[0];
+        const ctx = chart.ctx;
+        const x = activePoint.element.x;
+        const topY = chart.scales.y.top;
+        const bottomY = chart.scales.y.bottom;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  };
+
+  // Dark Premium Chart options (Redesigned for Ultra-Minimal Style)
   const defaultChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1000,
+      easing: 'easeInOutQuart'
+    },
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#2a2a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#a1a1aa',
-        borderColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: chartTooltipBg,
+        titleColor: chartTooltipText,
+        bodyColor: chartTextColor,
+        borderColor: chartBorder,
         borderWidth: 1,
         padding: 12,
-        cornerRadius: 8,
+        cornerRadius: 12,
+        boxPadding: 6,
+        usePointStyle: true,
         displayColors: false,
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#71717a', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#71717a', font: { size: 10 }, maxTicksLimit: 5 } }
+      x: { grid: { display: false, drawBorder: false }, ticks: { color: chartTextColor, font: { size: 10 }, maxRotation: 0 } },
+      y: { grid: { display: false, drawBorder: false }, ticks: { display: false } }
     },
     elements: {
       point: {
         radius: 0,
         hoverRadius: 6,
-        backgroundColor: '#fbcfe8',
-        borderColor: '#ec4899',
-        borderWidth: 2
+        backgroundColor: '#ffffff',
+        borderColor: '#a855f7',
+        borderWidth: 2,
+        hoverBorderWidth: 3
       },
       line: {
-        tension: 0.4
+        tension: 0.4,
+        borderWidth: 2,
+        borderJoinStyle: 'round',
+        borderCapStyle: 'round'
       }
     }
   };
@@ -135,9 +219,10 @@ export const DashboardPage = ({ onNavigate }) => {
       borderColor: '#ec4899', // Pink glow
       backgroundColor: (context) => {
         const ctx = context.chart.ctx;
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.3)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.20)');
+        gradient.addColorStop(0.5, 'rgba(236, 72, 153, 0.08)');
+        gradient.addColorStop(1, 'transparent');
         return gradient;
       },
       fill: true,
@@ -269,7 +354,7 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   return (
-    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+    <div ref={container} className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       
       {/* Date Filters */}
       <div className="flex items-center justify-end gap-4 pb-2">
@@ -359,12 +444,12 @@ export const DashboardPage = ({ onNavigate }) => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Left Col: Main Banner & CTA */}
-        <div className="col-span-1 flex flex-col gap-6">
+        <div className="col-span-1 flex flex-col gap-6 gsap-hero opacity-0">
           <div className="premium-glass-card h-full w-full p-8 relative flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
             <div className="flex items-end gap-3">
-              <span className="text-4xl lg:text-5xl font-medium text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
+              <span className="text-4xl lg:text-5xl font-medium text-theme-text-primary tracking-tight">{kpis.totalChatsAnalyzed.toLocaleString()}</span>
             </div>
             <div className="mt-8 flex items-center justify-between">
               <span className="text-xs text-theme-text-secondary">Enterprise QA Platform</span>
@@ -391,9 +476,9 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="premium-glass-card p-5 flex flex-col"
+                className="premium-glass-card p-5 flex flex-col gsap-kpi opacity-0"
               >
-                <span className="text-xl font-semibold mb-1 tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400">{kpi.value}</span>
+                <span className="text-xl font-semibold mb-1 tracking-tight text-theme-text-primary">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
                   {kpi.change}
                 </span>
@@ -412,20 +497,45 @@ export const DashboardPage = ({ onNavigate }) => {
 
       {/* Main Chart Section (Like Helios "Portfolio Performance") */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Daily Volume Performance</h2>
-          <div className="flex gap-2">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Daily Volume Performance</h2>
+            <p className="text-xs text-theme-text-secondary mt-0.5">Compared with previous period</p>
+          </div>
+          <div className="flex gap-1 bg-theme-bg-input p-1 rounded-full shadow-inner border border-theme-border">
             {['1D', '1W', '1M', '6M', '1Y'].map((t) => (
-              <button key={t} className={`w-8 h-8 rounded-full text-[10px] font-medium flex items-center justify-center transition-colors ${t === '1D' ? 'bg-theme-card-hover text-theme-text-primary shadow-sm' : 'text-theme-text-secondary/70 hover:text-theme-text-secondary'}`}>
+              <button key={t} className={`w-8 h-7 rounded-full text-[10px] font-semibold flex items-center justify-center transition-all ${t === '1D' ? 'bg-theme-bg-card text-theme-text-primary shadow-sm border border-theme-border' : 'text-theme-text-secondary hover:text-theme-text-primary'}`}>
                 {t}
               </button>
             ))}
           </div>
         </div>
-        <div className="premium-glass-card p-6 h-96 flex flex-col relative group">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-pink-500/5 blur-[100px] pointer-events-none" />
-          <div className="flex-1 min-h-0 relative z-10 mt-4">
-            <Line data={dailyTrendData} options={defaultChartOptions} />
+        <div className="premium-glass-card p-8 h-[420px] flex flex-col relative group gsap-chart opacity-0">
+          {/* Summary Statistics */}
+          <div className="flex items-center gap-6 mb-8">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Peak Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">1,204</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Average Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">842</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Lowest Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">312</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Growth</span>
+              <span className="text-xl font-semibold text-emerald-500">+14.2%</span>
+            </div>
+          </div>
+          
+          <div className="flex-1 min-h-0 relative z-10 w-full pl-0 -ml-2">
+            <Line data={dailyTrendData} options={defaultChartOptions} plugins={[verticalLinePlugin]} />
           </div>
         </div>
       </div>
@@ -433,7 +543,7 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Additional Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* Weekly Trend */}
-        <div className="premium-glass-card p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Weekly Quality Trend</h3>
           <div className="flex-1 min-h-0">
             <Bar data={weeklyTrendData} options={{ ...defaultChartOptions, scales: { ...defaultChartOptions.scales, x: { ...defaultChartOptions.scales.x, stacked: true }, y: { ...defaultChartOptions.scales.y, stacked: true } } }} />
@@ -441,7 +551,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Monthly Trend */}
-        <div className="premium-glass-card p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Monthly Score Averages</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyTrendData} options={defaultChartOptions} />
@@ -449,10 +559,10 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Issue Distribution */}
-        <div className="premium-glass-card p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Issue Category Watchlist</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
-            <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
+            <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', animation: { animateScale: true, animateRotate: true, duration: 1600, easing: 'easeOutExpo' }, plugins: { legend: { position: 'right', labels: { color: chartTextColor, font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Issues</span>
             </div>
@@ -460,10 +570,10 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* AI Model Usage */}
-        <div className="premium-glass-card p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Model Distribution Portfolio</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
-            <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
+            <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', animation: { animateScale: true, animateRotate: true, duration: 1600, easing: 'easeOutExpo' }, plugins: { legend: { position: 'right', labels: { color: chartTextColor, font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Models</span>
             </div>

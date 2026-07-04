@@ -70,21 +70,11 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
             <div className="absolute inset-0 bg-purple-600/40 mix-blend-color rounded-full" />
             <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-purple-400/30" />
           </div>
-          <span
-            className="text-xl font-black tracking-tighter font-sans"
-            style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}
-          >
+          <span className="text-xl font-black tracking-tighter font-sans">
             <span className="text-theme-text-primary">Qa_</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#b5c2ff] via-[#758bfd] to-[#4662eb]">automation</span>
           </span>
         </div>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-white/10 transition-colors text-theme-text-secondary hover:text-theme-text-primary cursor-pointer"
-          title="Toggle Theme"
-        >
-          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
       </div>
 
       {/* Navigation List */}

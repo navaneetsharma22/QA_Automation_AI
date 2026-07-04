@@ -121,7 +121,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </button>
           </div>
 
-          <div className="relative bg-theme-card backdrop-blur-md rounded-3xl overflow-hidden transition-colors">
+          <div className="premium-glass-card overflow-hidden relative group transition-colors">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <textarea
               rows={14}
               required
@@ -167,13 +168,15 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-theme-card backdrop-blur-md p-6 rounded-3xl h-fit">
-          <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
-            <Layers className="w-4 h-4 text-theme-accent-yellow" />
-            <span>AI Engine Configuration</span>
-          </h2>
+        <div className="premium-glass-card p-8 h-fit relative group">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          <div className="relative z-10 space-y-6">
+            <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
+              <Layers className="w-4 h-4 text-theme-accent-yellow" />
+              <span>AI Engine Configuration</span>
+            </h2>
 
-          {/* Project Template Selector */}
+            {/* Project Template Selector */}
           <div className="mb-6">
             <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               1. Project Report Layout
@@ -271,6 +274,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
           </div>
           
           {/* Spacer to push config up if needed, though h-fit handles it */}
+          </div>
         </div>
       </form>
     </div>

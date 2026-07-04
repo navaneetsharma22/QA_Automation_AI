@@ -40,7 +40,7 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-20 px-4">
-      <div className="w-full max-w-xl bg-theme-main border border-theme-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="w-full max-w-xl bg-theme-bg-card border border-theme-border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center px-4 border-b border-theme-border bg-theme-input">
           <Search className="w-4 h-4 text-theme-secondary mr-3" />
           <input
@@ -56,7 +56,7 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
           </button>
         </div>
 
-        <div className="max-h-80 overflow-y-auto py-2 px-2 divide-y divide-[#1F2937]/50 custom-scrollbar">
+        <div className="max-h-80 overflow-y-auto py-3 px-3 space-y-1 custom-scrollbar">
           {filtered.length === 0 ? (
             <div className="py-8 text-center text-sm text-theme-secondary">No matching commands found.</div>
           ) : (
@@ -69,7 +69,7 @@ export const CommandPalette = ({ isOpen, onClose, onSelectTab }) => {
                     onSelectTab(item.id);
                     onClose();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-theme-card text-left transition-colors text-sm text-theme-primary group"
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-theme-bg-input text-left transition-all duration-200 text-sm text-theme-primary group"
                 >
                   <div className="flex items-center gap-3">
                     <Icon className="w-4 h-4 text-blue-400" />

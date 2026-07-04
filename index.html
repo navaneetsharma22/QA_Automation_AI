@@ -6,6 +6,17 @@
     <link rel="apple-touch-icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QA Automation</title>
+    <script>
+      try {
+        var store = localStorage.getItem('arena-ui-storage');
+        if (store) {
+          var state = JSON.parse(store).state;
+          if (state && state.theme) {
+            document.documentElement.setAttribute('data-theme', state.theme);
+          }
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
