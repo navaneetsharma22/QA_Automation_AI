@@ -24,7 +24,7 @@ export const SettingsPage = () => {
     <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       <form onSubmit={handleSubmit} className="space-y-6 max-w-5xl">
         {/* SECTION 1: Organization */}
-        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="premium-glass-card no-hover p-6 space-y-4">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Shield className="w-4 h-4 text-theme-accent-yellow" />
             <span>Organization Profile</span>
@@ -55,7 +55,7 @@ export const SettingsPage = () => {
         </div>
 
         {/* SECTION 2: RAG Configuration */}
-        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="premium-glass-card no-hover p-6 space-y-4">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Database className="w-4 h-4 text-emerald-400" />
             <span>RAG Engine Configuration</span>
@@ -90,7 +90,7 @@ export const SettingsPage = () => {
         </div>
 
         {/* SECTION 3: Webhooks */}
-        <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 space-y-4 transition-all">
+        <div className="premium-glass-card no-hover p-6 space-y-4">
           <h2 className="text-sm font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Bell className="w-4 h-4 text-theme-accent-yellow" />
             <span>Webhook Notifications</span>

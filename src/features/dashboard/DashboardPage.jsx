@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { 
@@ -67,43 +66,6 @@ export const DashboardPage = ({ onNavigate }) => {
   });
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const container = useRef();
-
-  useGSAP(() => {
-    // Initial states
-    gsap.set('.gsap-hero, .gsap-kpi, .gsap-chart', { opacity: 0, y: 20, scale: 0.98 });
-
-    const tl = gsap.timeline();
-
-    // 1. Hero banner enters very fast
-    tl.to('.gsap-hero', {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 0.4,
-      ease: 'power2.out'
-    }, 0)
-    
-    // 2. KPIs stagger in extremely quickly
-    .to('.gsap-kpi', {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 0.3,
-      stagger: 0.02,
-      ease: 'power2.out'
-    }, 0.1)
-    
-    // 3. Charts stagger in right behind them
-    .to('.gsap-chart', {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 0.5,
-      stagger: 0.08,
-      ease: 'power2.out'
-    }, 0.2);
-
-  }, { scope: container });
 
   const kpiCards = [
     { label: 'Total Analyzed', value: kpis.totalChatsAnalyzed.toLocaleString(), icon: MessageSquare, change: '+12.4% (0.7%)', up: true, color: 'text-blue-400' },
@@ -444,7 +406,7 @@ export const DashboardPage = ({ onNavigate }) => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Left Col: Main Banner & CTA */}
-        <div className="col-span-1 flex flex-col gap-6 gsap-hero opacity-0">
+        <div className="col-span-1 flex flex-col gap-6">
           <div className="premium-glass-card h-full w-full p-8 relative flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
@@ -476,7 +438,7 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="premium-glass-card p-5 flex flex-col gsap-kpi opacity-0"
+                className="premium-glass-card p-5 flex flex-col"
               >
                 <span className="text-xl font-semibold mb-1 tracking-tight text-theme-text-primary">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
@@ -510,9 +472,9 @@ export const DashboardPage = ({ onNavigate }) => {
             ))}
           </div>
         </div>
-        <div className="premium-glass-card p-8 h-[420px] flex flex-col relative group gsap-chart opacity-0">
+        <div className="premium-glass-card overflow-hidden relative group">
           {/* Summary Statistics */}
-          <div className="flex items-center gap-6 mb-8">
+          <div className="flex items-center gap-6 mb-8 p-8 pb-0">
             <div className="flex flex-col">
               <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Peak Volume</span>
               <span className="text-xl font-semibold text-theme-text-primary">1,204</span>
