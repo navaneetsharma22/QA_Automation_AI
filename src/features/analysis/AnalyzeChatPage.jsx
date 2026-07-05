@@ -168,7 +168,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="premium-glass-card p-8 h-fit relative group">
+        <div className="premium-glass-card p-8 h-fit relative group !overflow-visible">
           <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
           <div className="relative z-10 space-y-6">
             <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">

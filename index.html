@@ -9,12 +9,16 @@
     <script>
       try {
         var store = localStorage.getItem('arena-ui-storage');
+        var theme = 'dark';
         if (store) {
           var state = JSON.parse(store).state;
           if (state && state.theme) {
-            document.documentElement.setAttribute('data-theme', state.theme);
+            theme = state.theme;
           }
         }
+        document.documentElement.setAttribute('data-theme', theme);
+        var bg = theme === 'light' ? '#F6F8FC' : '#050507';
+        document.write('<style>html, body, #root { background-color: ' + bg + '; }</style>');
       } catch (e) {}
     </script>
   </head>
