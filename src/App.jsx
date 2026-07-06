@@ -25,7 +25,7 @@ import { AdminLoginPage } from './features/admin/AdminLoginPage';
 import { AdminPanel } from './features/admin/AdminPanel';
 
 const MainApp = () => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, checkSessionExpiry } = useAuthStore();
   const { currentReport, setCurrentReport } = useQaStore();
   const { activeTab, setActiveTab, resultSource, setResultSource, viewingReport, setViewingReport, theme } = useUiStore();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -33,6 +33,11 @@ const MainApp = () => {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme || 'dark');
   }, [theme]);
+
+  // Check session expiry on mount and whenever the active tab changes
+  useEffect(() => {
+    checkSessionExpiry();
+  }, [activeTab]);
 
   if (!isAuthenticated) {
     return (
@@ -94,7 +99,8 @@ const MainApp = () => {
       />
 
       <Toaster 
-        position="bottom-right" 
+        position="bottom-right"
+        containerStyle={{ zIndex: 100000 }}
         toastOptions={{ 
           style: { 
             background: '#111827', 
