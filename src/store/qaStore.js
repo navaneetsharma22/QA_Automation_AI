@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AI_PROVIDERS } from '../constants/aiProviders';
+import { apiFetch } from '../lib/apiFetch';
 
 const initialHistory = [];
 const initialPrompts = [];
@@ -152,7 +153,7 @@ export const useQaStore = create(
       customHeaders['x-cohere-key'] = localStorage.getItem('x-cohere-active') === 'true' ? (localStorage.getItem('x-cohere-key') || '') : '';
       customHeaders['x-github-key'] = localStorage.getItem('x-github-active') === 'true' ? (localStorage.getItem('x-github-key') || '') : '';
 
-      const response = await fetch(`${apiUrl}/v1/analyze`, {
+      const response = await apiFetch(`${apiUrl}/v1/analyze`, {
         method: 'POST',
         headers: customHeaders,
         body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId, category })
