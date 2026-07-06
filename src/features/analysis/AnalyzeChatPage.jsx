@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
@@ -281,9 +282,9 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       </form>
     </div>
 
-      {/* Full-screen Loader Overlay */}
-      {isAnalyzing && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-theme-bg/80 backdrop-blur-md animate-in fade-in duration-300">
+      {/* Full-screen Loader Overlay - Portaled to cover everything including Sidebar */}
+      {isAnalyzing && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-theme-bg/80 backdrop-blur-md animate-in fade-in duration-300">
           <GradientOrb size={200} mode={theme || 'dark'} />
           <div className="mt-8 flex flex-col items-center text-center">
             <h3 className="text-xl font-bold text-theme-text-primary tracking-wide animate-pulse mb-2">
@@ -293,7 +294,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               Please wait while the AI generates the QA report based on your configuration.
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

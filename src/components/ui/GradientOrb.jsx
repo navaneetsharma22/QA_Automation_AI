@@ -19,11 +19,11 @@ const PALETTES = {
     sheenOpacity: 0.35,
   },
   dark: {
-    // brighter stops + higher opacity so the rings read against a dark background
-    ring1: { colors: ["#3aa0ff", "#2f7fe0", "#123a66"], opacity: 0.28 },
-    ring2: { colors: ["#5fb4ff", "#3d8bea", "#1a4d8a"], opacity: 0.4 },
-    core: ["#0b1640", "#2a4a86", "#6ea3e0"],
-    sheenOpacity: 0.5,
+    // Obsidian Glass (Monochrome Silver & Dark Charcoal)
+    ring1: { colors: ["#FFFFFF", "#FFFFFF", "#FFFFFF"], opacity: 0.05 },
+    ring2: { colors: ["#FFFFFF", "#F5F5F5", "#E0E0E0"], opacity: 0.15 },
+    core: ["#0A0A0A", "#171717", "#242424"],
+    sheenOpacity: 0.6,
   },
 };
 
