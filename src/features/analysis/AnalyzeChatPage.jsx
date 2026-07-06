@@ -5,10 +5,11 @@ import { AI_PROVIDERS } from '../../constants/aiProviders';
 import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CustomSelect } from '../../components/ui/CustomSelect';
+import GradientOrb from '../../components/ui/GradientOrb';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const { analyzeChat, prompts, aiProviders } = useQaStore();
-  const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis } = useUiStore();
+  const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis, theme } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
   const activeProviders = aiProviders.filter(p => p.active);
@@ -103,8 +104,9 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   };
 
   return (
-    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <>
+      <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left 2 Cols: Chat Paste Area */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
@@ -278,5 +280,21 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
         </div>
       </form>
     </div>
+
+      {/* Full-screen Loader Overlay */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-theme-bg/80 backdrop-blur-md animate-in fade-in duration-300">
+          <GradientOrb size={200} mode={theme || 'dark'} />
+          <div className="mt-8 flex flex-col items-center text-center">
+            <h3 className="text-xl font-bold text-theme-text-primary tracking-wide animate-pulse mb-2">
+              Analyzing Conversation...
+            </h3>
+            <p className="text-sm text-theme-text-secondary max-w-sm">
+              Please wait while the AI generates the QA report based on your configuration.
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
