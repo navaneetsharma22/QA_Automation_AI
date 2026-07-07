@@ -12,54 +12,105 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [analyzingId, setAnalyzingId] = useState(null);
+  const [isFetchingAllPages, setIsFetchingAllPages] = useState(false);
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
 
   const { analyzeChat, aiProviders, prompts, history } = useQaStore();
   const { setActiveTab, setPendingAnalysis } = useUiStore();
 
-  const fetchChats = async (pageToFetch, dateToFetch) => {
-    // Always read selectedDate from the ref so pagination/refresh never use a stale closure value
+  const fetchChats = async (pageToFetch, dateToFetch, fetchAllPages = false) => {
     const dateFilter = dateToFetch !== undefined ? dateToFetch : selectedDate;
     setLoading(true);
+    setIsFetchingAllPages(fetchAllPages);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      // Validate YYYY-MM-DD before appending
       const isValidDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d);
-      let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=50`;
-      if (dateFilter && isValidDate(dateFilter)) {
-        url += `&date=${dateFilter}`;
-      }
-      if (import.meta.env.DEV) console.log('[CRM] fetch →', url);
+      
       const crmActive = localStorage.getItem('crm-active') === 'true';
       const crmToken = crmActive ? (localStorage.getItem('crm-token') || '') : '';
-      
       const qcActive = localStorage.getItem('qc-active') === 'true';
       const qcToken = qcActive ? (localStorage.getItem('qc-token') || '') : '';
-      
       const headers = {};
       if (crmToken) headers['x-crm-token'] = crmToken;
       if (qcToken) headers['x-qc-token'] = qcToken;
-      const res = await apiFetch(url, { headers });
-      if (res.ok) {
-        const data = await res.json();
-        setChats(data.data || []);
-        setTotalPages(data.totalPages || 1);
-        setTotalItems(data.total || 0);
-        setPage(pageToFetch);
+
+      if (fetchAllPages) {
+        // Fetch all pages sequentially
+        let allChats = [];
+        let currentPage = 1;
+        let hasMorePages = true;
+        let totalPagesCount = 1;
+        let totalCount = 0;
+
+        while (hasMorePages) {
+          let url = `${apiUrl}/v1/crm/chats?page=${currentPage}&limit=100`;
+          if (dateFilter && isValidDate(dateFilter)) {
+            url += `&date=${dateFilter}`;
+          }
+          if (import.meta.env.DEV) console.log(`[CRM] Fetching page ${currentPage}...`);
+          
+          const res = await apiFetch(url, { headers });
+          if (!res.ok) {
+            toast.error('Failed to load CRM chats');
+            break;
+          }
+          
+          const data = await res.json();
+          const pageChats = data.data || [];
+          allChats = [...allChats, ...pageChats];
+          totalPagesCount = data.totalPages || 1;
+          totalCount = data.total || 0;
+          
+          if (import.meta.env.DEV) {
+            console.log(`[CRM] Page ${currentPage}: ${pageChats.length} chats, Total so far: ${allChats.length}`);
+          }
+          
+          if (currentPage >= totalPagesCount) {
+            hasMorePages = false;
+          } else {
+            currentPage++;
+          }
+        }
+        
+        if (import.meta.env.DEV) {
+          console.log(`[CRM] Fetch complete: ${totalPagesCount} pages, ${allChats.length} total chats`);
+        }
+        
+        setChats(allChats);
+        setTotalPages(totalPagesCount);
+        setTotalItems(totalCount);
+        setPage(1);
       } else {
-        toast.error('Failed to load CRM chats');
+        // Fetch single page (for pagination)
+        let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=50`;
+        if (dateFilter && isValidDate(dateFilter)) {
+          url += `&date=${dateFilter}`;
+        }
+        if (import.meta.env.DEV) console.log('[CRM] fetch →', url);
+        
+        const res = await apiFetch(url, { headers });
+        if (res.ok) {
+          const data = await res.json();
+          setChats(data.data || []);
+          setTotalPages(data.totalPages || 1);
+          setTotalItems(data.total || 0);
+          setPage(pageToFetch);
+        } else {
+          toast.error('Failed to load CRM chats');
+        }
       }
     } catch (err) {
       console.error(err);
       toast.error('Network error fetching chats');
     } finally {
       setLoading(false);
+      setIsFetchingAllPages(false);
     }
   };
 
   useEffect(() => {
-    fetchChats(1, selectedDate);
+    fetchChats(1, selectedDate, true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
@@ -123,7 +174,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </div>
 
         <button 
-          onClick={() => fetchChats(page, selectedDate)}
+          onClick={() => fetchChats(1, selectedDate, true)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover transition-all shadow-sm"
           title="Refresh List"
         >
@@ -135,7 +186,8 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       <div className="bg-theme-card backdrop-blur-xl rounded-3xl overflow-hidden">
         <div className="p-5 flex items-center justify-between bg-theme-input">
           <div className="flex items-center gap-2 text-sm text-theme-text-secondary font-mono tracking-wider text-[11px] uppercase">
-            <span className="font-bold text-theme-text-primary text-sm">{totalItems}</span> RESOLVED CONVERSATIONS
+            <span className="font-bold text-theme-text-primary text-sm">{chats.length}</span> RESOLVED CONVERSATIONS
+            {isFetchingAllPages && <span className="text-xs text-theme-accent-yellow animate-pulse">Loading all pages...</span>}
           </div>
           <div className="relative">
             <Search className="w-4 h-4 text-theme-text-secondary/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -165,7 +217,9 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 <tr>
                   <td colSpan="6" className="px-6 py-16 text-center">
                     <RefreshCw className="w-6 h-6 animate-spin text-theme-accent-yellow mx-auto mb-4" />
-                    <p className="text-theme-text-secondary font-medium tracking-wide">Connecting to CRM...</p>
+                    <p className="text-theme-text-secondary font-medium tracking-wide">
+                      {isFetchingAllPages ? 'Fetching all resolved chats...' : 'Connecting to CRM...'}
+                    </p>
                   </td>
                 </tr>
               ) : chats.length === 0 ? (
@@ -233,15 +287,15 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
           </table>
         </div>
 
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
+        {/* Pagination - Hidden when all pages are fetched */}
+        {!loading && !isFetchingAllPages && totalPages > 1 && (
           <div className="px-6 py-4 flex items-center justify-between bg-theme-input text-[11px] font-mono tracking-wider">
             <span className="text-theme-text-secondary/70">
               SHOWING PAGE <span className="font-bold text-theme-text-secondary">{page}</span> OF <span className="font-bold text-theme-text-secondary">{totalPages}</span>
             </span>
             <div className="flex items-center gap-2">
               <button 
-                onClick={() => fetchChats(page - 1, selectedDate)}
+                onClick={() => fetchChats(page - 1, selectedDate, false)}
                 disabled={page === 1}
                 className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
@@ -252,7 +306,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
-                    onClick={() => fetchChats(p, selectedDate)}
+                    onClick={() => fetchChats(p, selectedDate, false)}
                     className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
                       page === p 
                         ? 'bg-gradient-to-r from-purple-600 to-[#d946ef] text-white shadow-sm' 
@@ -265,7 +319,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               </div>
 
               <button 
-                onClick={() => fetchChats(page + 1, selectedDate)}
+                onClick={() => fetchChats(page + 1, selectedDate, false)}
                 disabled={page === totalPages}
                 className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >

@@ -3,13 +3,13 @@ import { createPortal } from 'react-dom';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
-import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
+import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CustomSelect } from '../../components/ui/CustomSelect';
 import GradientOrb from '../../components/ui/GradientOrb';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
-  const { analyzeChat, prompts, aiProviders } = useQaStore();
+  const { analyzeChat, prompts, aiProviders, cancelAnalysis } = useQaStore();
   const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis, theme } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
@@ -24,6 +24,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [originalPetitionId, setOriginalPetitionId] = useState('');
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -50,14 +51,12 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       }
       setConversationText(textToSet);
       
-      // Select the category if it matches one of our options (case-insensitive)
       const validCategories = ['Booking', 'Cancellation', 'Reschedule', 'Refund', 'Baggage', 'Check-in', 'Meal / Seat', 'Visa / Travel Advisory', 'Other'];
       if (pendingCategory) {
          const match = validCategories.find(c => c.toLowerCase() === pendingCategory.toLowerCase());
          if (match) setSelectedCategory(match);
       }
       
-      // Clear the store so it doesn't auto-fill again if they navigate away and back
       setPendingAnalysis('', 'Auto-Detect', '');
     }
   }, [pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis]);
@@ -98,10 +97,29 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
     } catch (err) {
-      toast.error(err.message || 'Analysis failed to execute', { id: toastId });
+      if (err.message === 'Analysis cancelled') {
+        toast.dismiss(toastId);
+      } else {
+        toast.error(err.message || 'Analysis failed to execute', { id: toastId });
+      }
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleCancelClick = () => {
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    cancelAnalysis();
+    setIsAnalyzing(false);
+    setIsCancelModalOpen(false);
+    toast.success('Analysis cancelled successfully.');
+  };
+
+  const handleContinueAnalysis = () => {
+    setIsCancelModalOpen(false);
   };
 
   return (
@@ -150,23 +168,36 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={isAnalyzing}
-              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
-            >
-              {isAnalyzing ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-theme-text-primary" />
-                  <span>Running QA Analysis...</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-white" />
-                  <span>Generate QA Report</span>
-                </>
+            <div className="flex gap-3 w-full">
+              <button
+                type="submit"
+                disabled={isAnalyzing}
+                className="flex-1 sm:flex-auto px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-theme-text-primary" />
+                    <span>Running QA Analysis...</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-white" />
+                    <span>Generate QA Report</span>
+                  </>
+                )}
+              </button>
+
+              {isAnalyzing && (
+                <button
+                  type="button"
+                  onClick={handleCancelClick}
+                  className="px-6 py-4 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 font-semibold rounded-xl text-[13px] transition-all shadow-sm flex items-center justify-center gap-2 tracking-wide"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
               )}
-            </button>
+            </div>
           </div>
         </div>
 
@@ -276,13 +307,12 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </p>
           </div>
           
-          {/* Spacer to push config up if needed, though h-fit handles it */}
           </div>
         </div>
       </form>
     </div>
 
-      {/* Full-screen Loader Overlay - Portaled to cover everything including Sidebar */}
+      {/* Full-screen Loader Overlay */}
       {isAnalyzing && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-theme-bg/80 backdrop-blur-md animate-in fade-in duration-300">
           <GradientOrb size={200} mode={theme || 'dark'} />
@@ -293,6 +323,55 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             <p className="text-sm text-theme-text-secondary max-w-sm">
               Please wait while the AI generates the QA report based on your configuration.
             </p>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {isCancelModalOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-theme-card border border-theme-border shadow-2xl rounded-2xl w-full max-w-md overflow-hidden transition-all relative p-8">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-theme-text-primary tracking-wide">Cancel Analysis?</h2>
+              <button 
+                onClick={() => setIsCancelModalOpen(false)}
+                className="rounded-full text-theme-text-secondary hover:text-theme-accent-yellow transition-colors bg-theme-card-hover p-1 hover:bg-theme-card-hover"
+              >
+                <X className="w-5 h-5 stroke-[2]" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="mb-8">
+              <p className="text-sm text-theme-text-secondary leading-relaxed">
+                The current AI analysis is still running.
+                <br />
+                <br />
+                Are you sure you want to cancel it?
+                <br />
+                <br />
+                <span className="font-semibold text-amber-400">Any progress generated so far will not be saved.</span>
+              </p>
+            </div>
+
+            {/* Modal Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleContinueAnalysis}
+                className="flex-1 px-4 py-3 bg-theme-card-hover hover:bg-theme-card-hover text-theme-text-primary font-semibold rounded-xl text-sm transition-all"
+              >
+                Continue Analysis
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-sm transition-all"
+              >
+                Cancel Analysis
+              </button>
+            </div>
           </div>
         </div>,
         document.body
