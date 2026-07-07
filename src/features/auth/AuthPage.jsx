@@ -95,7 +95,7 @@ export const AuthPage = () => {
           style={{ backgroundColor: 'rgba(99,102,241,0.08)' }} />
         <div className="absolute -bottom-40 left-1/4 w-[60%] h-[60%] rounded-full blur-[140px] transition-colors duration-700"
           style={{ backgroundColor: 'rgba(168,85,247,0.07)' }} />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.18] mix-blend-overlay z-10" />
+        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.18] mix-blend-overlay z-10" />
       </div>
 
       {/* ── Theme toggle ── */}
@@ -144,7 +144,7 @@ export const AuthPage = () => {
 
           {/* Noise + vignette */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/8 via-transparent to-black/70 mix-blend-overlay pointer-events-none z-20" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.18] mix-blend-overlay z-20 pointer-events-none" />
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.18] mix-blend-overlay z-20 pointer-events-none" />
 
           {/* ── Logo + wordmark ── */}
           <div className="relative z-30 flex items-center gap-4">

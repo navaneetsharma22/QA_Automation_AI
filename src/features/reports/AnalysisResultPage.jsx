@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQaStore } from '../../store/qaStore';
+import { apiFetch } from '../../lib/apiFetch';
 import { 
   CheckCircle2, 
   Check,
@@ -272,10 +273,10 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
   const handleSendToQC = async () => {
     setIsSendingQC(true);
-    const toastId = toast.loading('Sending report to QC Platform...');
+    const toastId = toast.loading('Sending to QC Platform...');
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      
+
       const payload = {
         ...report,
         petitionId: petitionIdValue,
@@ -289,24 +290,36 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       const headers = { 'Content-Type': 'application/json' };
       if (qcToken) headers['x-qc-token'] = qcToken;
 
-      const res = await fetch(`${apiUrl}/v1/qc/post-report`, {
+      const res = await apiFetch(`${apiUrl}/v1/qc/post-report`, {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
+
       const data = await res.json();
+
+      // Backend returned a non-2xx HTTP status — surface the real error
       if (!res.ok) {
-        let errMsg = data.error || 'Failed to send to QC';
-        if (data.details && data.details.message) {
-          errMsg += ': ' + data.details.message;
-        }
+        const errMsg = data.message || data.error || `Server error (HTTP ${res.status})`;
         throw new Error(errMsg);
       }
-      
-      toast.success('Successfully sent to QC Platform!', { id: toastId });
+
+      // Backend returned 200 but QC API did not confirm creation
+      if (!data.success) {
+        const errMsg = data.message || data.error || 'QC Platform did not confirm the observation was created.';
+        throw new Error(errMsg);
+      }
+
+      // Confirmed: observation was created
+      const createdId = data.createdId;
+      const successMsg = createdId
+        ? `Observation created in QC Platform. ID: ${createdId}`
+        : 'Observation successfully created in QC Platform.';
+
+      toast.success(successMsg, { id: toastId });
       setIsQcModalOpen(false);
     } catch (err) {
-      console.error(err);
+      console.error('[QC Submit]', err.message);
       toast.error(err.message, { id: toastId });
     } finally {
       setIsSendingQC(false);
@@ -394,35 +407,54 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
         <div className="space-y-4">
           {findings.map((finding, idx) => {
-            const isPassed = finding.status?.toLowerCase() === 'pass' || finding.status?.toLowerCase() === 'passed';
+            const statusLower = finding.status?.toLowerCase() || '';
+            const isPassed = statusLower === 'pass' || statusLower === 'passed';
+            const isNA = statusLower === 'not applicable' || statusLower === 'n/a';
+            const isFailed = !isPassed && !isNA;
+
+            const borderClass = isPassed ? 'border-emerald-500/20' : isNA ? 'border-gray-500/20' : 'border-red-500/20';
+            const badgeClass = isPassed
+              ? 'bg-emerald-500/15 text-emerald-400'
+              : isNA
+              ? 'bg-gray-500/15 text-theme-text-secondary'
+              : 'bg-red-500/15 text-red-400';
+
+            const evidenceList = Array.isArray(finding.evidence) ? finding.evidence.filter(Boolean) : [];
+
             return (
-              <div 
-                key={idx} 
-                className={`bg-theme-input border rounded-xl p-5 ${
-                  isPassed ? 'border-emerald-500/20' : 'border-red-500/20'
-                }`}
+              <div
+                key={idx}
+                className={`bg-theme-input border rounded-xl p-5 ${borderClass}`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-base font-semibold text-theme-text-primary tracking-wide">
                     {finding.ruleName || finding.issue || `Finding ${idx + 1}`}
                   </h3>
-                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
-                    isPassed 
-                      ? 'bg-emerald-500/15 text-emerald-400' 
-                      : 'bg-red-500/15 text-red-400'
-                  }`}>
+                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${badgeClass}`}>
                     {finding.status || 'N/A'}
                   </span>
                 </div>
                 <p className="text-theme-text-secondary text-sm leading-relaxed mb-2">
                   {finding.description || finding.finding || ''}
                 </p>
-                {finding.explanation && !isPassed && (
-                  <div className="mt-3 pt-3">
+                {finding.explanation && isFailed && (
+                  <div className="mt-3 pt-3 border-t border-theme-border">
                     <p className="text-sm leading-relaxed">
-                      <span className="font-bold text-red-400">Fail:</span>{' '}
+                      <span className="font-bold text-red-400">Violation: </span>
                       <span className="text-theme-text-secondary">{finding.explanation}</span>
                     </p>
+                  </div>
+                )}
+                {isFailed && evidenceList.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-theme-border">
+                    <p className="text-xs font-bold text-theme-text-secondary uppercase tracking-wider mb-2">Chat Evidence</p>
+                    <div className="space-y-2">
+                      {evidenceList.map((ev, eIdx) => (
+                        <div key={eIdx} className="bg-theme-card rounded-lg px-4 py-2.5 border-l-2 border-red-500/50">
+                          <p className="text-sm text-theme-text-secondary italic leading-relaxed">&ldquo;{ev}&rdquo;</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

@@ -68,7 +68,7 @@ const MainApp = () => {
         <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full blur-[120px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-2)' }} />
         <div className="absolute -bottom-40 left-1/3 w-[400px] h-[400px] rounded-full blur-[100px] transition-colors duration-700" style={{ backgroundColor: 'var(--glow-3)' }} />
         {/* Grain/Noise Texture for Premium Feel */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.25] mix-blend-overlay z-10" />
+        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.25] mix-blend-overlay z-10" />
       </div>
       <Sidebar activeTab={activeTab === 'result' ? resultSource : activeTab} setActiveTab={(tab) => { setActiveTab(tab); setViewingReport(null); }} />
 

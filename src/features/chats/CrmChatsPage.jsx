@@ -3,6 +3,7 @@ import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search, Calendar, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { apiFetch } from '../../lib/apiFetch';
 
 export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [chats, setChats] = useState([]);
@@ -11,25 +12,25 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [analyzingId, setAnalyzingId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(() => {
-    return localStorage.getItem('crmSelectedDate') || '';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('crmSelectedDate', selectedDate);
-  }, [selectedDate]);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(todayStr);
 
   const { analyzeChat, aiProviders, prompts, history } = useQaStore();
   const { setActiveTab, setPendingAnalysis } = useUiStore();
 
-  const fetchChats = async (pageToFetch, dateToFetch = selectedDate) => {
+  const fetchChats = async (pageToFetch, dateToFetch) => {
+    // Always read selectedDate from the ref so pagination/refresh never use a stale closure value
+    const dateFilter = dateToFetch !== undefined ? dateToFetch : selectedDate;
     setLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      // Validate YYYY-MM-DD before appending
+      const isValidDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d);
       let url = `${apiUrl}/v1/crm/chats?page=${pageToFetch}&limit=50`;
-      if (dateToFetch) {
-        url += `&date=${dateToFetch}`;
+      if (dateFilter && isValidDate(dateFilter)) {
+        url += `&date=${dateFilter}`;
       }
+      if (import.meta.env.DEV) console.log('[CRM] fetch →', url);
       const crmActive = localStorage.getItem('crm-active') === 'true';
       const crmToken = crmActive ? (localStorage.getItem('crm-token') || '') : '';
       
@@ -39,7 +40,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       const headers = {};
       if (crmToken) headers['x-crm-token'] = crmToken;
       if (qcToken) headers['x-qc-token'] = qcToken;
-      const res = await fetch(url, { headers });
+      const res = await apiFetch(url, { headers });
       if (res.ok) {
         const data = await res.json();
         setChats(data.data || []);
@@ -59,6 +60,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
 
   useEffect(() => {
     fetchChats(1, selectedDate);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
   const handleAnalyze = async (chat) => {
@@ -70,7 +72,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
       
       const crmToken = localStorage.getItem('crm-token') || '';
       const headers = crmToken ? { 'x-crm-token': crmToken } : {};
-      const transcriptRes = await fetch(`${apiUrl}/v1/crm/chats/${chat.id}/transcript`, { headers });
+      const transcriptRes = await apiFetch(`${apiUrl}/v1/crm/chats/${chat.id}/transcript`, { headers });
       if (!transcriptRes.ok) throw new Error('Failed to fetch transcript');
       
       const transcriptData = await transcriptRes.json();
@@ -121,7 +123,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
         </div>
 
         <button 
-          onClick={() => fetchChats(page)}
+          onClick={() => fetchChats(page, selectedDate)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover transition-all shadow-sm"
           title="Refresh List"
         >
@@ -169,7 +171,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               ) : chats.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center text-theme-text-secondary/70">
-                    No chats found.
+                    {selectedDate ? `No chats found for ${selectedDate}.` : 'No chats found.'}
                   </td>
                 </tr>
               ) : (
@@ -239,7 +241,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
             </span>
             <div className="flex items-center gap-2">
               <button 
-                onClick={() => fetchChats(page - 1)}
+                onClick={() => fetchChats(page - 1, selectedDate)}
                 disabled={page === 1}
                 className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
@@ -250,7 +252,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
-                    onClick={() => fetchChats(p)}
+                    onClick={() => fetchChats(p, selectedDate)}
                     className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
                       page === p 
                         ? 'bg-gradient-to-r from-purple-600 to-[#d946ef] text-white shadow-sm' 
@@ -263,7 +265,7 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
               </div>
 
               <button 
-                onClick={() => fetchChats(page + 1)}
+                onClick={() => fetchChats(page + 1, selectedDate)}
                 disabled={page === totalPages}
                 className="p-1.5 rounded-lg bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
