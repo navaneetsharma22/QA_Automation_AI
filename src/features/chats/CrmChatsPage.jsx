@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { MessageCircle, Sparkles, ChevronLeft, ChevronRight, Play, RefreshCw, Search, Calendar, X, Check } from 'lucide-react';
@@ -15,14 +15,22 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
   const [isFetchingAllPages, setIsFetchingAllPages] = useState(false);
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
+  const lastFetchKeyRef = useRef('');
+  const inFlightFetchKeyRef = useRef('');
 
   const { analyzeChat, aiProviders, prompts, history } = useQaStore();
   const { setActiveTab, setPendingAnalysis } = useUiStore();
 
   const fetchChats = async (pageToFetch, dateToFetch, fetchAllPages = false) => {
     const dateFilter = dateToFetch !== undefined ? dateToFetch : selectedDate;
+    const fetchKey = `${fetchAllPages ? 'all' : 'page'}:${pageToFetch}:${dateFilter || ''}`;
+
+    if (inFlightFetchKeyRef.current === fetchKey) return;
+    if (lastFetchKeyRef.current === fetchKey && !loading) return;
+
     setLoading(true);
     setIsFetchingAllPages(fetchAllPages);
+    inFlightFetchKeyRef.current = fetchKey;
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       const isValidDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d);
@@ -100,12 +108,15 @@ export const CrmChatsPage = ({ onAnalysisComplete }) => {
           toast.error('Failed to load CRM chats');
         }
       }
+
+      lastFetchKeyRef.current = fetchKey;
     } catch (err) {
       console.error(err);
       toast.error('Network error fetching chats');
     } finally {
       setLoading(false);
       setIsFetchingAllPages(false);
+      inFlightFetchKeyRef.current = '';
     }
   };
 
