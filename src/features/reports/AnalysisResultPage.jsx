@@ -113,6 +113,12 @@ const CustomDropdown = ({ value, onChange }) => {
   );
 };
 
+const toStr = (val) => {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'object') return val.quote || val.text || val.message || JSON.stringify(val);
+  return String(val);
+};
+
 const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
   if (!schemaNode || !findingData) return null;
 
@@ -146,7 +152,7 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
     );
   }
 
-  const textContent = Array.isArray(content) ? content.join('\n') : String(content);
+  const textContent = Array.isArray(content) ? content.map(toStr).join('\n') : toStr(content);
 
   return (
     <div className={`bg-theme-card backdrop-blur-md rounded-2xl p-6 transition-all ${depth > 0 ? 'mt-0 bg-transparent border-theme-border' : 'mt-8'}`}>
@@ -451,7 +457,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                     <div className="space-y-2">
                       {evidenceList.map((ev, eIdx) => (
                         <div key={eIdx} className="bg-theme-card rounded-lg px-4 py-2.5 border-l-2 border-red-500/50">
-                          <p className="text-sm text-theme-text-secondary italic leading-relaxed">&ldquo;{ev}&rdquo;</p>
+                          <p className="text-sm text-theme-text-secondary italic leading-relaxed">&ldquo;{toStr(ev)}&rdquo;</p>
                         </div>
                       ))}
                     </div>
@@ -495,7 +501,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               {expectedArr.map((action, idx) => (
                 <li key={idx} className="flex items-start gap-2 break-words">
                   <span className="text-blue-400 mt-0.5 flex-shrink-0">•</span>
-                  <span>{typeof action === 'object' ? JSON.stringify(action) : action}</span>
+                  <span>{toStr(action)}</span>
                 </li>
               ))}
             </ul>
@@ -671,14 +677,26 @@ export const AnalysisResultPage = ({ report, onBack }) => {
           <div className="mb-6">
             <h3 className="text-sm font-bold text-theme-text-secondary mb-3 uppercase tracking-wider">QA Observations</h3>
             <div className="bg-theme-input rounded-xl p-5 space-y-2">
-              {conclusion.observations.map((obs, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-sm text-theme-text-secondary">
-                  <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {isPassed ? '✓' : '✗'}
-                  </span>
-                  <span>{typeof obs === 'object' ? JSON.stringify(obs) : obs}</span>
-                </div>
-              ))}
+              {conclusion.observations.map((obs, idx) => {
+                let obsText = '';
+                if (typeof obs === 'object' && obs !== null) {
+                  if (obs.quote) {
+                    obsText = obs.quote;
+                  } else {
+                    obsText = JSON.stringify(obs);
+                  }
+                } else {
+                  obsText = String(obs);
+                }
+                return (
+                  <div key={idx} className="flex items-start gap-2 text-sm text-theme-text-secondary">
+                    <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {isPassed ? '✓' : '✗'}
+                    </span>
+                    <span>{obsText}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
