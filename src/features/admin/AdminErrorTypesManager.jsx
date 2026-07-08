@@ -133,7 +133,7 @@ export const AdminErrorTypesManager = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl p-6">
+      <div className="bg-theme-main border border-theme-border rounded-2xl p-6">
         <h2 className="text-xl font-bold text-theme-primary mb-2 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-amber-500" />
           Error Types (Severity) Manager
@@ -142,13 +142,13 @@ export const AdminErrorTypesManager = () => {
           Define global error types (like MISLEADING, CRITICAL, AHT). These will be available in the dropdowns and injected into the AI system prompt to guide how the LLM evaluates agents.
         </p>
 
-        <form onSubmit={handleAddErrorType} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#0B1020] p-6 rounded-xl border border-[#1F2937]/50">
+        <form onSubmit={handleAddErrorType} className="grid grid-cols-1 md:grid-cols-12 gap-6 bg-theme-input p-6 rounded-xl border border-theme-border/50">
           <div className="md:col-span-4 space-y-2">
             <label className="text-xs font-bold text-theme-secondary uppercase tracking-wider">Error Type Name</label>
             <select 
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#111827] border border-[#1F2937] text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
+              className="w-full bg-theme-main border border-theme-border text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
             >
               <option value="" disabled>Select Error Type</option>
               <option value="AHT (Average Handle Time)">AHT (Average Handle Time)</option>
@@ -170,7 +170,7 @@ export const AdminErrorTypesManager = () => {
               placeholder="Describe exactly what constitutes this error so the AI categorizes it properly..." 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-[#111827] border border-[#1F2937] text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
+              className="w-full bg-theme-main border border-theme-border text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
             />
           </div>
 
@@ -178,7 +178,7 @@ export const AdminErrorTypesManager = () => {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-primary font-medium rounded-xl transition-all shadow-sm"
             >
               {isSubmitting ? 'Saving...' : (
                 <>
@@ -191,8 +191,8 @@ export const AdminErrorTypesManager = () => {
         </form>
       </div>
 
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
+      <div className="bg-theme-main border border-theme-border rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-theme-border flex items-center justify-between">
           <h3 className="text-base font-bold text-theme-primary flex items-center gap-2">
             <Settings className="w-4 h-4 text-emerald-400" />
             Active Error Types ({errorTypes.length})
@@ -204,7 +204,7 @@ export const AdminErrorTypesManager = () => {
             <div className="p-8 text-center text-theme-secondary text-sm">Loading error types...</div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="text-xs text-theme-secondary uppercase bg-[#0B1020] border-b border-[#1F2937]">
+              <thead className="text-xs text-theme-secondary uppercase bg-theme-input border-b border-theme-border">
                 <tr>
                   <th className="px-6 py-4 font-bold tracking-wider">Name</th>
                   <th className="px-6 py-4 font-bold tracking-wider">Definition</th>
@@ -213,7 +213,7 @@ export const AdminErrorTypesManager = () => {
               </thead>
               <tbody className="divide-y divide-[#1F2937]">
                 {errorTypes.map((et, idx) => (
-                  <tr key={et.id || idx} className="hover:bg-[#0B1020]/50 transition-colors">
+                  <tr key={et.id || idx} className="hover:bg-theme-input/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-theme-primary">
                       <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
                         {et.name}
@@ -254,15 +254,15 @@ export const AdminErrorTypesManager = () => {
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#111827] border border-[#1F2937] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
+          <div className="bg-theme-main border border-theme-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-theme-border flex items-center justify-between">
               <h3 className="text-lg font-bold text-theme-primary flex items-center gap-2">
                 <Settings className="w-5 h-5 text-blue-400" />
                 Edit Error Type
               </h3>
               <button 
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-theme-secondary hover:text-theme-primary p-1 rounded-lg hover:bg-[#1F2937] transition-colors"
+                className="text-theme-secondary hover:text-theme-primary p-1 rounded-lg hover:bg-theme-card transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -274,7 +274,7 @@ export const AdminErrorTypesManager = () => {
                 <select 
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
+                  className="w-full bg-theme-input border border-theme-border text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer" 
                 >
                   <option value="" disabled>Select Error Type</option>
                   <option value="AHT (Average Handle Time)">AHT (Average Handle Time)</option>
@@ -295,22 +295,22 @@ export const AdminErrorTypesManager = () => {
                   rows={4}
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full bg-[#0B1020] border border-[#1F2937] text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
+                  className="w-full bg-theme-input border border-theme-border text-theme-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors resize-none" 
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#1F2937]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-theme-border">
                 <button 
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-6 py-2.5 bg-transparent hover:bg-[#1F2937] text-theme-primary font-medium rounded-xl transition-all border border-[#1F2937]"
+                  className="px-6 py-2.5 bg-transparent hover:bg-theme-card text-theme-primary font-medium rounded-xl transition-all border border-theme-border"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={isUpdating}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-primary font-medium rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-theme-primary font-medium rounded-xl transition-all shadow-sm"
                 >
                   {isUpdating ? 'Updating...' : (
                     <>

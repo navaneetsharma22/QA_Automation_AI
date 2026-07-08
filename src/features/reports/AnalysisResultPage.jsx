@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQaStore } from '../../store/qaStore';
+import { apiFetch } from '../../lib/apiFetch';
 import { 
   CheckCircle2, 
   Check,
@@ -38,7 +39,7 @@ const CopyButton = ({ text, className = "" }) => {
   return (
     <button 
       onClick={handleCopy}
-      className={`p-1.5 hover:bg-[#1F2937] rounded-md transition-colors text-theme-text-secondary hover:text-theme-text-primary flex-shrink-0 ${className}`}
+      className={`p-1.5 hover:bg-theme-card rounded-md transition-colors text-theme-text-secondary hover:text-theme-text-primary flex-shrink-0 ${className}`}
       title="Copy to clipboard"
     >
       {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -81,7 +82,7 @@ const CustomDropdown = ({ value, onChange }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div 
-        className="w-full bg-[#110918] text-theme-text-primary text-sm font-semibold border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-all cursor-pointer flex justify-between items-center"
+        className="w-full bg-theme-input text-theme-text-primary text-sm font-semibold border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-all cursor-pointer flex justify-between items-center"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{selectedOption.label}</span>
@@ -92,11 +93,12 @@ const CustomDropdown = ({ value, onChange }) => {
         </div>
       </div>
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-[#161324] rounded-xl shadow-[0_10px_40px_rgba(168,85,247,0.3)] overflow-hidden max-h-[260px] overflow-y-auto custom-scrollbar flex flex-col p-1.5">
+        <div className="absolute z-50 w-full mt-2 bg-theme-card border border-theme-border rounded-xl shadow-2xl overflow-hidden max-h-[260px] overflow-y-auto custom-scrollbar flex flex-col p-1.5">
           {options.map((opt) => (
             <div 
               key={opt.value}
-              className={`px-3 py-2.5 text-[13px] font-medium cursor-pointer rounded-lg transition-colors ${value === opt.value ? 'bg-theme-accent-yellow/30 text-purple-300' : 'text-theme-text-secondary hover:bg-[#1d132a] hover:text-theme-text-primary'}`}
+              className={`px-3 py-2.5 text-[13px] font-medium cursor-pointer rounded-lg transition-colors ${value === opt.value ? 'font-bold' : 'text-theme-text-secondary hover:bg-theme-card-hover hover:text-theme-text-primary'}`}
+              style={value === opt.value ? { background: 'var(--sidebar-active-bg)', color: 'var(--sidebar-active-text)' } : undefined}
               onClick={() => {
                 onChange(opt.value);
                 setIsOpen(false);
@@ -109,6 +111,12 @@ const CustomDropdown = ({ value, onChange }) => {
       )}
     </div>
   );
+};
+
+const toStr = (val) => {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'object') return val.quote || val.text || val.message || JSON.stringify(val);
+  return String(val);
 };
 
 const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
@@ -129,7 +137,7 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
                     : 'space-y-6';
 
     return (
-      <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group ${depth > 0 ? 'mt-4 p-6 bg-[#110918] backdrop-blur-none' : ''}`}>
+      <div className={`bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group ${depth > 0 ? 'mt-4 p-6 bg-theme-input backdrop-blur-none' : ''}`}>
         {schemaNode.heading && (
           <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-semibold text-theme-text-primary tracking-wide ${schemaNode.type === 'row' ? 'mb-4 w-full' : 'mb-4'}`}>
             {schemaNode.heading}
@@ -144,10 +152,10 @@ const DynamicCard = ({ schemaNode, findingData, depth = 0 }) => {
     );
   }
 
-  const textContent = Array.isArray(content) ? content.join('\n') : String(content);
+  const textContent = Array.isArray(content) ? content.map(toStr).join('\n') : toStr(content);
 
   return (
-    <div className={`bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all ${depth > 0 ? 'mt-0 bg-transparent border-theme-border' : 'mt-8'}`}>
+    <div className={`bg-theme-card backdrop-blur-md rounded-2xl p-6 transition-all ${depth > 0 ? 'mt-0 bg-transparent border-theme-border' : 'mt-8'}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className={`${depth === 0 ? 'text-xl' : 'text-lg'} font-semibold text-theme-text-primary tracking-wide`}>
           {schemaNode.heading}
@@ -271,10 +279,10 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
   const handleSendToQC = async () => {
     setIsSendingQC(true);
-    const toastId = toast.loading('Sending report to QC Platform...');
+    const toastId = toast.loading('Sending to QC Platform...');
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-      
+
       const payload = {
         ...report,
         petitionId: petitionIdValue,
@@ -288,24 +296,36 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       const headers = { 'Content-Type': 'application/json' };
       if (qcToken) headers['x-qc-token'] = qcToken;
 
-      const res = await fetch(`${apiUrl}/v1/qc/post-report`, {
+      const res = await apiFetch(`${apiUrl}/v1/qc/post-report`, {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify(payload)
       });
+
       const data = await res.json();
+
+      // Backend returned a non-2xx HTTP status — surface the real error
       if (!res.ok) {
-        let errMsg = data.error || 'Failed to send to QC';
-        if (data.details && data.details.message) {
-          errMsg += ': ' + data.details.message;
-        }
+        const errMsg = data.message || data.error || `Server error (HTTP ${res.status})`;
         throw new Error(errMsg);
       }
-      
-      toast.success('Successfully sent to QC Platform!', { id: toastId });
+
+      // Backend returned 200 but QC API did not confirm creation
+      if (!data.success) {
+        const errMsg = data.message || data.error || 'QC Platform did not confirm the observation was created.';
+        throw new Error(errMsg);
+      }
+
+      // Confirmed: observation was created
+      const createdId = data.createdId;
+      const successMsg = createdId
+        ? `Observation created in QC Platform. ID: ${createdId}`
+        : 'Observation successfully created in QC Platform.';
+
+      toast.success(successMsg, { id: toastId });
       setIsQcModalOpen(false);
     } catch (err) {
-      console.error(err);
+      console.error('[QC Submit]', err.message);
       toast.error(err.message, { id: toastId });
     } finally {
       setIsSendingQC(false);
@@ -320,7 +340,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!content) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-blue-400" />
@@ -347,7 +367,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       : (Array.isArray(logs) ? logs.join('\n\n') : String(logs));
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-amber-400" />
@@ -383,7 +403,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!hasRuleFormat) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <FileCheck className="w-5 h-5 text-indigo-400" />
@@ -393,35 +413,54 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         </div>
         <div className="space-y-4">
           {findings.map((finding, idx) => {
-            const isPassed = finding.status?.toLowerCase() === 'pass' || finding.status?.toLowerCase() === 'passed';
+            const statusLower = finding.status?.toLowerCase() || '';
+            const isPassed = statusLower === 'pass' || statusLower === 'passed';
+            const isNA = statusLower === 'not applicable' || statusLower === 'n/a';
+            const isFailed = !isPassed && !isNA;
+
+            const borderClass = isPassed ? 'border-emerald-500/20' : isNA ? 'border-gray-500/20' : 'border-red-500/20';
+            const badgeClass = isPassed
+              ? 'bg-emerald-500/15 text-emerald-400'
+              : isNA
+              ? 'bg-gray-500/15 text-theme-text-secondary'
+              : 'bg-red-500/15 text-red-400';
+
+            const evidenceList = Array.isArray(finding.evidence) ? finding.evidence.filter(Boolean) : [];
+
             return (
-              <div 
-                key={idx} 
-                className={`bg-[#110918] border rounded-xl p-5 ${
-                  isPassed ? 'border-emerald-500/20' : 'border-red-500/20'
-                }`}
+              <div
+                key={idx}
+                className={`bg-theme-input border rounded-xl p-5 ${borderClass}`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-base font-semibold text-theme-text-primary tracking-wide">
                     {finding.ruleName || finding.issue || `Finding ${idx + 1}`}
                   </h3>
-                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
-                    isPassed 
-                      ? 'bg-emerald-500/15 text-emerald-400' 
-                      : 'bg-red-500/15 text-red-400'
-                  }`}>
+                  <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${badgeClass}`}>
                     {finding.status || 'N/A'}
                   </span>
                 </div>
                 <p className="text-theme-text-secondary text-sm leading-relaxed mb-2">
                   {finding.description || finding.finding || ''}
                 </p>
-                {finding.explanation && !isPassed && (
-                  <div className="mt-3 pt-3">
+                {finding.explanation && isFailed && (
+                  <div className="mt-3 pt-3 border-t border-theme-border">
                     <p className="text-sm leading-relaxed">
-                      <span className="font-bold text-red-400">Fail:</span>{' '}
+                      <span className="font-bold text-red-400">Violation: </span>
                       <span className="text-theme-text-secondary">{finding.explanation}</span>
                     </p>
+                  </div>
+                )}
+                {isFailed && evidenceList.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-theme-border">
+                    <p className="text-xs font-bold text-theme-text-secondary uppercase tracking-wider mb-2">Chat Evidence</p>
+                    <div className="space-y-2">
+                      {evidenceList.map((ev, eIdx) => (
+                        <div key={eIdx} className="bg-theme-card rounded-lg px-4 py-2.5 border-l-2 border-red-500/50">
+                          <p className="text-sm text-theme-text-secondary italic leading-relaxed">&ldquo;{toStr(ev)}&rdquo;</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -444,14 +483,14 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `Expected Agent Action:\n${expectedArr.join('\n')}\n\nAgent Action:\n${actual || 'N/A'}\n\nMissing Expected Action:\n${missing || 'None'}`;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 space-y-6 transition-all relative group">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 space-y-6 transition-all relative group">
         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
           <CopyButton text={copyText} />
         </div>
 
         {/* Expected Agent Action */}
         {expectedArr.length > 0 && (
-          <div className="bg-[#110918] rounded-xl p-6 transition-all">
+          <div className="bg-theme-input rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Expected Agent Action
@@ -462,7 +501,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               {expectedArr.map((action, idx) => (
                 <li key={idx} className="flex items-start gap-2 break-words">
                   <span className="text-blue-400 mt-0.5 flex-shrink-0">•</span>
-                  <span>{typeof action === 'object' ? JSON.stringify(action) : action}</span>
+                  <span>{toStr(action)}</span>
                 </li>
               ))}
             </ul>
@@ -471,7 +510,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
         {/* Agent Action */}
         {actual && (
-          <div className="bg-[#110918] rounded-xl p-6 transition-all">
+          <div className="bg-theme-input rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Agent Action
@@ -484,7 +523,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
 
         {/* Missing Expected Action */}
         {missing && (
-          <div className="bg-[#110918] rounded-xl p-6 transition-all">
+          <div className="bg-theme-input rounded-xl p-6 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">
                 Missing Expected Action
@@ -506,7 +545,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `AHT Delay Analysis\nResult: ${aht.result || 'N/A'}\n\nConversation Timeline:\n${(aht.timeline || []).join('\n')}\n\nObservation:\n${aht.observation || 'N/A'}`;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 transition-all">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <Clock className="w-5 h-5 text-cyan-400" />
@@ -528,7 +567,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         {aht.timeline && aht.timeline.length > 0 && (
           <div className="mb-5">
             <h3 className="text-sm font-bold text-theme-text-secondary mb-3">Conversation Timeline:</h3>
-            <div className="bg-[#110918] rounded-xl p-4 space-y-1.5">
+            <div className="bg-theme-input rounded-xl p-4 space-y-1.5">
               {aht.timeline.map((entry, idx) => {
                 let displayEntry = entry;
                 if (typeof entry === 'object' && entry !== null) {
@@ -565,7 +604,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     if (!reason) return null;
 
     return (
-      <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
+      <div className="bg-theme-card backdrop-blur-md rounded-2xl p-6 mt-8 transition-all">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-theme-text-primary tracking-wide flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-theme-accent-yellow" />
@@ -589,7 +628,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
     const copyText = `QA Conclusion\nStatus: ${conclusion.status}\nMisleading: ${conclusion.misleading}\nSeverity: ${conclusion.severity}\n\nQA Observations:\n${(conclusion.observations || []).join('\n')}\n\nQA Decision:\n${conclusion.decision || 'N/A'}`;
 
     return (
-      <div className={`bg-[#150d1f] backdrop-blur-md border rounded-2xl p-8 mt-8 transition-all ${
+      <div className={`bg-theme-card backdrop-blur-md border rounded-2xl p-8 mt-8 transition-all ${
         isPassed ? 'border-emerald-500/30' : 'border-red-500/30'
       }`}>
         <div className="flex items-center justify-between mb-6">
@@ -637,15 +676,27 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         {conclusion.observations && conclusion.observations.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-bold text-theme-text-secondary mb-3 uppercase tracking-wider">QA Observations</h3>
-            <div className="bg-[#110918] rounded-xl p-5 space-y-2">
-              {conclusion.observations.map((obs, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-sm text-theme-text-secondary">
-                  <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {isPassed ? '✓' : '✗'}
-                  </span>
-                  <span>{typeof obs === 'object' ? JSON.stringify(obs) : obs}</span>
-                </div>
-              ))}
+            <div className="bg-theme-input rounded-xl p-5 space-y-2">
+              {conclusion.observations.map((obs, idx) => {
+                let obsText = '';
+                if (typeof obs === 'object' && obs !== null) {
+                  if (obs.quote) {
+                    obsText = obs.quote;
+                  } else {
+                    obsText = JSON.stringify(obs);
+                  }
+                } else {
+                  obsText = String(obs);
+                }
+                return (
+                  <div key={idx} className="flex items-start gap-2 text-sm text-theme-text-secondary">
+                    <span className={`mt-0.5 flex-shrink-0 ${isPassed ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {isPassed ? '✓' : '✗'}
+                    </span>
+                    <span>{obsText}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -670,7 +721,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         <div className="flex items-center gap-4">
           <button
             onClick={onBack}
-            className="p-2.5 rounded-xl bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] transition-all"
+            className="p-2.5 rounded-xl bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover transition-all"
             title="Go Back"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -680,7 +731,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               <h1 className="text-2xl font-semibold text-theme-text-primary tracking-wide">
                 Quality Assurance Report
               </h1>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#110918] text-theme-text-secondary">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-theme-input text-theme-text-secondary">
                 {report.analysisId}
               </span>
             </div>
@@ -694,7 +745,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
           <button
             onClick={() => setIsQcModalOpen(true)}
             disabled={isSendingQC}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-50"
           >
             {isSendingQC ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
             To QC
@@ -704,13 +755,13 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               navigator.clipboard.writeText(JSON.stringify(report, null, 2));
               toast.success('Copied report JSON to clipboard');
             }}
-            className="px-3.5 py-2 rounded-xl bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] text-xs font-medium transition-all flex items-center gap-2"
+            className="px-3.5 py-2 rounded-xl bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover text-xs font-medium transition-all flex items-center gap-2"
           >
             <Copy className="w-3.5 h-3.5 text-theme-text-secondary" /> Copy JSON
           </button>
           <button
             onClick={handleExportJson}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2"
           >
             <Download className="w-3.5 h-3.5" /> Export Report
           </button>
@@ -718,22 +769,22 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       </div>
 
       {/* Metadata Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#150d1f] backdrop-blur-md rounded-2xl p-6 transition-all">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-theme-card backdrop-blur-md rounded-2xl p-6 transition-all">
         <div className="space-y-2.5">
           <label className="text-[11px] font-bold text-theme-text-secondary uppercase tracking-wider">Petition Number</label>
-          <div className="w-full bg-[#110918] text-theme-text-primary text-sm rounded-xl px-4 py-3.5 flex items-center">
+          <div className="w-full bg-theme-input text-theme-text-primary text-sm rounded-xl px-4 py-3.5 flex items-center">
             {petitionIdValue || 'N/A'}
           </div>
         </div>
         <div className="space-y-2.5">
           <label className="text-[11px] font-bold text-theme-text-secondary uppercase tracking-wider">Error Type</label>
-          <div className="w-full bg-[#110918] text-theme-text-primary text-sm font-semibold rounded-xl px-4 py-3.5 flex items-center">
+          <div className="w-full bg-theme-input text-theme-text-primary text-sm font-semibold rounded-xl px-4 py-3.5 flex items-center">
             {selectedErrorType || 'N/A'}
           </div>
         </div>
         <div className="space-y-2.5">
           <label className="text-[11px] font-bold text-theme-text-secondary uppercase tracking-wider">Agent Name</label>
-          <div className="w-full bg-[#110918] text-theme-text-primary text-sm rounded-xl px-4 py-3.5 flex items-center">
+          <div className="w-full bg-theme-input text-theme-text-primary text-sm rounded-xl px-4 py-3.5 flex items-center">
             {agentName || 'N/A'}
           </div>
         </div>
@@ -768,7 +819,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
         /* ═══ Fallback for old/unparsed reports ═══ */
         <>
           {report?.findings?.length > 0 ? (
-            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group">
+            <div className="bg-theme-card backdrop-blur-md rounded-2xl p-8 mt-8 transition-all relative group">
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
                 <CopyButton text={JSON.stringify(report.findings, null, 2)} />
               </div>
@@ -781,12 +832,12 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               <p className="text-theme-text-secondary text-sm mb-6">
                 The AI returned a report, but its structure didn't exactly match the expected card format. Here is the raw output:
               </p>
-              <div className="text-theme-text-secondary text-sm leading-relaxed whitespace-pre-wrap break-words bg-[#110918] p-6 rounded-xl">
+              <div className="text-theme-text-secondary text-sm leading-relaxed whitespace-pre-wrap break-words bg-theme-input p-6 rounded-xl">
                 {JSON.stringify(report.findings, null, 2)}
               </div>
             </div>
           ) : (
-            <div className="bg-[#150d1f] backdrop-blur-md rounded-2xl p-12 text-center space-y-3 mt-8 transition-all">
+            <div className="bg-theme-card backdrop-blur-md rounded-2xl p-12 text-center space-y-3 mt-8 transition-all">
               <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
@@ -802,7 +853,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
       {/* QC Modal */}
       {isQcModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#150d1f] border-transparent rounded-2xl w-full max-w-4xl overflow-hidden transition-all relative p-8">
+          <div className="bg-theme-card border border-theme-border shadow-2xl rounded-2xl w-full max-w-4xl overflow-hidden transition-all relative p-8">
             
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-8">
@@ -812,7 +863,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
               </div>
               <button 
                 onClick={() => setIsQcModalOpen(false)}
-                className="rounded-full text-theme-text-secondary hover:text-theme-accent-yellow transition-colors bg-[#1d132a] p-1 hover:bg-[#1d132a]"
+                className="rounded-full text-theme-text-secondary hover:text-theme-accent-yellow transition-colors bg-theme-card-hover p-1 hover:bg-theme-card-hover"
               >
                 <XCircle className="w-5 h-5 stroke-[2]" />
               </button>
@@ -830,7 +881,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                     placeholder="e.g. PET-12345" 
                     value={petitionIdValue}
                     onChange={(e) => setPetitionIdValue(e.target.value)}
-                    className="w-full bg-[#110918] text-theme-text-primary text-sm border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-colors placeholder:text-gray-600" 
+                    className="w-full bg-theme-input text-theme-text-primary text-sm border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-colors placeholder:text-gray-600" 
                   />
                 </div>
                 <div className="space-y-2.5">
@@ -847,7 +898,7 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                     placeholder="Optional" 
                     value={agentName}
                     onChange={(e) => setAgentName(e.target.value)}
-                    className="w-full bg-[#110918] text-theme-text-primary text-sm border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-colors placeholder:text-gray-600" 
+                    className="w-full bg-theme-input text-theme-text-primary text-sm border-transparent rounded-xl px-4 py-3.5 focus:outline-none transition-colors placeholder:text-gray-600" 
                   />
                 </div>
               </div>
@@ -858,14 +909,14 @@ export const AnalysisResultPage = ({ report, onBack }) => {
                   placeholder="Describe the anomaly..." 
                   value={observationValue}
                   onChange={(e) => setObservationValue(e.target.value)}
-                  className="w-full min-h-[350px] resize-y bg-[#110918] text-theme-text-primary text-sm leading-relaxed border-transparent rounded-xl px-5 py-4 focus:outline-none transition-colors placeholder:text-gray-600 custom-scrollbar" 
+                  className="w-full min-h-[350px] resize-y bg-theme-input text-theme-text-primary text-sm leading-relaxed border-transparent rounded-xl px-5 py-4 focus:outline-none transition-colors placeholder:text-gray-600 custom-scrollbar" 
                 />
               </div>
 
               <button
                 onClick={handleSendToQC}
                 disabled={isSendingQC}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-extrabold text-[13px] tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 mt-4"
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-extrabold text-[13px] tracking-widest uppercase transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 mt-4"
               >
                 {isSendingQC ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>+ Log Observation</span>}
               </button>

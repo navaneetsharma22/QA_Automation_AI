@@ -56,12 +56,12 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
   });
 
   return (
-    <aside className="w-[320px] flex flex-col h-[calc(100vh-2rem)] my-4 ml-4 rounded-3xl bg-[#1d132a] backdrop-blur-3xl border border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.5)] shrink-0 select-none z-30 py-4">
+    <aside className="w-[320px] flex flex-col h-[calc(100vh-2rem)] my-4 ml-4 rounded-3xl bg-theme-card-hover backdrop-blur-3xl border border-theme-border shadow-sm shrink-0 select-none z-30 py-4">
       {/* Brand Header */}
       <div className="h-16 px-6 flex items-center justify-between mb-4">
         <div className="flex items-center gap-3 pointer-events-none">
           {/* Logo with purple mask */}
-          <div className="relative w-9 h-9 rounded-full overflow-hidden shadow-[0_0_16px_rgba(139,92,246,0.5)]">
+          <div className="relative w-9 h-9 rounded-full overflow-hidden shadow-sm">
             <img
               src="/logo.png"
               alt="QA Automation Logo"
@@ -70,21 +70,11 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
             <div className="absolute inset-0 bg-purple-600/40 mix-blend-color rounded-full" />
             <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-purple-400/30" />
           </div>
-          <span
-            className="text-xl font-black tracking-tighter font-sans"
-            style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))' }}
-          >
+          <span className="text-xl font-black tracking-tighter font-sans">
             <span className="text-theme-text-primary">Qa_</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-b from-[#b5c2ff] via-[#758bfd] to-[#4662eb]">automation</span>
           </span>
         </div>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-white/10 transition-colors text-theme-text-secondary hover:text-theme-text-primary cursor-pointer"
-          title="Toggle Theme"
-        >
-          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
       </div>
 
       {/* Navigation List */}
@@ -98,13 +88,24 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-[13px] font-medium transition-all duration-300 group ${
                 isActive
-                  ? 'bg-gradient-to-r from-[#3b2a45]/80 to-[#251b2e]/40 text-white shadow-[0_0_20px_rgba(192,132,252,0.15)] border border-purple-500/10'
-                  : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                  ? 'shadow-sm border border-theme-border'
+                  : 'hover:bg-[var(--sidebar-inactive-hover)]'
               }`}
+              style={{
+                background: isActive ? 'var(--sidebar-active-bg)' : undefined,
+                color: isActive ? 'var(--sidebar-active-text)' : 'var(--sidebar-inactive-text)'
+              }}
             >
               <div className="flex items-center gap-3.5">
-                <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-purple-300' : 'text-gray-500 group-hover:text-gray-300'}`} />
-                <span className={isActive ? 'font-semibold tracking-wide' : 'tracking-wide'}>{item.label}</span>
+                <Icon 
+                  className="w-4 h-4 transition-colors"
+                  style={{ color: isActive ? 'var(--sidebar-active-text)' : 'var(--sidebar-inactive-text)' }}
+                />
+                <span 
+                  className={isActive ? 'font-semibold tracking-wide' : 'tracking-wide transition-colors group-hover:text-theme-primary'}
+                >
+                  {item.label}
+                </span>
               </div>
             </button>
           );
@@ -119,13 +120,24 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
           onClick={() => setActiveTab('profile')}
           className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-[13px] font-medium transition-all duration-300 group ${
             activeTab === 'profile'
-              ? 'bg-gradient-to-r from-[#3b2a45]/80 to-[#251b2e]/40 text-white shadow-[0_0_20px_rgba(192,132,252,0.15)] border border-purple-500/10'
-              : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+              ? 'shadow-sm border border-theme-border'
+              : 'hover:bg-[var(--sidebar-inactive-hover)]'
           }`}
+          style={{
+            background: activeTab === 'profile' ? 'var(--sidebar-active-bg)' : undefined,
+            color: activeTab === 'profile' ? 'var(--sidebar-active-text)' : 'var(--sidebar-inactive-text)'
+          }}
         >
           <div className="flex items-center gap-3.5">
-            <UserCircle2 className={`w-4 h-4 transition-colors ${activeTab === 'profile' ? 'text-purple-300' : 'text-gray-500 group-hover:text-gray-300'}`} />
-            <span className={activeTab === 'profile' ? 'font-semibold tracking-wide' : 'tracking-wide'}>Support Profile</span>
+            <UserCircle2 
+              className="w-4 h-4 transition-colors"
+              style={{ color: activeTab === 'profile' ? 'var(--sidebar-active-text)' : 'var(--sidebar-inactive-text)' }}
+            />
+            <span 
+              className={activeTab === 'profile' ? 'font-semibold tracking-wide' : 'tracking-wide transition-colors group-hover:text-theme-primary'}
+            >
+              Support Profile
+            </span>
           </div>
         </button>
       </div>

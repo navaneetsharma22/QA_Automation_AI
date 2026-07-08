@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Settings, LogOut, UserCircle2, ChevronDown, MessageCircle, Database } from 'lucide-react';
+import { Search, Bell, Settings, LogOut, UserCircle2, ChevronDown, MessageCircle, Database, Sun, Moon } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useUiStore } from '../../store/uiStore';
 import toast from 'react-hot-toast';
 
 export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useUiStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -161,32 +163,40 @@ export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
   };
 
   return (
-    <header className="h-24 px-10 flex items-center justify-between sticky top-0 z-20 shrink-0 bg-theme-main/80 backdrop-blur-md border-b border-white/5">
+    <header className="h-24 px-10 flex items-center justify-between sticky top-0 z-20 shrink-0 bg-theme-main/80 backdrop-blur-md border-b border-theme-border">
       {renderHeaderContent()}
 
       <div className="flex items-center gap-4">
         {/* Search Pill */}
         <button
           onClick={onOpenCommandPalette}
-          className="hidden sm:flex items-center gap-3 px-5 py-2.5 rounded-full bg-[#2a2a2e]/60 border border-white/5 hover:bg-[#343438]/80 text-theme-secondary hover:text-theme-primary text-sm font-medium transition-all duration-300 w-64"
+          className="hidden sm:flex items-center gap-3 px-5 py-2.5 rounded-full bg-theme-input border border-theme-border hover:bg-[#343438]/80 text-theme-secondary hover:text-theme-primary text-sm font-medium transition-all duration-300 w-64"
         >
           <Search className="w-4 h-4 text-theme-secondary" />
           <span>Ask QA_automation anything</span>
         </button>
 
+        {/* Theme Toggle */}
+        <button 
+          onClick={toggleTheme}
+          className="w-10 h-10 rounded-full bg-theme-input border border-theme-border flex items-center justify-center text-theme-secondary hover:text-theme-primary hover:bg-theme-card-hover transition-all"
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+
         {/* Circular Notification Bell */}
         <button 
           onClick={() => toast('No new security violations detected today.', { icon: '🛡️' })}
-          className="w-10 h-10 rounded-full bg-[#111113] border border-white/5 flex items-center justify-center text-theme-secondary hover:text-theme-primary hover:bg-[#1f1f22] transition-all relative"
+          className="w-10 h-10 rounded-full bg-theme-input border border-theme-border flex items-center justify-center text-theme-secondary hover:text-theme-primary hover:bg-theme-card-hover transition-all relative"
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-theme-accent-yellow shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+          <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-theme-accent-yellow shadow-sm animate-pulse" />
         </button>
 
         {/* Settings Icon */}
         <button 
           onClick={() => onNavigate('settings')}
-          className="w-10 h-10 rounded-full bg-[#111113] border border-white/5 flex items-center justify-center text-theme-secondary hover:text-theme-primary hover:bg-[#1f1f22] transition-all"
+          className="w-10 h-10 rounded-full bg-theme-input border border-theme-border flex items-center justify-center text-theme-secondary hover:text-theme-primary hover:bg-theme-card-hover transition-all"
         >
           <Settings className="w-4 h-4" />
         </button>
@@ -204,8 +214,8 @@ export const Header = ({ activeTab, onNavigate, onOpenCommandPalette }) => {
           </div>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 top-12 mt-2 w-56 bg-white/[0.05] backdrop-blur-xl border border-theme-border rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden py-2 z-50 animate-in slide-in-from-top-2 duration-200">
-              <div className="px-5 py-3 border-b border-theme-border mb-2 bg-[#110918]">
+            <div className="absolute right-0 top-12 mt-2 w-56 bg-white/[0.05] backdrop-blur-xl border border-theme-border rounded-3xl shadow-sm overflow-hidden py-2 z-50 animate-in slide-in-from-top-2 duration-200">
+              <div className="px-5 py-3 border-b border-theme-border mb-2 bg-theme-input">
                 <p className="text-sm font-semibold text-theme-primary tracking-wide truncate">{user?.fullName}</p>
                 <p className="text-xs text-theme-secondary truncate mt-0.5">{user?.email}</p>
               </div>

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AI_PROVIDERS } from '../constants/aiProviders';
+import { apiFetch } from '../lib/apiFetch';
 
 const initialHistory = [];
 const initialPrompts = [];
@@ -14,7 +15,8 @@ export const useQaStore = create(
       prompts: initialPrompts,
       knowledgeBase: initialKnowledgeBase,
       aiProviders: initialAiProviders,
-      currentReport: null, // Selected or newly generated report
+      currentReport: null,
+      analysisAbortController: null,
 
   settings: {
     orgName: 'QA Automation Enterprise Global',
@@ -28,7 +30,6 @@ export const useQaStore = create(
     webhookUrl: 'https://hooks.slack.com/services/T00/B00/arena-qa-alerts'
   },
 
-  // KPI Calculations
   getKpis: (dateFilter = {}) => {
     let history = get().history;
     
@@ -47,7 +48,6 @@ export const useQaStore = create(
     const successfulAnalysis = history.filter(h => h.status === 'Passed' || h.status === 'Warning').length;
     const failedAnalysis = totalChatsAnalyzed - successfulAnalysis;
 
-    // Misleading percentage from actual findings
     const misleadingCount = history.filter(h =>
       (h.findings || []).some(f => f.category?.toLowerCase().includes('mislead'))
     ).length;
@@ -57,7 +57,6 @@ export const useQaStore = create(
 
     const averageQaScore = Math.round(history.reduce((a, b) => a + (b.qaScore || 0), 0) / (history.length || 1)) || 0;
 
-    // Average latency from real latencyMs values
     const latencies = history.filter(h => h.latencyMs).map(h => h.latencyMs);
     const avgLatency = latencies.length
       ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
@@ -68,19 +67,15 @@ export const useQaStore = create(
     const totalPromptTemplates = get().prompts.length;
     const knowledgeBaseDocuments = get().knowledgeBase.length;
 
-    // Volume counts from real dates
     const now = Date.now();
     const dayMs = 24 * 60 * 60 * 1000;
     const dailyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < dayMs).length;
     const weeklyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < 7 * dayMs).length;
     const monthlyAnalysis = history.filter(h => (now - new Date(h.date).getTime()) < 30 * dayMs).length;
 
-    // Issue category breakdowns - search ruleName in findings AND errorType on the report itself
     const matchKeyword = (h, keyword) => {
       const kw = keyword.toLowerCase();
-      // Check top-level errorType
       if ((h.errorType || '').toLowerCase().includes(kw)) return true;
-      // Check each finding's ruleName, description and category
       return (h.findings || []).some(f =>
         (f.ruleName || '').toLowerCase().includes(kw) ||
         (f.category || '').toLowerCase().includes(kw) ||
@@ -139,7 +134,9 @@ export const useQaStore = create(
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
       const customHeaders = { 'Content-Type': 'application/json' };
       
-      // Always flag to use personal keys. If a key is empty, the backend falls back to server default (.env).
+      const abortController = new AbortController();
+      set({ analysisAbortController: abortController });
+      
       customHeaders['x-use-personal-keys'] = 'true';
       customHeaders['x-groq-key'] = localStorage.getItem('x-groq-active') === 'true' ? (localStorage.getItem('x-groq-key') || '') : '';
       customHeaders['x-openai-key'] = localStorage.getItem('x-openai-active') === 'true' ? (localStorage.getItem('x-openai-key') || '') : '';
@@ -152,10 +149,11 @@ export const useQaStore = create(
       customHeaders['x-cohere-key'] = localStorage.getItem('x-cohere-active') === 'true' ? (localStorage.getItem('x-cohere-key') || '') : '';
       customHeaders['x-github-key'] = localStorage.getItem('x-github-active') === 'true' ? (localStorage.getItem('x-github-key') || '') : '';
 
-      const response = await fetch(`${apiUrl}/v1/analyze`, {
+      const response = await apiFetch(`${apiUrl}/v1/analyze`, {
         method: 'POST',
         headers: customHeaders,
-        body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId, category })
+        body: JSON.stringify({ conversationText, aiProvider, aiModel, projectId, category }),
+        signal: abortController.signal
       });
 
       if (!response.ok) {
@@ -178,7 +176,7 @@ export const useQaStore = create(
         aiModelUsed: `${aiProvider} (${aiModel})`,
         promptVersion: promptVersion || 'v4',
         processingTime: `${latencyMs}ms`,
-        latencyMs: latencyMs, // Keep raw number for charting
+        latencyMs: latencyMs,
         qaScore: aiResult.qaScore || 0,
         status: aiResult.status || 'Warning',
         misleadingPercentage: aiResult.misleadingPercentage || 0,
@@ -187,8 +185,7 @@ export const useQaStore = create(
         overallRecommendation: aiResult.overallRecommendation || 'No findings.',
         findings: aiResult.findings || [],
         projectId: projectId || null,
-        schemaDefinition: aiResult.schemaDefinition || null, // Will store dynamic schema used
-        // Global report card fields
+        schemaDefinition: aiResult.schemaDefinition || null,
         qaFinding: aiResult.qaFinding || null,
         criticalChatLogs: aiResult.criticalChatLogs || [],
         expectedAgentAction: aiResult.expectedAgentAction || [],
@@ -201,13 +198,27 @@ export const useQaStore = create(
 
       set(state => ({
         history: [newReport, ...state.history],
-        currentReport: newReport
+        currentReport: newReport,
+        analysisAbortController: null
       }));
 
       return newReport;
     } catch (err) {
+      set({ analysisAbortController: null });
+      if (err.name === 'AbortError') {
+        console.log('Analysis cancelled by user');
+        throw new Error('Analysis cancelled');
+      }
       console.error('QA Analysis Error:', err);
       throw err;
+    }
+  },
+
+  cancelAnalysis: () => {
+    const controller = get().analysisAbortController;
+    if (controller) {
+      controller.abort();
+      set({ analysisAbortController: null });
     }
   },
 
@@ -218,7 +229,6 @@ export const useQaStore = create(
     }));
   },
 
-  // Prompt actions
   createPrompt: (promptData) => {
     const newPrompt = {
       id: 'p_' + Date.now(),
@@ -297,7 +307,6 @@ export const useQaStore = create(
     }));
   },
 
-  // Knowledge base actions
   addKnowledgeDoc: (doc) => {
     const newDoc = {
       id: 'kb_' + Date.now(),
@@ -321,10 +330,9 @@ export const useQaStore = create(
     set(state => ({ settings: { ...state.settings, ...newSettings } }));
   }
 }), {
-  name: 'arena-qa-storage', // key for localStorage
+  name: 'arena-qa-storage',
   merge: (persistedState, currentState) => {
     if (persistedState.aiProviders) {
-      // Sync hardcoded provider configs (models, badges, etc.) but keep user's active toggle state
       persistedState.aiProviders = currentState.aiProviders.map(currentProvider => {
         const savedProvider = persistedState.aiProviders.find(p => p.id === currentProvider.id);
         if (savedProvider) {
@@ -341,5 +349,5 @@ export const useQaStore = create(
     knowledgeBase: state.knowledgeBase,
     settings: state.settings,
     aiProviders: state.aiProviders 
-  }), // Only persist these fields
+  }),
 }));

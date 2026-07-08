@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { useQaStore } from '../../store/qaStore';
+import { useUiStore } from '../../store/uiStore';
 import { 
   MessageSquare, 
   CheckCircle2, 
@@ -51,17 +54,68 @@ ChartJS.register(
   Filler
 );
 
+// Module-level flag to ensure animation only plays on initial refresh/load, not when switching tabs back and forth.
+let hasPlayedInitialAnimation = false;
+
 export const DashboardPage = ({ onNavigate }) => {
   const [filterMode, setFilterMode] = useState('specific'); // 'specific' or 'range'
+  const { getKpis, history } = useQaStore();
+  const { theme } = useUiStore();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const { getKpis, history } = useQaStore();
   const kpis = getKpis({
     startDate,
     endDate: filterMode === 'specific' ? startDate : endDate
   });
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+  const container = useRef();
+
+  useGSAP(() => {
+    // If we already animated during this session (meaning we just switched tabs), 
+    // skip the heavy animation and instantly show everything to optimize speed.
+    if (hasPlayedInitialAnimation) {
+      gsap.set('.gsap-hero, .gsap-kpi, .gsap-chart', { opacity: 1, y: 0 });
+      return;
+    }
+
+    // Initial states: Use only opacity and translation (no scale) to avoid Chart.js layout thrashing
+    gsap.set('.gsap-hero, .gsap-kpi, .gsap-chart', { opacity: 0, y: 15 });
+
+    const tl = gsap.timeline({ 
+      delay: 0.15,
+      onComplete: () => {
+        hasPlayedInitialAnimation = true;
+      }
+    });
+
+    // 1. Hero banner enters smoothly
+    tl.to('.gsap-hero', {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: 'power3.out'
+    }, 0)
+    
+    // 2. KPIs stagger in smoothly
+    .to('.gsap-kpi', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.05,
+      ease: 'power3.out'
+    }, 0.15)
+    
+    // 3. Charts animate in without resizing/scaling to prevent jank
+    .to('.gsap-chart', {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      stagger: 0.15,
+      ease: 'power3.out'
+    }, 0.3);
+
+  }, { scope: container });
 
   const kpiCards = [
     { label: 'Total Analyzed', value: kpis.totalChatsAnalyzed.toLocaleString(), icon: MessageSquare, change: '+12.4% (0.7%)', up: true, color: 'text-blue-400' },
@@ -78,37 +132,79 @@ export const DashboardPage = ({ onNavigate }) => {
     { label: 'Monthly Volume', value: kpis.monthlyAnalysis.toLocaleString(), icon: CalendarRange, change: '+180 this mo', up: true, color: 'text-blue-400' },
   ];
 
-  // Dark Premium Chart options
+  // Dynamic Chart Colors based on Theme
+  const chartTextColor = theme === 'light' ? '#6B7280' : '#71717a';
+  const chartTooltipBg = theme === 'light' ? '#FFFFFF' : '#2a2a2e';
+  const chartTooltipText = theme === 'light' ? '#111827' : '#ffffff';
+  const chartBorder = theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.03)';
+
+  // Custom Plugin for Hover Vertical Line
+  const verticalLinePlugin = {
+    id: 'verticalLine',
+    afterDraw: chart => {
+      if (chart.tooltip?._active?.length) {
+        const activePoint = chart.tooltip._active[0];
+        const ctx = chart.ctx;
+        const x = activePoint.element.x;
+        const topY = chart.scales.y.top;
+        const bottomY = chart.scales.y.bottom;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, topY);
+        ctx.lineTo(x, bottomY);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  };
+
+  // Dark Premium Chart options (Redesigned for Ultra-Minimal Style)
   const defaultChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1000,
+      easing: 'easeInOutQuart'
+    },
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#2a2a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#a1a1aa',
-        borderColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: chartTooltipBg,
+        titleColor: chartTooltipText,
+        bodyColor: chartTextColor,
+        borderColor: chartBorder,
         borderWidth: 1,
         padding: 12,
-        cornerRadius: 8,
+        cornerRadius: 12,
+        boxPadding: 6,
+        usePointStyle: true,
         displayColors: false,
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#71717a', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#71717a', font: { size: 10 }, maxTicksLimit: 5 } }
+      x: { grid: { display: false, drawBorder: false }, ticks: { color: chartTextColor, font: { size: 10 }, maxRotation: 0 } },
+      y: { grid: { display: false, drawBorder: false }, ticks: { display: false } }
     },
     elements: {
       point: {
         radius: 0,
         hoverRadius: 6,
-        backgroundColor: '#fbcfe8',
-        borderColor: '#ec4899',
-        borderWidth: 2
+        backgroundColor: '#ffffff',
+        borderColor: '#a855f7',
+        borderWidth: 2,
+        hoverBorderWidth: 3
       },
       line: {
-        tension: 0.4
+        tension: 0.4,
+        borderWidth: 2,
+        borderJoinStyle: 'round',
+        borderCapStyle: 'round'
       }
     }
   };
@@ -135,9 +231,10 @@ export const DashboardPage = ({ onNavigate }) => {
       borderColor: '#ec4899', // Pink glow
       backgroundColor: (context) => {
         const ctx = context.chart.ctx;
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.3)');
-        gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(236, 72, 153, 0.20)');
+        gradient.addColorStop(0.5, 'rgba(236, 72, 153, 0.08)');
+        gradient.addColorStop(1, 'transparent');
         return gradient;
       },
       fill: true,
@@ -269,13 +366,13 @@ export const DashboardPage = ({ onNavigate }) => {
   };
 
   return (
-    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+    <div ref={container} className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
       
       {/* Date Filters */}
       <div className="flex items-center justify-end gap-4 pb-2">
         <div className="flex items-center gap-2">
           
-          <div className="flex bg-[#150d1f] rounded-xl p-1 mr-2">
+          <div className="flex bg-theme-card rounded-xl p-1 mr-2">
             <button
               onClick={() => {
                 if (filterMode !== 'specific') {
@@ -287,7 +384,7 @@ export const DashboardPage = ({ onNavigate }) => {
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'specific' 
                   ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
-                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-theme-card-hover'
               }`}
             >
               Specific Day
@@ -303,7 +400,7 @@ export const DashboardPage = ({ onNavigate }) => {
               className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all ${
                 filterMode === 'range' 
                   ? 'bg-theme-accent-yellow/20 text-purple-300 shadow-sm' 
-                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-[#1d132a]'
+                  : 'text-theme-text-secondary hover:text-theme-text-secondary hover:bg-theme-card-hover'
               }`}
             >
               Date Range
@@ -334,7 +431,7 @@ export const DashboardPage = ({ onNavigate }) => {
               setStartDate(today);
               if (filterMode === 'range') setEndDate(today);
             }}
-            className="px-3 py-2 bg-[#1d132a] hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] text-theme-text-secondary hover:text-theme-text-primary text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
+            className="px-3 py-2 bg-theme-card-hover hover:border-theme-accent-yellow/50 hover:bg-theme-card-hover text-theme-text-secondary hover:text-theme-text-primary text-xs font-semibold rounded-xl transition-all ml-1 shadow-sm"
           >
             Today
           </button>
@@ -345,7 +442,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 setStartDate('');
                 setEndDate('');
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-[13px] font-medium ml-1 shadow-sm hover:shadow-md"
               title="Clear Filter"
             >
               <X className="w-3.5 h-3.5" />
@@ -359,8 +456,8 @@ export const DashboardPage = ({ onNavigate }) => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Left Col: Main Banner & CTA */}
-        <div className="col-span-1 flex flex-col gap-6">
-          <div className="bg-gradient-to-br from-[#2a1b38]/80 to-[#1a1224]/80 backdrop-blur-xl h-full w-full p-8 rounded-3xl relative overflow-hidden flex flex-col justify-center group">
+        <div className="col-span-1 flex flex-col gap-6 gsap-hero opacity-0">
+          <div className="premium-glass-card h-full w-full p-8 relative flex flex-col justify-center group">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(168,85,247,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <h3 className="text-theme-text-secondary text-sm font-medium mb-2">Total Chats Analyzed</h3>
             <div className="flex items-end gap-3">
@@ -370,7 +467,7 @@ export const DashboardPage = ({ onNavigate }) => {
               <span className="text-xs text-theme-text-secondary">Enterprise QA Platform</span>
               <button 
                 onClick={() => setIsInsightsOpen(true)}
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#d946ef] text-theme-text-primary text-xs font-semibold shadow-[0_0_20px_rgba(217,70,239,0.3)] hover:shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2"
+                className="px-5 py-2.5 rounded-full bg-theme-accent-yellow text-[#1e1b26] text-theme-text-primary text-xs font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Explore AI Insights
@@ -383,7 +480,7 @@ export const DashboardPage = ({ onNavigate }) => {
         <div className="col-span-1 xl:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Key Metrics</h2>
-            <button className="px-4 py-1.5 rounded-full text-xs text-theme-text-secondary hover:bg-[#1d132a] transition-colors flex items-center gap-1.5">
+            <button className="px-4 py-1.5 rounded-full text-xs text-theme-text-secondary hover:bg-theme-card-hover transition-colors flex items-center gap-1.5">
               See all <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
@@ -391,9 +488,9 @@ export const DashboardPage = ({ onNavigate }) => {
             {kpiCards.slice(0, 8).map((kpi, idx) => (
               <div
                 key={idx}
-                className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-5 hover:bg-[#1d132a] transition-all flex flex-col"
+                className="premium-glass-card p-5 flex flex-col gsap-kpi opacity-0"
               >
-                <span className="text-theme-text-primary text-xl font-semibold mb-1 tracking-tight">{kpi.value}</span>
+                <span className="text-xl font-semibold mb-1 tracking-tight text-theme-text-primary">{kpi.value}</span>
                 <span className={`text-[11px] font-medium flex items-center gap-1 ${kpi.up ? 'text-[#10b981]' : 'text-[#ec4899]'}`}>
                   {kpi.change}
                 </span>
@@ -412,20 +509,45 @@ export const DashboardPage = ({ onNavigate }) => {
 
       {/* Main Chart Section (Like Helios "Portfolio Performance") */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Daily Volume Performance</h2>
-          <div className="flex gap-2">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-sm text-theme-text-primary font-medium tracking-wide">Daily Volume Performance</h2>
+            <p className="text-xs text-theme-text-secondary mt-0.5">Compared with previous period</p>
+          </div>
+          <div className="flex gap-1 bg-theme-bg-input p-1 rounded-full shadow-inner border border-theme-border">
             {['1D', '1W', '1M', '6M', '1Y'].map((t) => (
-              <button key={t} className={`w-8 h-8 rounded-full text-[10px] font-medium flex items-center justify-center transition-colors ${t === '1D' ? 'bg-[#2a2a2e] text-theme-text-primary shadow-[0_0_15px_rgba(0,0,0,0.5)]' : 'text-theme-text-secondary/70 hover:text-theme-text-secondary'}`}>
+              <button key={t} className={`w-8 h-7 rounded-full text-[10px] font-semibold flex items-center justify-center transition-all ${t === '1D' ? 'bg-theme-bg-card text-theme-text-primary shadow-sm border border-theme-border' : 'text-theme-text-secondary hover:text-theme-text-primary'}`}>
                 {t}
               </button>
             ))}
           </div>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-96 flex flex-col relative overflow-hidden group">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-pink-500/5 blur-[100px] pointer-events-none" />
-          <div className="flex-1 min-h-0 relative z-10 mt-4">
-            <Line data={dailyTrendData} options={defaultChartOptions} />
+        <div className="premium-glass-card p-8 h-[420px] flex flex-col relative group gsap-chart opacity-0">
+          {/* Summary Statistics */}
+          <div className="flex items-center gap-6 mb-8">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Peak Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">1,204</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Average Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">842</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Lowest Volume</span>
+              <span className="text-xl font-semibold text-theme-text-primary">312</span>
+            </div>
+            <div className="w-px h-8 bg-theme-border" />
+            <div className="flex flex-col">
+              <span className="text-[10px] text-theme-text-secondary uppercase tracking-widest font-semibold mb-1">Growth</span>
+              <span className="text-xl font-semibold text-emerald-500">+14.2%</span>
+            </div>
+          </div>
+          
+          <div className="flex-1 min-h-0 relative z-10 w-full pl-0 -ml-2">
+            <Line data={dailyTrendData} options={defaultChartOptions} plugins={[verticalLinePlugin]} />
           </div>
         </div>
       </div>
@@ -433,7 +555,7 @@ export const DashboardPage = ({ onNavigate }) => {
       {/* Additional Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* Weekly Trend */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Weekly Quality Trend</h3>
           <div className="flex-1 min-h-0">
             <Bar data={weeklyTrendData} options={{ ...defaultChartOptions, scales: { ...defaultChartOptions.scales, x: { ...defaultChartOptions.scales.x, stacked: true }, y: { ...defaultChartOptions.scales.y, stacked: true } } }} />
@@ -441,7 +563,7 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Monthly Trend */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Monthly Score Averages</h3>
           <div className="flex-1 min-h-0">
             <Line data={monthlyTrendData} options={defaultChartOptions} />
@@ -449,10 +571,10 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* Issue Distribution */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Issue Category Watchlist</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
-            <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
+            <Doughnut data={issueDistData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', animation: { animateScale: true, animateRotate: true, duration: 1600, easing: 'easeOutExpo' }, plugins: { legend: { position: 'right', labels: { color: chartTextColor, font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Issues</span>
             </div>
@@ -460,10 +582,10 @@ export const DashboardPage = ({ onNavigate }) => {
         </div>
 
         {/* AI Model Usage */}
-        <div className="bg-[#150d1f] backdrop-blur-md rounded-3xl p-6 h-80 flex flex-col">
+        <div className="premium-glass-card p-6 h-80 flex flex-col gsap-chart opacity-0">
           <h3 className="text-sm font-medium text-theme-text-primary mb-6">Model Distribution Portfolio</h3>
           <div className="flex-1 min-h-0 flex items-center justify-center relative group">
-            <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'right', labels: { color: '#a1a1aa', font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
+            <Doughnut data={aiModelUsageData} options={{ responsive: true, maintainAspectRatio: false, cutout: '75%', animation: { animateScale: true, animateRotate: true, duration: 1600, easing: 'easeOutExpo' }, plugins: { legend: { position: 'right', labels: { color: chartTextColor, font: { size: 11, family: 'sans-serif' }, usePointStyle: true, boxWidth: 8, padding: 15 } } } }} />
             <div className="absolute inset-0 flex items-center justify-center md:pr-[180px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <span className="text-xs text-theme-text-secondary font-semibold tracking-widest uppercase">Models</span>
             </div>
@@ -478,26 +600,26 @@ export const DashboardPage = ({ onNavigate }) => {
           onClick={() => setIsInsightsOpen(false)}
         >
           <div 
-            className="absolute top-0 right-0 w-[450px] max-w-full h-full bg-theme-main/90 backdrop-blur-3xl border-l border-theme-border shadow-[-20px_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in slide-in-from-right duration-300"
+            className="absolute top-0 right-0 w-[450px] max-w-full h-full bg-theme-main/90 backdrop-blur-3xl border-l border-theme-border shadow-sm flex flex-col animate-in slide-in-from-right duration-300"
             onClick={e => e.stopPropagation()}
           >
-            <div className="p-6 flex items-center justify-between bg-[#150d1f]">
+            <div className="p-6 flex items-center justify-between bg-theme-card">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-600 flex items-center justify-center shadow-sm">
                   <Sparkles className="w-4 h-4 text-theme-text-primary" />
                 </div>
                 <h2 className="text-lg font-semibold text-theme-text-primary tracking-wide">AI Executive Summary</h2>
               </div>
               <button 
                 onClick={() => setIsInsightsOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#1d132a] flex items-center justify-center text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a] transition-colors"
+                className="w-8 h-8 rounded-full bg-theme-card-hover flex items-center justify-center text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-              <div className="bg-[#150d1f] rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent-yellow/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" /> Performance Uptrend
@@ -507,7 +629,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="bg-[#150d1f] rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-amber-300 mb-2 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" /> Latency Warning
@@ -517,7 +639,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 </p>
               </div>
 
-              <div className="bg-[#150d1f] border border-blue-500/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+              <div className="premium-glass-card p-5 relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none" />
                 <h3 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
                   <Target className="w-4 h-4" /> Action Items
@@ -535,13 +657,13 @@ export const DashboardPage = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="p-6 bg-[#150d1f]">
+            <div className="p-6 bg-theme-card">
               <button 
                 onClick={() => {
                   setIsInsightsOpen(false);
                   onNavigate('analytics');
                 }}
-                className="w-full py-3 rounded-xl bg-[#1d132a] hover:bg-[#1d132a] text-theme-text-primary text-sm font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-theme-card-hover hover:bg-theme-card-hover text-theme-text-primary text-sm font-semibold transition-all flex items-center justify-center gap-2"
               >
                 View Full Analytics Report <ArrowRight className="w-4 h-4" />
               </button>

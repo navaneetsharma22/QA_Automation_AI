@@ -54,7 +54,7 @@ export const KnowledgeBasePage = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all flex items-center gap-2 self-start md:self-auto"
+          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 self-start md:self-auto"
         >
           <Plus className="w-4 h-4" /> Add Knowledge Document
         </button>
@@ -68,7 +68,7 @@ export const KnowledgeBasePage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search knowledge documents or content..."
-            className="w-full bg-[#150d1f] backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors shadow-inner"
+            className="w-full bg-theme-card backdrop-blur-md rounded-xl pl-10 pr-4 py-2.5 text-xs text-theme-text-primary placeholder-gray-500 focus:outline-none focus:border-theme-accent-yellow/50 transition-colors shadow-inner"
           />
         </div>
         <div className="text-xs text-theme-text-secondary font-mono">
@@ -81,7 +81,7 @@ export const KnowledgeBasePage = () => {
         {filtered.map((doc) => (
           <div 
             key={doc.id}
-            className="bg-[#150d1f] backdrop-blur-xl rounded-2xl p-6 shadow-2xl hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] transition-all flex flex-col justify-between group"
+            className="bg-theme-card backdrop-blur-xl rounded-2xl p-6 shadow-2xl hover:border-theme-accent-yellow/50 hover:bg-theme-card-hover transition-all flex flex-col justify-between group"
           >
             <div>
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -110,7 +110,7 @@ export const KnowledgeBasePage = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-theme-text-secondary font-mono bg-[#110918] p-4 rounded-xl line-clamp-4 leading-relaxed my-4 custom-scrollbar">
+              <p className="text-xs text-theme-text-secondary font-mono bg-theme-input p-4 rounded-xl line-clamp-4 leading-relaxed my-4 custom-scrollbar">
                 {doc.content}
               </p>
             </div>
@@ -145,7 +145,7 @@ export const KnowledgeBasePage = () => {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Expedited Refund Fraud Verification SLA"
-                  className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
+                  className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
                 />
               </div>
 
@@ -155,7 +155,7 @@ export const KnowledgeBasePage = () => {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
+                    className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
                   >
                     {categories.map(cat => (
                       <option key={cat} value={cat} className="bg-theme-main text-theme-text-primary">{cat}</option>
@@ -168,7 +168,7 @@ export const KnowledgeBasePage = () => {
                   <select
                     value={formData.fileType}
                     onChange={(e) => setFormData({ ...formData, fileType: e.target.value })}
-                    className="w-full bg-[#110918] rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
+                    className="w-full bg-theme-input rounded-xl px-4 py-2.5 text-xs text-theme-text-primary focus:outline-none focus:border-theme-accent-yellow/50"
                   >
                     <option value="Markdown (.md)" className="bg-theme-main text-theme-text-primary">Markdown (.md)</option>
                     <option value="Text (.txt)" className="bg-theme-main text-theme-text-primary">Text (.txt)</option>
@@ -185,7 +185,7 @@ export const KnowledgeBasePage = () => {
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Paste official policy text here. This content will be chunked and converted into vector embeddings for RAG search..."
-                  className="w-full bg-[#110918] rounded-xl p-4 text-xs font-mono text-gray-100 focus:outline-none focus:border-theme-accent-yellow/50 leading-relaxed custom-scrollbar"
+                  className="w-full bg-theme-input rounded-xl p-4 text-xs font-mono text-gray-100 focus:outline-none focus:border-theme-accent-yellow/50 leading-relaxed custom-scrollbar"
                 />
               </div>
 
@@ -193,7 +193,7 @@ export const KnowledgeBasePage = () => {
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-xs font-medium text-theme-text-secondary hover:text-theme-text-primary transition-colors">
                   Cancel
                 </button>
-                <button type="submit" className="px-5 py-2.5 bg-theme-accent-yellow hover:bg-theme-accent-yellow text-theme-text-primary font-semibold text-xs rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all">
+                <button type="submit" className="px-5 py-2.5 bg-theme-accent-yellow hover:bg-theme-accent-yellow text-theme-text-primary font-semibold text-xs rounded-xl shadow-sm transition-all">
                   Generate Embeddings & Save
                 </button>
               </div>

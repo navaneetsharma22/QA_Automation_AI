@@ -1,13 +1,24 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import toast from 'react-hot-toast';
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
   user: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
+
+  checkSessionExpiry: () => {
+    const { user, isAuthenticated } = get();
+    if (isAuthenticated && user?.expiresAt && Date.now() > user.expiresAt) {
+      set({ isAuthenticated: false, user: null });
+      toast.error('Your session has expired. Please log in again.');
+      return true; // expired
+    }
+    return false;
+  },
 
   login: async (email, password) => {
     set({ isLoading: true, error: null });
@@ -77,9 +88,9 @@ export const useAuthStore = create(
   },
 
 }), {
-  name: 'arena-auth-storage', // key for localStorage
+  name: 'arena-auth-storage',
   partialize: (state) => ({ 
     user: state.user,
     isAuthenticated: state.isAuthenticated
-  }), // Only persist these fields
+  }),
 }));

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQaStore } from '../../store/qaStore';
 import { useUiStore } from '../../store/uiStore';
 import { AI_PROVIDERS } from '../../constants/aiProviders';
-import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers } from 'lucide-react';
+import { MessageSquareCode, Sparkles, AlertCircle, ArrowRight, Check, Play, RefreshCw, Layers, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { CustomSelect } from '../../components/ui/CustomSelect';
+import GradientOrb from '../../components/ui/GradientOrb';
 
 export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
-  const { analyzeChat, prompts, aiProviders } = useQaStore();
-  const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis } = useUiStore();
+  const { analyzeChat, prompts, aiProviders, cancelAnalysis } = useQaStore();
+  const { pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis, theme } = useUiStore();
   const [conversationText, setConversationText] = useState('');
   
   const activeProviders = aiProviders.filter(p => p.active);
@@ -22,6 +24,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
   const [selectedCategory, setSelectedCategory] = useState('Auto-Detect');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [originalPetitionId, setOriginalPetitionId] = useState('');
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -48,14 +51,12 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       }
       setConversationText(textToSet);
       
-      // Select the category if it matches one of our options (case-insensitive)
       const validCategories = ['Booking', 'Cancellation', 'Reschedule', 'Refund', 'Baggage', 'Check-in', 'Meal / Seat', 'Visa / Travel Advisory', 'Other'];
       if (pendingCategory) {
          const match = validCategories.find(c => c.toLowerCase() === pendingCategory.toLowerCase());
          if (match) setSelectedCategory(match);
       }
       
-      // Clear the store so it doesn't auto-fill again if they navigate away and back
       setPendingAnalysis('', 'Auto-Detect', '');
     }
   }, [pendingTranscript, pendingCategory, pendingChatId, setPendingAnalysis]);
@@ -96,15 +97,35 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
       toast.success('QA Report generated successfully!', { id: toastId });
       onAnalysisComplete(report);
     } catch (err) {
-      toast.error(err.message || 'Analysis failed to execute', { id: toastId });
+      if (err.message === 'Analysis cancelled') {
+        toast.dismiss(toastId);
+      } else {
+        toast.error(err.message || 'Analysis failed to execute', { id: toastId });
+      }
     } finally {
       setIsAnalyzing(false);
     }
   };
 
+  const handleCancelClick = () => {
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    cancelAnalysis();
+    setIsAnalyzing(false);
+    setIsCancelModalOpen(false);
+    toast.success('Analysis cancelled successfully.');
+  };
+
+  const handleContinueAnalysis = () => {
+    setIsCancelModalOpen(false);
+  };
+
   return (
-    <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <>
+      <div className="px-10 py-6 w-full space-y-8 animate-in fade-in duration-300">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left 2 Cols: Chat Paste Area */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
@@ -121,7 +142,8 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </button>
           </div>
 
-          <div className="relative bg-[#150d1f] backdrop-blur-md rounded-3xl overflow-hidden transition-colors">
+          <div className="premium-glass-card overflow-hidden relative group transition-colors">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             <textarea
               rows={14}
               required
@@ -130,7 +152,7 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               placeholder="Paste conversation transcript here...&#10;&#10;Customer: ...&#10;Agent: ..."
               className="w-full bg-transparent p-6 text-sm text-theme-text-primary placeholder-gray-600 focus:outline-none font-mono leading-relaxed resize-y min-h-[340px]"
             />
-            <div className="bg-[#1d132a] px-6 py-3 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
+            <div className="bg-theme-card-hover px-6 py-3 flex items-center justify-between text-[11px] text-theme-text-secondary/70 font-mono tracking-wider">
               <span>{conversationText.length} CHARACTERS</span>
               <span>AUTO-DETECTING MARKDOWN & METADATA</span>
             </div>
@@ -146,34 +168,49 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={isAnalyzing}
-              className="w-full sm:w-auto self-end px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
-            >
-              {isAnalyzing ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-theme-text-primary" />
-                  <span>Running QA Analysis...</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-white" />
-                  <span>Generate QA Report</span>
-                </>
+            <div className="flex gap-3 w-full">
+              <button
+                type="submit"
+                disabled={isAnalyzing}
+                className="flex-1 sm:flex-auto px-10 py-4 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary font-semibold rounded-xl text-[13px] transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 disabled:opacity-50 tracking-wide shrink-0"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-theme-text-primary" />
+                    <span>Running QA Analysis...</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-white" />
+                    <span>Generate QA Report</span>
+                  </>
+                )}
+              </button>
+
+              {isAnalyzing && (
+                <button
+                  type="button"
+                  onClick={handleCancelClick}
+                  className="px-6 py-4 bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 font-semibold rounded-xl text-[13px] transition-all shadow-sm flex items-center justify-center gap-2 tracking-wide"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
               )}
-            </button>
+            </div>
           </div>
         </div>
 
         {/* Right Col: AI Provider & Prompt Configuration */}
-        <div className="space-y-6 bg-[#150d1f] backdrop-blur-md p-6 rounded-3xl h-fit">
-          <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
-            <Layers className="w-4 h-4 text-theme-accent-yellow" />
-            <span>AI Engine Configuration</span>
-          </h2>
+        <div className="premium-glass-card p-8 h-fit relative group !overflow-visible">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle_at_100%_0%,rgba(168,85,247,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          <div className="relative z-10 space-y-6">
+            <h2 className="text-sm font-semibold text-theme-text-primary flex items-center gap-2 pb-4 tracking-wide">
+              <Layers className="w-4 h-4 text-theme-accent-yellow" />
+              <span>AI Engine Configuration</span>
+            </h2>
 
-          {/* Project Template Selector */}
+            {/* Project Template Selector */}
           <div className="mb-6">
             <label className="block text-xs font-semibold text-theme-text-secondary uppercase tracking-wider mb-1.5">
               1. Project Report Layout
@@ -231,11 +268,15 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
                     key={provider.id}
                     type="button"
                     onClick={() => handleProviderChange(provider.id)}
-                    className={`p-3 rounded-xl border border-transparent text-left transition-all duration-300 flex flex-col gap-1.5 ${
+                    className={`p-3 rounded-xl border text-left transition-all duration-300 flex flex-col gap-1.5 ${
                       isSelected
-                        ? 'bg-gradient-to-br from-[#3b2a45]/80 to-[#251b2e]/40 text-theme-text-primary shadow-[0_0_15px_rgba(168,85,247,0.15)]'
-                        : 'bg-[#110918] text-theme-text-secondary hover:text-theme-text-primary hover:bg-[#1d132a]'
+                        ? 'shadow-sm border-theme-border'
+                        : 'border-transparent bg-theme-input text-theme-text-secondary hover:text-theme-text-primary hover:bg-theme-card-hover'
                     }`}
+                    style={{
+                      background: isSelected ? 'var(--sidebar-active-bg)' : undefined,
+                      color: isSelected ? 'var(--sidebar-active-text)' : undefined
+                    }}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="text-xs font-semibold tracking-wide">{provider.name}</span>
@@ -266,9 +307,75 @@ export const AnalyzeChatPage = ({ onAnalysisComplete }) => {
             </p>
           </div>
           
-          {/* Spacer to push config up if needed, though h-fit handles it */}
+          </div>
         </div>
       </form>
     </div>
+
+      {/* Full-screen Loader Overlay */}
+      {isAnalyzing && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-theme-bg/80 backdrop-blur-md animate-in fade-in duration-300">
+          <GradientOrb size={200} mode={theme || 'dark'} />
+          <div className="mt-8 flex flex-col items-center text-center">
+            <h3 className="text-xl font-bold text-theme-text-primary tracking-wide animate-pulse mb-2">
+              Analyzing Conversation...
+            </h3>
+            <p className="text-sm text-theme-text-secondary max-w-sm">
+              Please wait while the AI generates the QA report based on your configuration.
+            </p>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {isCancelModalOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-theme-card border border-theme-border shadow-2xl rounded-2xl w-full max-w-md overflow-hidden transition-all relative p-8">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-theme-text-primary tracking-wide">Cancel Analysis?</h2>
+              <button 
+                onClick={() => setIsCancelModalOpen(false)}
+                className="rounded-full text-theme-text-secondary hover:text-theme-accent-yellow transition-colors bg-theme-card-hover p-1 hover:bg-theme-card-hover"
+              >
+                <X className="w-5 h-5 stroke-[2]" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="mb-8">
+              <p className="text-sm text-theme-text-secondary leading-relaxed">
+                The current AI analysis is still running.
+                <br />
+                <br />
+                Are you sure you want to cancel it?
+                <br />
+                <br />
+                <span className="font-semibold text-amber-400">Any progress generated so far will not be saved.</span>
+              </p>
+            </div>
+
+            {/* Modal Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleContinueAnalysis}
+                className="flex-1 px-4 py-3 bg-theme-card-hover hover:bg-theme-card-hover text-theme-text-primary font-semibold rounded-xl text-sm transition-all"
+              >
+                Continue Analysis
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-sm transition-all"
+              >
+                Cancel Analysis
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 };

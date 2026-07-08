@@ -32,7 +32,7 @@ export const ReportsPage = ({ onInspectReport }) => {
 
         <button
           onClick={handleExportAll}
-          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all flex items-center gap-2 self-start md:self-auto"
+          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-xs font-semibold rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-2 self-start md:self-auto"
         >
           <Download className="w-4 h-4" /> Export All Reports (JSON/CSV)
         </button>
@@ -40,23 +40,23 @@ export const ReportsPage = ({ onInspectReport }) => {
 
       {/* Summary KPI header */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
+        <div className="bg-theme-card backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Total Reports Generated</span>
           <span className="text-2xl font-bold text-theme-text-primary tracking-wide mt-1 block">{history.length}</span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
+        <div className="bg-theme-card backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Critical Severity Issues</span>
           <span className="text-2xl font-bold text-red-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'Critical').length}
           </span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
+        <div className="bg-theme-card backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">High / Medium Issues</span>
           <span className="text-2xl font-bold text-amber-400 tracking-wide mt-1 block">
             {allIssues.filter(i => i.severity === 'High' || i.severity === 'Medium').length}
           </span>
         </div>
-        <div className="bg-[#150d1f] backdrop-blur-md p-5 rounded-2xl">
+        <div className="bg-theme-card backdrop-blur-md p-5 rounded-2xl">
           <span className="text-xs text-theme-text-secondary font-mono tracking-wider uppercase block">Average Confidence</span>
           <span className="text-2xl font-bold text-cyan-400 tracking-wide mt-1 block">96.8%</span>
         </div>
@@ -68,7 +68,7 @@ export const ReportsPage = ({ onInspectReport }) => {
           <h2 className="text-xs font-semibold text-theme-text-secondary uppercase tracking-wider font-mono">
             Misleading & Policy Violation Findings ({filteredIssues.length})
           </h2>
-          <div className="flex items-center gap-1.5 bg-[#110918] p-1 rounded-xl text-xs">
+          <div className="flex items-center gap-1.5 bg-theme-input p-1 rounded-xl text-xs">
             {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM'].map(sev => (
               <button
                 key={sev}
@@ -87,7 +87,7 @@ export const ReportsPage = ({ onInspectReport }) => {
           {filteredIssues.map((iss, idx) => (
             <div
               key={iss.id || idx}
-              className="bg-[#150d1f] border border-transparent backdrop-blur-md rounded-xl p-5 hover:border-theme-accent-yellow/50 hover:bg-[#1d132a] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
+              className="bg-theme-card border border-transparent backdrop-blur-md rounded-xl p-5 hover:border-theme-accent-yellow/50 hover:bg-theme-card-hover transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group"
               onClick={() => {
                 const rep = history.find(h => h.analysisId === iss.analysisId);
                 if (rep) onInspectReport(rep);
@@ -119,7 +119,7 @@ export const ReportsPage = ({ onInspectReport }) => {
                   <span className="text-[10px] text-theme-text-secondary/70 block font-mono">Category</span>
                   <span className="text-xs text-theme-text-secondary font-medium">{iss.category}</span>
                 </div>
-                <button className="px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600 hover:text-white transition-all text-xs font-semibold flex items-center gap-1.5 group-hover:bg-purple-600 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                <button className="px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600 hover:text-white transition-all text-xs font-semibold flex items-center gap-1.5 group-hover:bg-purple-600 group-hover:text-white group-hover:shadow-md">
                   <span>Inspect Report</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>

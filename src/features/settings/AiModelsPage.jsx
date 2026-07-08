@@ -21,7 +21,7 @@ export const AiModelsPage = () => {
       <div className="flex items-center justify-end px-10 pt-6 pb-6">
         <button 
           onClick={() => toast.success('AI Provider configuration saved successfully!')}
-          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-sm font-semibold rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] flex items-center gap-2"
+          className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-[#d946ef] hover:from-purple-500 hover:to-[#c026d3] text-theme-text-primary text-sm font-semibold rounded-xl transition-all shadow-sm hover:shadow-md flex items-center gap-2"
         >
           <CheckCircle2 className="w-4 h-4" />
           Save Configuration
@@ -32,14 +32,14 @@ export const AiModelsPage = () => {
         {aiProviders.map((p) => (
           <div
             key={p.id}
-            className={`bg-[#150d1f] backdrop-blur-xl rounded-3xl p-6 transition-all flex flex-col justify-between relative overflow-hidden group ${
-              p.active ? 'hover:bg-[#1d132a]' : 'opacity-70'
+            className={`premium-glass-card no-hover p-6 transition-all flex flex-col justify-between relative overflow-hidden group ${
+              p.active ? '' : 'opacity-50 grayscale'
             }`}
           >
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#110918] flex items-center justify-center font-bold font-mono text-theme-accent-yellow group-hover:shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-theme-input flex items-center justify-center font-bold font-mono text-theme-accent-yellow group-hover:shadow-md transition-all">
                     <Cpu className="w-5 h-5" style={{ color: p.color }} />
                   </div>
                   <div>
@@ -63,7 +63,7 @@ export const AiModelsPage = () => {
                 {p.description}
               </p>
 
-              <div className="bg-[#110918] p-3.5 rounded-xl space-y-2 text-xs font-mono">
+              <div className="bg-theme-input p-3.5 rounded-xl space-y-2 text-xs font-mono">
                 <div className="flex justify-between text-theme-text-secondary">
                   <span>Default Model:</span>
                   <span className="text-theme-text-primary font-semibold truncate max-w-[140px]">{p.defaultModel}</span>

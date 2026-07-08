@@ -127,8 +127,8 @@ export const GptTrainingStudio = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden shadow-xl flex flex-col" style={{ height: 'calc(100vh - 120px)', minHeight: '600px' }}>
-        <div className="shrink-0 px-8 py-6 border-b border-[#1F2937] bg-gradient-to-r from-purple-900/20 to-pink-900/10 z-10">
+      <div className="bg-theme-main border border-theme-border rounded-2xl overflow-hidden shadow-xl flex flex-col" style={{ height: 'calc(100vh - 120px)', minHeight: '600px' }}>
+        <div className="shrink-0 px-8 py-6 border-b border-theme-border bg-gradient-to-r from-purple-900/20 to-pink-900/10 z-10">
           <h2 className="text-2xl font-bold text-theme-text-primary mb-2 flex items-center gap-3">
             <MessageSquare className="w-7 h-7 text-theme-accent-yellow" />
             GPT Training Examples
@@ -141,7 +141,7 @@ export const GptTrainingStudio = () => {
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           
           {/* Category Selector */}
-          <div className="bg-[#0B1020] border border-[#1F2937] p-6 rounded-xl shadow-inner mb-8 flex items-center justify-between shrink-0">
+          <div className="bg-theme-input border border-theme-border p-6 rounded-xl shadow-inner mb-8 flex items-center justify-between shrink-0">
             <div>
               <h3 className="text-sm font-bold text-theme-text-secondary uppercase tracking-wider mb-1">Issue Category</h3>
               <p className="text-xs text-theme-text-secondary/70">Select the category to define its specific perfect output example.</p>
@@ -149,7 +149,7 @@ export const GptTrainingStudio = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-72 bg-[#111827] border border-[#374151] text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-theme-accent-yellow transition-colors cursor-pointer font-bold"
+              className="w-72 bg-theme-main border border-theme-border text-theme-text-primary text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-theme-accent-yellow transition-colors cursor-pointer font-bold"
             >
               <option value="" disabled>Select Category...</option>
               {categories.map(c => (
@@ -176,14 +176,14 @@ export const GptTrainingStudio = () => {
                 onChange={handleExampleChange}
                 disabled={!selectedCategory}
                 placeholder={selectedCategory ? '{\n  "qaScore": 85,\n  "status": "Warning",\n  "errorType": "Misleading",\n  "findings": [...]\n}' : "Select a category above to start typing..."}
-                className="w-full min-h-[300px] h-full bg-[#0B1020] border border-[#1F2937] text-theme-text-primary text-sm rounded-xl p-5 focus:outline-none focus:border-theme-accent-yellow/50 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none shadow-inner font-mono disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full min-h-[300px] h-full bg-theme-input border border-theme-border text-theme-text-primary text-sm rounded-xl p-5 focus:outline-none focus:border-theme-accent-yellow/50 focus:ring-1 focus:ring-purple-500/50 transition-all resize-none shadow-inner font-mono disabled:opacity-50 disabled:cursor-not-allowed"
                 spellCheck="false"
               />
             </div>
           </div>
         </div>
 
-        <div className="shrink-0 px-8 py-6 border-t border-[#1F2937] bg-[#111827] flex justify-end z-10">
+        <div className="shrink-0 px-8 py-6 border-t border-theme-border bg-theme-main flex justify-end z-10">
           <button 
             onClick={handleSave}
             disabled={isSubmitting || isSaved}
@@ -211,8 +211,8 @@ export const GptTrainingStudio = () => {
       </div>
 
       {/* Active Contexts List */}
-      <div className="bg-[#111827] border border-[#1F2937] rounded-2xl overflow-hidden mt-8 shadow-xl">
-        <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between">
+      <div className="bg-theme-main border border-theme-border rounded-2xl overflow-hidden mt-8 shadow-xl">
+        <div className="px-6 py-4 border-b border-theme-border flex items-center justify-between">
           <h3 className="text-base font-bold text-theme-text-primary flex items-center gap-2">
             <List className="w-5 h-5 text-theme-accent-yellow" />
             Active Category Examples ({activeCategories.length})
@@ -221,7 +221,7 @@ export const GptTrainingStudio = () => {
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-theme-text-secondary uppercase bg-[#0B1020] border-b border-[#1F2937]">
+            <thead className="text-xs text-theme-text-secondary uppercase bg-theme-input border-b border-theme-border">
               <tr>
                 <th className="px-6 py-4 font-bold tracking-wider">Category</th>
                 <th className="px-6 py-4 font-bold tracking-wider">Example Preview</th>
@@ -230,7 +230,7 @@ export const GptTrainingStudio = () => {
             </thead>
             <tbody className="divide-y divide-[#1F2937]">
               {activeCategories.map(([category, data]) => (
-                <tr key={category} className="hover:bg-[#0B1020]/50 transition-colors">
+                <tr key={category} className="hover:bg-theme-input/50 transition-colors">
                   <td className="px-6 py-4 font-medium text-theme-text-primary whitespace-nowrap">
                     {category}
                   </td>
